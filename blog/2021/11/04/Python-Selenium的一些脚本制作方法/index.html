@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="关于Selenium什么是 Selenuium？Selenium是一个用于测试网站的自动化测试工具，支持各种浏览器包括Chrome、Firefox、Safari等主流界面浏览器，同时也支持phantomJS无界面浏览器。 Selenuim 支持哪些系统？Windows、Linux、IOS、Android等都能支持 我拿它做了些啥？ 学校每日打卡 抢到4价疫苗(没用到Selenium，主要是轮询+短">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python+Selenium 的一些脚本制作方法">
+<meta property="og:url" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="关于Selenium什么是 Selenuium？Selenium是一个用于测试网站的自动化测试工具，支持各种浏览器包括Chrome、Firefox、Safari等主流界面浏览器，同时也支持phantomJS无界面浏览器。 Selenuim 支持哪些系统？Windows、Linux、IOS、Android等都能支持 我拿它做了些啥？ 学校每日打卡 抢到4价疫苗(没用到Selenium，主要是轮询+短">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/3.gif">
+<meta property="og:image" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/Snipaste_2021-11-04_11-30-04.jpg">
+<meta property="og:image" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/1.gif">
+<meta property="og:image" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/Snipaste_2021-11-04_14-42-33.jpg">
+<meta property="og:image" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/Snipaste_2021-11-04_14-52-46.jpg">
+<meta property="article:published_time" content="2021-11-04T02:44:41.000Z">
+<meta property="article:modified_time" content="2022-08-11T01:23:32.853Z">
+<meta property="article:author" content="柳江南">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="selenium">
+<meta property="article:tag" content="脚本">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/3.gif">
+
+<link rel="canonical" href="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Python+Selenium 的一些脚本制作方法 | 碎碎念</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python+Selenium 的一些脚本制作方法
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-04 10:44:41" itemprop="dateCreated datePublished" datetime="2021-11-04T10:44:41+08:00">2021-11-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:32" itemprop="dateModified" datetime="2022-08-11T09:23:32+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="关于Selenium"><a href="#关于Selenium" class="headerlink" title="关于Selenium"></a>关于Selenium</h2><h3 id="什么是-Selenuium？"><a href="#什么是-Selenuium？" class="headerlink" title="什么是 Selenuium？"></a>什么是 Selenuium？</h3><p>Selenium是一个用于测试网站的自动化测试工具，支持各种浏览器包括Chrome、Firefox、Safari等主流界面浏览器，同时也支持phantomJS无界面浏览器。</p>
+<h3 id="Selenuim-支持哪些系统？"><a href="#Selenuim-支持哪些系统？" class="headerlink" title="Selenuim 支持哪些系统？"></a>Selenuim 支持哪些系统？</h3><p>Windows、Linux、IOS、Android等都能支持</p>
+<h3 id="我拿它做了些啥？"><a href="#我拿它做了些啥？" class="headerlink" title="我拿它做了些啥？"></a>我拿它做了些啥？</h3><ul>
+<li>学校每日打卡</li>
+<li>抢到4价疫苗(没用到<code>Selenium</code>，主要是轮询+短信提醒)</li>
+<li>还有一些脚本是用的油猴插件，如抢课(纯<code>js脚本</code>)、查全专业同学考试的成绩组成并做成表格(<code>python+js脚本</code>)等<br><img src="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/3.gif" alt="gif"></li>
+</ul>
+<span id="more"></span>
+
+<h3 id="Selenuim-支持哪些浏览器？"><a href="#Selenuim-支持哪些浏览器？" class="headerlink" title="Selenuim 支持哪些浏览器？"></a>Selenuim 支持哪些浏览器？</h3><p>Chrome、Edge、Firefox</p>
+<h3 id="你需要具备的一点点能力"><a href="#你需要具备的一点点能力" class="headerlink" title="你需要具备的一点点能力"></a>你需要具备的一点点能力</h3><ul>
+<li>会使用<code>id</code>、<code>name</code>、<code>class name</code>、<code>tag name</code>、<code>xpath</code>等方法查找元素节点</li>
+<li>会一点<code>python</code><blockquote>
+<p>附加：</p>
+<ul>
+<li>短信能力：能够找到一家靠谱的平台商</li>
+<li>邮件能力：能够获取到自己邮箱的授权码</li>
+<li>定时任务：需要的话，要有能力部署在<code>Linux</code>上面</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h2 id="安装Selenium"><a href="#安装Selenium" class="headerlink" title="安装Selenium"></a>安装Selenium</h2><h3 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install Selenium</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-找到自己浏览器的驱动"><a href="#2-找到自己浏览器的驱动" class="headerlink" title="2. 找到自己浏览器的驱动"></a>2. 找到自己浏览器的驱动</h3><p>一定要对应自己的浏览器以及版本（版本！！！）<br><img src="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/Snipaste_2021-11-04_11-30-04.jpg" alt="jpg"><br><a target="_blank" rel="noopener" href="https://chromedriver.storage.googleapis.com/index.html">Chrome驱动文件</a><br><a target="_blank" rel="noopener" href="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/">Edge驱动文件</a></p>
+<h3 id="3-把下下来的驱动exe文件复制到Python根目录下"><a href="#3-把下下来的驱动exe文件复制到Python根目录下" class="headerlink" title="3. 把下下来的驱动exe文件复制到Python根目录下"></a>3. 把下下来的驱动<code>exe文件</code>复制到<code>Python</code>根目录下</h3><p>不同浏览器可能要对<code>exe文件</code>进行重命名</p>
+<h3 id="4-写一小段代码片段"><a href="#4-写一小段代码片段" class="headerlink" title="4. 写一小段代码片段"></a>4. 写一小段代码片段</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 为了方便演示，中间加了 time.sleep() 延迟</span></span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.common.by <span class="keyword">import</span> By</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">  driver = webdriver.Edge()</span><br><span class="line">  driver.get(<span class="string">&quot;https://www.baidu.com/&quot;</span>)</span><br><span class="line">  driver.find_element(By.ID, <span class="string">&quot;kw&quot;</span>).send_keys(<span class="string">&quot;Selenium&quot;</span>)</span><br><span class="line">  driver.find_element(By.ID, <span class="string">&quot;su&quot;</span>).click()</span><br><span class="line">  driver.quit()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-冲"><a href="#5-冲" class="headerlink" title="5. 冲"></a>5. 冲</h3><p><img src="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/1.gif" alt="gif"></p>
+<h3 id="6-定位元素的方式"><a href="#6-定位元素的方式" class="headerlink" title="6. 定位元素的方式"></a>6. 定位元素的方式</h3><table>
+<thead>
+<tr>
+<th>定位元素</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>find_element(By.ID, “xxx”)</td>
+<td>通过元素id定位</td>
+</tr>
+<tr>
+<td>find_element(By.NAME, “xxx”)</td>
+<td>通过元素name定位</td>
+</tr>
+<tr>
+<td>find_element(By.XPATH, “xxx”)</td>
+<td>通过xpath表达式定位</td>
+</tr>
+<tr>
+<td>find_element(By.LINK_TEXT, “xxx”)</td>
+<td>通过完整超链接定位</td>
+</tr>
+<tr>
+<td>find_element(By.PARTIAL_LINK_TEXT, “xxx”)</td>
+<td>通过部分链接定位</td>
+</tr>
+<tr>
+<td>find_element(By.TAG_NAME, “xxx”)</td>
+<td>通过标签定位</td>
+</tr>
+<tr>
+<td>find_element(By.CLASS_NAME, “xxx”)</td>
+<td>通过类名进行定位</td>
+</tr>
+<tr>
+<td>find_element(By.CSS_SELECTOR, “xxx”)</td>
+<td>通过css选择器进行定位</td>
+</tr>
+</tbody></table>
+<p>如果要定位多个，使用<code>find_elements</code>即可</p>
+<h3 id="6-常用方法的使用"><a href="#6-常用方法的使用" class="headerlink" title="6. 常用方法的使用"></a>6. 常用方法的使用</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>set_window_size()</td>
+<td>设置浏览器的大小</td>
+</tr>
+<tr>
+<td>back()</td>
+<td>控制浏览器后退</td>
+</tr>
+<tr>
+<td>forward()</td>
+<td>控制浏览器前进</td>
+</tr>
+<tr>
+<td>refresh()</td>
+<td>刷新当前页面</td>
+</tr>
+<tr>
+<td>clear()</td>
+<td>清除文本</td>
+</tr>
+<tr>
+<td>send_keys (value)</td>
+<td>模拟按键输入</td>
+</tr>
+<tr>
+<td>click()</td>
+<td>单击元素</td>
+</tr>
+<tr>
+<td>submit()</td>
+<td>用于提交表单</td>
+</tr>
+<tr>
+<td>get_attribute(name)</td>
+<td>获取元素属性值</td>
+</tr>
+<tr>
+<td>is_displayed()</td>
+<td>设置该元素是否用户可见</td>
+</tr>
+<tr>
+<td>size</td>
+<td>返回元素的尺寸</td>
+</tr>
+<tr>
+<td>text</td>
+<td>获取元素的文本</td>
+</tr>
+</tbody></table>
+<h2 id="邮件能力-以QQ邮件为例"><a href="#邮件能力-以QQ邮件为例" class="headerlink" title="邮件能力(以QQ邮件为例)"></a>邮件能力(以QQ邮件为例)</h2><h3 id="需要用到的包"><a href="#需要用到的包" class="headerlink" title="需要用到的包"></a>需要用到的包</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> smtplib</span><br><span class="line"><span class="keyword">from</span> email.mime.text <span class="keyword">import</span> MIMEText</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mail</span>(<span class="params">subject, content, msg_to</span>):</span><br><span class="line">  subject = <span class="string">&quot;主题&quot;</span></span><br><span class="line">  content = <span class="string">&quot;内容&quot;</span></span><br><span class="line">  msg_to = <span class="string">&quot;10000@qq.com&quot;</span> <span class="comment">#目标邮箱</span></span><br><span class="line">  msg_from = <span class="string">&quot;1086@qq.com&quot;</span> <span class="comment">#发信方邮箱</span></span><br><span class="line">  passwd = <span class="string">&quot;xxxxx&quot;</span> <span class="comment">#授权码</span></span><br><span class="line"></span><br><span class="line">  msg = MIMEText(content)</span><br><span class="line">  msg[<span class="string">&#x27;Subject&#x27;</span>] = subject</span><br><span class="line">  msg[<span class="string">&#x27;From&#x27;</span>] = msg_from</span><br><span class="line">  msg[<span class="string">&#x27;To&#x27;</span>] = msg_to</span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    s = smtplib.SMTP_SSL(<span class="string">&quot;smtp.qq.com&quot;</span>, <span class="number">465</span>)</span><br><span class="line">    s.login(msg_from, passwd)</span><br><span class="line">    s.sendmail(msg_from, msg_to, msg.as_string())</span><br><span class="line">  <span class="keyword">finally</span>:</span><br><span class="line">    s.quit()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://service.mail.qq.com/cgi-bin/help?subtype=1&id=28&no=1001256">获取授权码</a></p>
+</blockquote>
+<p><img src="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/Snipaste_2021-11-04_14-42-33.jpg" alt="jpg"></p>
+<h2 id="短信能力"><a href="#短信能力" class="headerlink" title="短信能力"></a>短信能力</h2><p>每家平台不一样，我用的<a target="_blank" rel="noopener" href="https://user.ihuyi.com/new/login.html">互亿无线</a>，大同小异，因为我买的学生版(50r/1000条)，所以只能用发验证码的固定模板。<br>但你可以制定一些代号(但是只有你自己看得懂，笑死)，如 验证码为 0， 就是打卡全部成功，否则为打卡失败的个数，为 999999, 就是服务器炸了 等。</p>
+<h3 id="方法-1"><a href="#方法-1" class="headerlink" title="方法"></a>方法</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 平台一般会有自己的示例，建议看你买的平台的示例</span></span><br><span class="line"><span class="comment"># 短信配置，这些平台会给你，都差不多</span></span><br><span class="line">host = <span class="string">&quot;xxxxxxxxxxxx&quot;</span>     </span><br><span class="line">sms_send_uri = <span class="string">&quot;xxxxxxx&quot;</span></span><br><span class="line">account = <span class="string">&quot;xxxxxxxx&quot;</span></span><br><span class="line">password = <span class="string">&quot;xxxxxxxxxxxx&quot;</span></span><br><span class="line">sms_list = [<span class="string">&quot;13333333333&quot;</span>] <span class="comment">#接收短信的数组</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_sms</span>(<span class="params">mobile, num</span>):</span><br><span class="line">  <span class="keyword">global</span> password</span><br><span class="line">  <span class="keyword">global</span> account</span><br><span class="line">  <span class="keyword">global</span> sms_send_uri</span><br><span class="line">  <span class="keyword">global</span> host</span><br><span class="line">  params = urllib.parse.urlencode(&#123;<span class="string">&#x27;account&#x27;</span>: account, <span class="string">&#x27;password&#x27;</span>: password, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;您的验证码是：&#x27;</span> + <span class="built_in">str</span>(num) + <span class="string">&#x27;。请不要把验证码泄露给其他人。&#x27;</span>, <span class="string">&#x27;mobile&#x27;</span>: mobile, <span class="string">&#x27;format&#x27;</span>: <span class="string">&#x27;json&#x27;</span>&#125;)</span><br><span class="line">  headers = &#123;<span class="string">&quot;Content-type&quot;</span>: <span class="string">&quot;application/x-www-form-urlencoded&quot;</span>,</span><br><span class="line">              <span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;text/plain&quot;</span>&#125;</span><br><span class="line">  conn = http.client.HTTPConnection(host, port=<span class="number">80</span>, timeout=<span class="number">30</span>)</span><br><span class="line">  conn.request(<span class="string">&quot;POST&quot;</span>, sms_send_uri, params, headers)</span><br><span class="line">  response = conn.getresponse()</span><br><span class="line">  res = json.loads(response.read().decode(<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line">  response_str = response.read()</span><br><span class="line">  conn.close()</span><br><span class="line">  <span class="keyword">return</span> response_str</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/Snipaste_2021-11-04_14-52-46.jpg" alt="短信"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_36279318/article/details/79475388">Python Selenium库的使用</a></p>
+
+        <span id="busuanzi_container_page_pv" style='display:none'>
+          本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+        </span>
+
+      
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/selenium/" rel="tag"># selenium</a>
+              <a href="/tags/%E8%84%9A%E6%9C%AC/" rel="tag"># 脚本</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/13/Vue-%E4%B8%8E%E5%9C%B0%E5%9B%BE-iframe-%E7%9A%84%E9%80%9A%E8%AE%AF/" rel="prev" title="Vue 与地图(iframe)的通讯">
+      <i class="fa fa-chevron-left"></i> Vue 与地图(iframe)的通讯
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/04/%E4%B8%AA%E4%BA%BA%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%92%8C%E9%93%BE%E6%8E%A5/" rel="next" title="个人常用软件及链接">
+      个人常用软件及链接 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8ESelenium"><span class="nav-number">1.</span> <span class="nav-text">关于Selenium</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Selenuium%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什么是 Selenuium？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Selenuim-%E6%94%AF%E6%8C%81%E5%93%AA%E4%BA%9B%E7%B3%BB%E7%BB%9F%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">Selenuim 支持哪些系统？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E6%8B%BF%E5%AE%83%E5%81%9A%E4%BA%86%E4%BA%9B%E5%95%A5%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">我拿它做了些啥？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Selenuim-%E6%94%AF%E6%8C%81%E5%93%AA%E4%BA%9B%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%9F"><span class="nav-number">1.4.</span> <span class="nav-text">Selenuim 支持哪些浏览器？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%A0%E9%9C%80%E8%A6%81%E5%85%B7%E5%A4%87%E7%9A%84%E4%B8%80%E7%82%B9%E7%82%B9%E8%83%BD%E5%8A%9B"><span class="nav-number">1.5.</span> <span class="nav-text">你需要具备的一点点能力</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Selenium"><span class="nav-number">2.</span> <span class="nav-text">安装Selenium</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">1. 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%BE%E5%88%B0%E8%87%AA%E5%B7%B1%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E9%A9%B1%E5%8A%A8"><span class="nav-number">2.2.</span> <span class="nav-text">2. 找到自己浏览器的驱动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8A%8A%E4%B8%8B%E4%B8%8B%E6%9D%A5%E7%9A%84%E9%A9%B1%E5%8A%A8exe%E6%96%87%E4%BB%B6%E5%A4%8D%E5%88%B6%E5%88%B0Python%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">3. 把下下来的驱动exe文件复制到Python根目录下</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%86%99%E4%B8%80%E5%B0%8F%E6%AE%B5%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5"><span class="nav-number">2.4.</span> <span class="nav-text">4. 写一小段代码片段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%86%B2"><span class="nav-number">2.5.</span> <span class="nav-text">5. 冲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%9A%E4%BD%8D%E5%85%83%E7%B4%A0%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">2.6.</span> <span class="nav-text">6. 定位元素的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">2.7.</span> <span class="nav-text">6. 常用方法的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%AE%E4%BB%B6%E8%83%BD%E5%8A%9B-%E4%BB%A5QQ%E9%82%AE%E4%BB%B6%E4%B8%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">邮件能力(以QQ邮件为例)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E5%8C%85"><span class="nav-number">3.1.</span> <span class="nav-text">需要用到的包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%AD%E4%BF%A1%E8%83%BD%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">短信能力</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95-1"><span class="nav-number">4.1.</span> <span class="nav-text">方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="柳江南"
+      src="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+  <p class="site-author-name" itemprop="name">柳江南</p>
+  <div class="site-description" itemprop="description">✨欧气满满的前端开发✨</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LJNaN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LJNaN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://wpa.qq.com/msgrd?v=3&uin=495587206&site=qq&menu=yes" title="QQ → http:&#x2F;&#x2F;wpa.qq.com&#x2F;msgrd?v&#x3D;3&amp;uin&#x3D;495587206&amp;site&#x3D;qq&amp;menu&#x3D;yes" rel="noopener" target="_blank"><i class=" fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/about" title="微信:Ljna233 → &#x2F;about"><i class=" fa-fw"></i>微信:Ljna233</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">柳江南</span>
+</div>
+
+<div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv" style='display:none'>
+      本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+      <span class="post-meta-divider">|</span>
+  </span>
+  <span id="busuanzi_container_site_uv" style='display:none'>
+      有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

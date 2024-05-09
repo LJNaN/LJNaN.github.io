@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="✨欧气满满的前端开发✨">
+<meta property="og:type" content="website">
+<meta property="og:title" content="碎碎念">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="✨欧气满满的前端开发✨">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="柳江南">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>碎碎念</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/09/%E5%A4%87%E5%BF%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/09/%E5%A4%87%E5%BF%98/" class="post-title-link" itemprop="url">备忘</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <i class="fa fa-thumb-tack"></i>
+            <font color=#eeba8b>置顶</font>
+            <span class="post-meta-divider">|</span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-09 17:33:45" itemprop="dateCreated datePublished" datetime="2021-10-09T17:33:45+08:00">2021-10-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:28:08" itemprop="dateModified" datetime="2022-08-11T09:28:08+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="一、从对象obj里取值"><a href="#一、从对象obj里取值" class="headerlink" title="一、从对象obj里取值"></a>一、从对象<code>obj</code>里取值</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">  <span class="attr">a</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">b</span>: <span class="number">2</span>,</span><br><span class="line">  <span class="attr">c</span>: <span class="number">3</span>,</span><br><span class="line">  <span class="attr">d</span>: <span class="number">4</span>,</span><br><span class="line">  <span class="attr">e</span>: <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/09/%E5%A4%87%E5%BF%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/03/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/03/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="post-title-link" itemprop="url">正则表达式</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-03 14:20:16" itemprop="dateCreated datePublished" datetime="2021-12-03T14:20:16+08:00">2021-12-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:33" itemprop="dateModified" datetime="2022-08-11T09:23:33+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>身为前端开发工程师，使用正则表达式的频率不低，在前端校验表单、在IDE上批量替换、甚至写个小脚本的时候都会用到正则，我觉得还是有必要对正则专门开一篇笔记记录一下。</p>
+<h2 id="正则是什么"><a href="#正则是什么" class="headerlink" title="正则是什么"></a>正则是什么</h2><p>正则表达式(regular expression)描述了一种字符串匹配的模式（pattern），可以用来检查一个串是否含有某种子串、将匹配的子串替换或者从某个串中取出符合某个条件的子串等。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/12/03/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/04/%E9%9A%8F%E6%89%8B%E8%AE%B0%E7%9A%84%E9%9B%B6%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/04/%E9%9A%8F%E6%89%8B%E8%AE%B0%E7%9A%84%E9%9B%B6%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/" class="post-title-link" itemprop="url">随手记的零碎知识点</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-04 18:25:26" itemprop="dateCreated datePublished" datetime="2021-11-04T18:25:26+08:00">2021-11-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:33" itemprop="dateModified" datetime="2022-08-11T09:23:33+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="随手记的零碎知识点"><a href="#随手记的零碎知识点" class="headerlink" title="随手记的零碎知识点"></a>随手记的零碎知识点</h1><h2 id="JS-中的-Map-对象和-Python-中的字典相似"><a href="#JS-中的-Map-对象和-Python-中的字典相似" class="headerlink" title="JS 中的 Map 对象和 Python 中的字典相似"></a><code>JS</code> 中的 <code>Map</code> 对象和 <code>Python</code> 中的字典相似</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// js</span></span><br><span class="line"><span class="keyword">let</span> map = <span class="keyword">new</span> <span class="title class_">Map</span>()</span><br><span class="line">map.<span class="title function_">set</span>(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>)</span><br><span class="line">map.<span class="title function_">set</span>(<span class="string">&quot;b&quot;</span>, <span class="number">2</span>)</span><br><span class="line">map.<span class="title function_">get</span>(<span class="string">&quot;a&quot;</span>)  <span class="comment">// 1</span></span><br><span class="line">map.<span class="title function_">get</span>(<span class="string">&quot;c&quot;</span>)  <span class="comment">// undefined</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python</span></span><br><span class="line"><span class="built_in">dict</span> = &#123;&#125;</span><br><span class="line"><span class="built_in">dict</span>[<span class="string">&quot;a&quot;</span>] = <span class="number">1</span></span><br><span class="line"><span class="built_in">dict</span>[<span class="string">&quot;b&quot;</span>] = <span class="number">2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">dict</span>[<span class="string">&quot;a&quot;</span>]) <span class="comment"># 1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">dict</span>[<span class="string">&quot;c&quot;</span>]) <span class="comment"># KeyError: &#x27;c&#x27;</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/04/%E9%9A%8F%E6%89%8B%E8%AE%B0%E7%9A%84%E9%9B%B6%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/04/%E4%B8%AA%E4%BA%BA%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%92%8C%E9%93%BE%E6%8E%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/04/%E4%B8%AA%E4%BA%BA%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%92%8C%E9%93%BE%E6%8E%A5/" class="post-title-link" itemprop="url">个人常用软件及链接</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-04 15:37:35" itemprop="dateCreated datePublished" datetime="2021-11-04T15:37:35+08:00">2021-11-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:33" itemprop="dateModified" datetime="2022-08-11T09:23:33+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">软件</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>提取码皆为 1234</strong></p>
+<h2 id="PS-Adobe-Photoshop-2020"><a href="#PS-Adobe-Photoshop-2020" class="headerlink" title="PS(Adobe Photoshop 2020)"></a>PS(Adobe Photoshop 2020)</h2><p>居家旅行杀人放火必备良药，做啥都能用上<br><img src="/2021/11/04/%E4%B8%AA%E4%BA%BA%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%92%8C%E9%93%BE%E6%8E%A5/Snipaste_2021-11-04_15-43-47.jpg" alt="PS"><br><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1zdnvm5bG_DPN5UJfHOkrZg">度盘</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/04/%E4%B8%AA%E4%BA%BA%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%92%8C%E9%93%BE%E6%8E%A5/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/" class="post-title-link" itemprop="url">Python+Selenium 的一些脚本制作方法</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-04 10:44:41" itemprop="dateCreated datePublished" datetime="2021-11-04T10:44:41+08:00">2021-11-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:32" itemprop="dateModified" datetime="2022-08-11T09:23:32+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="关于Selenium"><a href="#关于Selenium" class="headerlink" title="关于Selenium"></a>关于Selenium</h2><h3 id="什么是-Selenuium？"><a href="#什么是-Selenuium？" class="headerlink" title="什么是 Selenuium？"></a>什么是 Selenuium？</h3><p>Selenium是一个用于测试网站的自动化测试工具，支持各种浏览器包括Chrome、Firefox、Safari等主流界面浏览器，同时也支持phantomJS无界面浏览器。</p>
+<h3 id="Selenuim-支持哪些系统？"><a href="#Selenuim-支持哪些系统？" class="headerlink" title="Selenuim 支持哪些系统？"></a>Selenuim 支持哪些系统？</h3><p>Windows、Linux、IOS、Android等都能支持</p>
+<h3 id="我拿它做了些啥？"><a href="#我拿它做了些啥？" class="headerlink" title="我拿它做了些啥？"></a>我拿它做了些啥？</h3><ul>
+<li>学校每日打卡</li>
+<li>抢到4价疫苗(没用到<code>Selenium</code>，主要是轮询+短信提醒)</li>
+<li>还有一些脚本是用的油猴插件，如抢课(纯<code>js脚本</code>)、查全专业同学考试的成绩组成并做成表格(<code>python+js脚本</code>)等<br><img src="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/3.gif" alt="gif"></li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/04/Python-Selenium%E7%9A%84%E4%B8%80%E4%BA%9B%E8%84%9A%E6%9C%AC%E5%88%B6%E4%BD%9C%E6%96%B9%E6%B3%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/13/Vue-%E4%B8%8E%E5%9C%B0%E5%9B%BE-iframe-%E7%9A%84%E9%80%9A%E8%AE%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/13/Vue-%E4%B8%8E%E5%9C%B0%E5%9B%BE-iframe-%E7%9A%84%E9%80%9A%E8%AE%AF/" class="post-title-link" itemprop="url">Vue 与地图(iframe)的通讯</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-13 14:33:09" itemprop="dateCreated datePublished" datetime="2021-10-13T14:33:09+08:00">2021-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:32" itemprop="dateModified" datetime="2022-08-11T09:23:32+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><code>Vue</code>与<code>地图</code>、<code>iframe</code>不能直接通讯，地图不能拿到<code>Vue</code>里的数据，<code>Vue</code>也不能直接操作地图里的东西，这个时候怎么办呢？</p>
+<p>这个时候我们就需要搭一座桥</p>
+<h4 id="直接在Window对象下创建全局方法"><a href="#直接在Window对象下创建全局方法" class="headerlink" title="直接在Window对象下创建全局方法"></a>直接在<code>Window</code>对象下创建全局方法</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">created</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">window</span>[<span class="string">&#x27;MyFunc&#x27;</span>] = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title class_">MyFunc</span>()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br><span class="line"><span class="attr">methods</span>: &#123;</span><br><span class="line">  <span class="title class_">MyFunc</span>() &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>然后你就可以在你的<code>地图</code>、<code>iframe</code>文件中使用这个全局方法</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--地图或者 iframe的html--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">botton</span> <span class="attr">onclick</span>=<span class="string">&quot;window.parent[&#x27;MyFunc&#x27;]()&quot;</span>&gt;</span>我是iframe里的按钮<span class="tag">&lt;/<span class="name">botton</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>其实还有一种把<code>iframe</code>放在<code>static</code>目录下的方法，但是上面那种方法自由度高得多，也不用担心其他诡异的bug</p>
+</blockquote>
+
+          <span id="busuanzi_container_page_pv" style='display:none'>
+            本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+          </span>
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/13/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/13/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A/" class="post-title-link" itemprop="url">小程序双向绑定</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-13 14:32:11" itemprop="dateCreated datePublished" datetime="2021-10-13T14:32:11+08:00">2021-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:33" itemprop="dateModified" datetime="2022-08-11T09:23:33+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="小程序本身支持简单双向绑定"><a href="#小程序本身支持简单双向绑定" class="headerlink" title="小程序本身支持简单双向绑定"></a>小程序本身支持简单双向绑定</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- wxml --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">model:value</span>=<span class="string">&quot;&#123;&#123; value &#125;&#125;&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// js</span></span><br><span class="line"><span class="attr">data</span>: &#123;</span><br><span class="line">  <span class="attr">value</span>: <span class="string">&quot;1234567&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/10/13/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A/1.gif" alt="简单绑定"></p>
+<h4 id="没有问题，可遇到复杂点的引用类型如何实现双向绑定呢"><a href="#没有问题，可遇到复杂点的引用类型如何实现双向绑定呢" class="headerlink" title="没有问题，可遇到复杂点的引用类型如何实现双向绑定呢"></a>没有问题，可遇到复杂点的引用类型如何实现双向绑定呢</h4>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/13/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/13/%E5%AD%A6%E4%B9%A0%E7%A8%8B%E5%BA%A6%E5%89%AF%E8%AF%8D%E7%9A%84%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/13/%E5%AD%A6%E4%B9%A0%E7%A8%8B%E5%BA%A6%E5%89%AF%E8%AF%8D%E7%9A%84%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">学习程度副词的理解</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-13 14:12:59" itemprop="dateCreated datePublished" datetime="2021-10-13T14:12:59+08:00">2021-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:33" itemprop="dateModified" datetime="2022-08-11T09:23:33+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%84%9F%E6%83%B3/" itemprop="url" rel="index"><span itemprop="name">感想</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="学习程度副词的理解"><a href="#学习程度副词的理解" class="headerlink" title="学习程度副词的理解"></a>学习程度副词的理解</h4><p>对于不同程度的词,我的理解如下:</p>
+<h5 id="精通"><a href="#精通" class="headerlink" title="精通"></a>精通</h5><ul>
+<li>了解背后的原理和规范</li>
+<li>动手重写过实现代码</li>
+<li>可以以为此为基础做二次开发</li>
+<li>能读懂源码并做出修改</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/13/%E5%AD%A6%E4%B9%A0%E7%A8%8B%E5%BA%A6%E5%89%AF%E8%AF%8D%E7%9A%84%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/13/%E5%B0%81%E8%A3%85%E7%9A%84%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/13/%E5%B0%81%E8%A3%85%E7%9A%84%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">封装的理解</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-13 14:12:36" itemprop="dateCreated datePublished" datetime="2021-10-13T14:12:36+08:00">2021-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:33" itemprop="dateModified" datetime="2022-08-11T09:23:33+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%84%9F%E6%83%B3/" itemprop="url" rel="index"><span itemprop="name">感想</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="对封装的理解"><a href="#对封装的理解" class="headerlink" title="对封装的理解"></a>对封装的理解</h4><ul>
+<li>封装,可以避免对信息技术一无所知的用户对数据进行不合理的操作</li>
+<li>能够增强使用的简易性。</li>
+<li>封装这个过程隐藏了类的实现细节,让使用者只能通过程序员规定的方法来访问数据。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/13/%E5%B0%81%E8%A3%85%E7%9A%84%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/13/%E4%B8%80%E4%B8%AA%E6%94%BE%E5%90%89%E4%BB%96%E8%B0%B1%E7%9A%84%E5%9C%B0%E6%96%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/13/%E4%B8%80%E4%B8%AA%E6%94%BE%E5%90%89%E4%BB%96%E8%B0%B1%E7%9A%84%E5%9C%B0%E6%96%B9/" class="post-title-link" itemprop="url">一个放吉他谱的地方</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-13 10:16:18" itemprop="dateCreated datePublished" datetime="2021-10-13T10:16:18+08:00">2021-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:32" itemprop="dateModified" datetime="2022-08-11T09:23:32+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index"><span itemprop="name">生活</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="放在这儿的应该都会弹"><a href="#放在这儿的应该都会弹" class="headerlink" title="放在这儿的应该都会弹"></a>放在这儿的应该都会弹</h2><h3 id="珊瑚海"><a href="#珊瑚海" class="headerlink" title="珊瑚海"></a>珊瑚海</h3><p><img src="/2021/10/13/%E4%B8%80%E4%B8%AA%E6%94%BE%E5%90%89%E4%BB%96%E8%B0%B1%E7%9A%84%E5%9C%B0%E6%96%B9/%E7%8F%8A%E7%91%9A%E6%B5%B71.png" alt="珊瑚海"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/13/%E4%B8%80%E4%B8%AA%E6%94%BE%E5%90%89%E4%BB%96%E8%B0%B1%E7%9A%84%E5%9C%B0%E6%96%B9/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+        
+      
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="柳江南"
+      src="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+  <p class="site-author-name" itemprop="name">柳江南</p>
+  <div class="site-description" itemprop="description">✨欧气满满的前端开发✨</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LJNaN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LJNaN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://wpa.qq.com/msgrd?v=3&uin=495587206&site=qq&menu=yes" title="QQ → http:&#x2F;&#x2F;wpa.qq.com&#x2F;msgrd?v&#x3D;3&amp;uin&#x3D;495587206&amp;site&#x3D;qq&amp;menu&#x3D;yes" rel="noopener" target="_blank"><i class=" fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/about" title="微信:Ljna233 → &#x2F;about"><i class=" fa-fw"></i>微信:Ljna233</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">柳江南</span>
+</div>
+
+<div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv" style='display:none'>
+      本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+      <span class="post-meta-divider">|</span>
+  </span>
+  <span id="busuanzi_container_site_uv" style='display:none'>
+      有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

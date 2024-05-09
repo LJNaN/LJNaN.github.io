@@ -1,0 +1,1 @@
+import{_,a as s,c as t}from"./_plugin-vue_export-helper-0759fc3c.js";const c=["src"],a={__name:"Video",props:{url:String},setup(e){const o=e;return(r,n)=>(s(),t("video",{class:"video",src:o.url,muted:"",autoplay:""},null,8,c))}},l=_(a,[["__scopeId","data-v-e30358a2"]]);export{l as V};

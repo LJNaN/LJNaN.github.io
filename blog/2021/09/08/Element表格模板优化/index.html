@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="icon本地化 在iconfont中下载生成的symbol代码，如  &#x2F;&#x2F;at.alicdn.com&#x2F;t&#x2F;font_8d5l8fzk5b87iudi.js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Element表格模板优化">
+<meta property="og:url" content="http://example.com/2021/09/08/Element%E8%A1%A8%E6%A0%BC%E6%A8%A1%E6%9D%BF%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="icon本地化 在iconfont中下载生成的symbol代码，如  &#x2F;&#x2F;at.alicdn.com&#x2F;t&#x2F;font_8d5l8fzk5b87iudi.js">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-08T03:05:16.000Z">
+<meta property="article:modified_time" content="2022-08-11T01:23:32.852Z">
+<meta property="article:author" content="柳江南">
+<meta property="article:tag" content="Element">
+<meta property="article:tag" content="表格">
+<meta property="article:tag" content="iconfont">
+<meta property="article:tag" content="封装">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/09/08/Element%E8%A1%A8%E6%A0%BC%E6%A8%A1%E6%9D%BF%E4%BC%98%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Element表格模板优化 | 碎碎念</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/08/Element%E8%A1%A8%E6%A0%BC%E6%A8%A1%E6%9D%BF%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+      <meta itemprop="name" content="柳江南">
+      <meta itemprop="description" content="✨欧气满满的前端开发✨">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Element表格模板优化
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-08 11:05:16" itemprop="dateCreated datePublished" datetime="2021-09-08T11:05:16+08:00">2021-09-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-11 09:23:32" itemprop="dateModified" datetime="2022-08-11T09:23:32+08:00">2022-08-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="icon本地化"><a href="#icon本地化" class="headerlink" title="icon本地化"></a>icon本地化</h2><ol>
+<li>在iconfont中下载生成的symbol代码，如</li>
+</ol>
+<p><code>//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js</code></p>
+<span id="more"></span>
+
+<ol start="2">
+<li>加入通用css代码（引入一次就行）</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-class">.icon</span> &#123;</span></span><br><span class="line"><span class="language-css">       <span class="attribute">width</span>: <span class="number">1em</span>; <span class="attribute">height</span>: <span class="number">1em</span>;</span></span><br><span class="line"><span class="language-css">       <span class="attribute">vertical-align</span>: -<span class="number">0.15em</span>;</span></span><br><span class="line"><span class="language-css">       fill: currentColor;</span></span><br><span class="line"><span class="language-css">       <span class="attribute">overflow</span>: hidden;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>挑选相应图标并获取类名，应用于页面</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">class</span>=<span class="string">&quot;icon&quot;</span> <span class="attr">aria-hidden</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">use</span> <span class="attr">xlink:href</span>=<span class="string">&quot;#icon-xxx&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">use</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="封装request"><a href="#封装request" class="headerlink" title="封装request"></a>封装request</h2><p>get在进行url拼接时使用全小写</p>
+<p>post/delete/put 中的data数据使用 row/json 传递</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> request <span class="keyword">from</span> <span class="string">&#x27;@/utils/request&#x27;</span></span><br><span class="line"><span class="keyword">const</span> baseurl = <span class="string">&#x27;/web/v1/&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getRequest</span>(<span class="params">url, data</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">request</span>(&#123;</span><br><span class="line">    <span class="attr">url</span>: <span class="string">`<span class="subst">$&#123;baseurl&#125;</span><span class="subst">$&#123;url&#125;</span>`</span>,</span><br><span class="line">    <span class="attr">method</span>: <span class="string">&#x27;get&#x27;</span>,</span><br><span class="line">    <span class="attr">params</span>: data</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">postRequest</span>(<span class="params">url, data</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">request</span>(&#123;</span><br><span class="line">    <span class="attr">url</span>: <span class="string">`<span class="subst">$&#123;baseurl&#125;</span><span class="subst">$&#123;url&#125;</span>`</span>,</span><br><span class="line">    <span class="attr">method</span>: <span class="string">&#x27;post&#x27;</span>,</span><br><span class="line">    <span class="attr">data</span>: data,</span><br><span class="line">    <span class="attr">headers</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">putRequest</span>(<span class="params">url, data</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">request</span>(&#123;</span><br><span class="line">    <span class="attr">url</span>: <span class="string">`<span class="subst">$&#123;baseurl&#125;</span><span class="subst">$&#123;url&#125;</span>`</span>,</span><br><span class="line">    <span class="attr">method</span>: <span class="string">&#x27;put&#x27;</span>,</span><br><span class="line">    <span class="attr">data</span>: data,</span><br><span class="line">    <span class="attr">headers</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">deleteRequest</span>(<span class="params">url, data</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">request</span>(&#123;</span><br><span class="line">    <span class="attr">url</span>: <span class="string">`<span class="subst">$&#123;baseurl&#125;</span><span class="subst">$&#123;url&#125;</span>`</span>,</span><br><span class="line">    <span class="attr">method</span>: <span class="string">&#x27;delete&#x27;</span>,</span><br><span class="line">    <span class="attr">data</span>: data,</span><br><span class="line">    <span class="attr">headers</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; getRequest, postRequest, putRequest, deleteRequest &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="可移植性"><a href="#可移植性" class="headerlink" title="可移植性"></a>可移植性</h2><p>本form页面主要是完成一个表格模板，要最大程度上保证其可移植性</p>
+<h3 id="css"><a href="#css" class="headerlink" title="css"></a>css</h3><p>布局和样式方面最好使用ElementUI自带的组件，如</p>
+<ul>
+<li>Container布局容器 代替 div.myheader   div.mymain  div.myfooter</li>
+<li>Layout24栅格布局</li>
+<li>Button按钮样式 统一</li>
+<li>尽可能少的css代码</li>
+</ul>
+<h3 id="mock"><a href="#mock" class="headerlink" title="mock"></a>mock</h3><p>测试时使用mock.js，发送对应的请求到mock.js上，后端部署好之后直接将url地址切换到后端上去。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Mock</span> = <span class="built_in">require</span>(<span class="string">&#x27;mockjs&#x27;</span>)</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">// 拿列表</span></span><br><span class="line">    <span class="attr">url</span>: <span class="string">&#x27;/web/v1/formcomponent/items&#x27;</span>,</span><br><span class="line">    <span class="attr">type</span>: <span class="string">&#x27;get&#x27;</span>,</span><br><span class="line">    <span class="attr">response</span>: <span class="function"><span class="params">config</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> params = config.<span class="property">query</span></span><br><span class="line">      params.<span class="property">pageIndex</span> = <span class="title class_">Number</span>(params.<span class="property">pageIndex</span>)</span><br><span class="line">      params.<span class="property">pageSize</span> = <span class="title class_">Number</span>(params.<span class="property">pagesize</span>)</span><br><span class="line">      <span class="keyword">let</span> items = []</span><br><span class="line">      items = <span class="title class_">Mock</span>.<span class="title function_">mock</span>(&#123;</span><br><span class="line">        [<span class="string">&#x27;items|&#x27;</span> + params.<span class="property">pageSize</span>]: [&#123;</span><br><span class="line">          <span class="attr">id</span>: <span class="string">&#x27;@integer(1, 50000)&#x27;</span>,</span><br><span class="line">          <span class="attr">roadNum</span>: <span class="string">&#x27;DL@integer(10000, 50000)&#x27;</span>,</span><br><span class="line">          <span class="attr">roadManager</span>: <span class="string">&#x27;@cname()&#x27;</span>,</span><br><span class="line">          <span class="attr">roadManagerPhone</span>: <span class="string">&#x27;1@integer(1000000000, 9999999999)&#x27;</span>,</span><br><span class="line">          <span class="attr">roadType</span>: <span class="string">&#x27;@pick([&quot;国道&quot;, &quot;省道&quot;, &quot;县道&quot;, &quot;乡道&quot;])&#x27;</span>,</span><br><span class="line">          <span class="attr">roadLength</span>: <span class="string">&#x27;@integer(1, 5)&#x27;</span>,</span><br><span class="line">          <span class="attr">infoStart</span>: <span class="string">&#x27;@csentence&#x27;</span>,</span><br><span class="line">          <span class="attr">infoEnd</span>: <span class="string">&#x27;@csentence&#x27;</span>,</span><br><span class="line">          <span class="attr">countryPassed</span>: <span class="string">&#x27;@county()、@county()、@county()&#x27;</span>,</span><br><span class="line">          <span class="attr">color</span>: <span class="string">&#x27;@hex()&#x27;</span>,</span><br><span class="line">          <span class="attr">lineWidth</span>: <span class="string">&#x27;@integer(1, 5)&#x27;</span>, </span><br><span class="line">          <span class="attr">icon</span>: <span class="string">&#x27;@pick([&quot;icon-shan&quot;, &quot;icon-suidao&quot;, &quot;icon-tielu&quot;, &quot;icon-heliu&quot;, &quot;icon-qiaoliang&quot;, &quot;icon-roadTransport&quot;])&#x27;</span>,</span><br><span class="line">          <span class="attr">belong</span>: <span class="string">&#x27;@county()&#x27;</span></span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;).<span class="property">items</span></span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="attr">code</span>: <span class="number">20000</span>,</span><br><span class="line">        <span class="attr">data</span>: &#123;</span><br><span class="line">          <span class="attr">total</span>: <span class="number">1572</span>,</span><br><span class="line">          items</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    <span class="comment">// 删除</span></span><br><span class="line">    <span class="attr">url</span>: <span class="string">&#x27;/web/v1/formcomponent/items&#x27;</span>,</span><br><span class="line">    <span class="attr">type</span>: <span class="string">&#x27;delete&#x27;</span>,</span><br><span class="line">    <span class="attr">response</span>: <span class="function"><span class="params">config</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> params = config.<span class="property">body</span>.<span class="property">id</span></span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;params: &#x27;</span>, params);</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="attr">code</span>: <span class="number">20000</span>,</span><br><span class="line">        <span class="attr">data</span>: &#123;</span><br><span class="line">          <span class="attr">errorMsg</span>: <span class="string">&#x27;ok&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    <span class="comment">// 新增</span></span><br><span class="line">    <span class="attr">url</span>: <span class="string">&#x27;/web/v1/formcomponent/item&#x27;</span>,</span><br><span class="line">    <span class="attr">type</span>: <span class="string">&#x27;post&#x27;</span>,</span><br><span class="line">    <span class="attr">response</span>: <span class="function"><span class="params">config</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> params = config.<span class="property">body</span></span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="attr">code</span>: <span class="number">20000</span>,</span><br><span class="line">        <span class="attr">data</span>: &#123; <span class="attr">errorMsg</span>: <span class="string">&#x27;ok&#x27;</span> &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    <span class="comment">// 更新</span></span><br><span class="line">    <span class="attr">url</span>: <span class="string">&#x27;/web/v1/formcomponent/item&#x27;</span>,</span><br><span class="line">    <span class="attr">type</span>: <span class="string">&#x27;put&#x27;</span>,</span><br><span class="line">    <span class="attr">response</span>: <span class="function"><span class="params">config</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> params = config.<span class="property">body</span></span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;params: &#x27;</span>, params);</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="attr">code</span>: <span class="number">20000</span>,</span><br><span class="line">        <span class="attr">data</span>: &#123; <span class="attr">errorMsg</span>: <span class="string">&#x27;ok&#x27;</span> &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+        <span id="busuanzi_container_page_pv" style='display:none'>
+          本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+        </span>
+
+      
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Element/" rel="tag"># Element</a>
+              <a href="/tags/%E8%A1%A8%E6%A0%BC/" rel="tag"># 表格</a>
+              <a href="/tags/iconfont/" rel="tag"># iconfont</a>
+              <a href="/tags/%E5%B0%81%E8%A3%85/" rel="tag"># 封装</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/08/%E4%B8%8D%E9%AA%84%E4%B8%8D%E8%BA%81%20%E6%9C%89%E5%A7%8B%E6%9C%89%E7%BB%88%20%E8%84%9A%E8%B8%8F%E5%AE%9E%E5%9C%B0/" rel="prev" title="不骄不躁 有始有终 脚踏实地">
+      <i class="fa fa-chevron-left"></i> 不骄不躁 有始有终 脚踏实地
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/08/hexo-asset-image%20%E6%8F%92%E4%BB%B6%E4%BF%AE%E6%94%B9/" rel="next" title="hexo-asset-image 插件修改">
+      hexo-asset-image 插件修改 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#icon%E6%9C%AC%E5%9C%B0%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">icon本地化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85request"><span class="nav-number">2.</span> <span class="nav-text">封装request</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text">可移植性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#css"><span class="nav-number">3.1.</span> <span class="nav-text">css</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mock"><span class="nav-number">3.2.</span> <span class="nav-text">mock</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="柳江南"
+      src="https://ljnan.github.io/2021/10/08/MD%E8%AF%AD%E6%B3%95/headimage.jpg">
+  <p class="site-author-name" itemprop="name">柳江南</p>
+  <div class="site-description" itemprop="description">✨欧气满满的前端开发✨</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LJNaN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LJNaN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://wpa.qq.com/msgrd?v=3&uin=495587206&site=qq&menu=yes" title="QQ → http:&#x2F;&#x2F;wpa.qq.com&#x2F;msgrd?v&#x3D;3&amp;uin&#x3D;495587206&amp;site&#x3D;qq&amp;menu&#x3D;yes" rel="noopener" target="_blank"><i class=" fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/about" title="微信:Ljna233 → &#x2F;about"><i class=" fa-fw"></i>微信:Ljna233</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">柳江南</span>
+</div>
+
+<div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv" style='display:none'>
+      本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+      <span class="post-meta-divider">|</span>
+  </span>
+  <span id="busuanzi_container_site_uv" style='display:none'>
+      有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
