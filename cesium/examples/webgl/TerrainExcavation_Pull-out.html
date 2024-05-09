@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<title>地形开挖抽出显示</title>
+		<link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+		<link href="./css/pretty.css" rel="stylesheet">
+		<link href="./css/bootstrap-new.min.css" rel="stylesheet">
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/tooltip.js"></script>
+		<script src="./js/config.js"></script>
+		<script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+		<style>
+			#toolbar {
+				width: 212px;
+				background: rgba(42, 42, 42, 1);
+				opacity: 0.9;
+				border-radius: 4px;
+				padding-top: 12px;
+				cursor: auto;
+			}
+			.dzt-operate {
+				margin: 0 0 10px 0px;
+			}	
+			.btn {
+				background: #444;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="cesiumContainer"></div>
+		<div id='loadingbar' class="spinner">
+			<div class="spinner-container container1">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container2">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container3">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+		</div>
+		<div id="toolbar" class="param-container tool-bar">
+			<div class="dzt-operate">
+				<label class="form-label">开挖深度(米) :</label>
+				<input type="text" class="form-control" value="20" id="depth" style="height: 25px;">
+			</div>
+			<div class="dzt-operate">
+				<label class="form-label">上移高度(米) :</label>
+				<input type="text" class="form-control" value="300" id="moveHeight" style="height: 25px;">
+			</div>
+			<div style="display: flex;justify-content: end;">
+				<button id="dig" class="button black" type="button">开挖</button>
+				<button id="clear" class="button black" type="button" style="margin-right: 0">清除</button>
+			</div>
+		</div>
+		<script>
+			function onload(Cesium) {
+				var viewer = new Cesium.Viewer('cesiumContainer', {
+					infoBox: false,
+					selectionIndicator: false,
+					timeline: true,
+					terrainProvider: new Cesium.CesiumTerrainProvider({
+						url: URL_CONFIG.STK,
+						requestWaterMask: true,
+						requestVertexNormals: true,
+						isSct: false
+					})
+				});
+				viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+					key: URL_CONFIG.BING_MAP_KEY, //当场景出现黑球时可至官网（https://www.bingmapsportal.com/）申请key
+					url: URL_CONFIG.BINGMAP
+				}));
+				var scene = viewer.scene;
+				scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+				scene.logarithmicDepthBuffer = true;
+				scene.camera.frustum.near = 0.1;
+				// 设置相机视角
+				scene.camera.setView({
+					destination: new Cesium.Cartesian3(-1599896.7748115514, 5335128.546004026, 3110503.5731401895),
+					orientation: {
+						heading: 5.484961496987353,
+						pitch: -0.2889694867297714,
+						roll: 6.2831723532483075
+					}
+				});
+				var tooltip = createTooltip(document.body);
+				//清除剖切结果
+				$('#clear').click(function() {
+					tooltip.setVisible(false);
+					handlerPolygon.deactivate();
+					handlerPolygon.clear();
+					viewer.scene.globe.removeAllExtractRegion();
+				});
+				//绘制裁剪面
+				var handlerPolygon = new Cesium.DrawHandler(viewer, Cesium.DrawMode.Polygon);
+				handlerPolygon.activeEvt.addEventListener(function(isActive) {
+					if(isActive == true) {
+						viewer.enableCursorStyle = false;
+						viewer._element.style.cursor = '';
+						$('body').removeClass('drawCur').addClass('drawCur');
+					} else {
+						viewer.enableCursorStyle = true;
+						$('body').removeClass('drawCur');
+					}
+				});
+				handlerPolygon.movingEvt.addEventListener(function(windowPosition) {
+					if(handlerPolygon.isDrawing) {
+						tooltip.showAt(windowPosition, '<p>绘制多边形，</p><p>右键结束绘制.</p>');
+					} else {
+						tooltip.showAt(windowPosition, '<p>点击绘制第一个点</p>');
+					}
+				});
+				handlerPolygon.drawEvt.addEventListener(function(res) {
+					var positions = [].concat(res.object.positions);
+					var positionsDegrees = [];
+					for(var i = 0; i < positions.length; i++) {
+						var cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
+						var lon = Cesium.Math.toDegrees(cartographic.longitude);
+						var lat = Cesium.Math.toDegrees(cartographic.latitude);
+						var h = cartographic.height;
+						positionsDegrees = positionsDegrees.concat([lon, lat, h]);
+					}
+					extract(positionsDegrees);
+					handlerPolygon.clear();
+					handlerPolygon.deactivate();
+					tooltip.setVisible(false);
+				})
+				//地形抽出部分
+				function extract(positions) {
+					viewer.scene.globe.removeAllExtractRegion();
+					viewer.scene.globe.addExtractRegion({
+						name: 'extract', //名称
+						position: positions, //区域
+						height: $('#depth').val(), //开挖深度
+						transparent: false, //封边是否透明
+						extractHeight: Number($('#moveHeight').val()), //抽出高度
+						granularity: 1 //精度
+					});
+				}
+				$("#dig").click(function() {
+					handlerPolygon.activate();
+				});
+
+				$('#loadingbar').remove();
+			}
+			if(typeof Cesium !== 'undefined') {
+				window.startupCalled = true;
+				onload(Cesium);
+			}
+		</script>
+	</body>
+
+</html>

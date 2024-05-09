@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>BIM厂房类数据的性能优化及处理方法</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+    <script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload"
+            src="../js/include-web.js" from="doc"></script>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/examples.css"/>
+    <link rel="stylesheet" href="../css/header.css"/>
+    <link rel='stylesheet' href='../css/sm-extend.css'/>
+    <link rel='stylesheet' href='../css/sm-doc.css'/>
+    <!--短文单独的样式-->
+    <!--<style>-->
+    <!--.icl2{-->
+    <!--position: absolute;-->
+    <!--bottom: 0px;-->
+    <!--width: 100%;-->
+    <!--}-->
+    <!--</style>-->
+</head>
+<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+<!-- ./wrapper -->
+
+<header class="header-wrapper main-header icl-header"></header>
+<script>
+    var navigation = {
+        nav: {
+            title: 'SuperMap iClient3D for cesium',
+            path: '../../web/',
+            isLocal: window.isLocal
+        }
+    };
+    identification = {};
+    utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+</script>
+<!--<div class="wrapper"></div>-->
+<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+    <div class='page-header'>
+        <h1>BIM厂房类数据的性能优化及处理方法</h1>
+        <hr/>
+        <h2 class="title">背景需求<a name="Summary"></a></h2>
+        <p>在项目中，有时会遇到由多个BIM数据组成的场景。该类场景中，数据范围不大，但主要数据类型为BIM类型数据，数据精细且集中分布。</p>
+        <p>比如在一个工厂的场景中，存在有原料库，成品库，水处理设施，加热炉等建筑，每一栋建筑都是一个BIM模型。</p>
+        <p>每个模型都很精细，并且有很多类别组成，比如，一栋建筑可以由常规模型，窗，门，墙，结构框架，楼板，幕墙，屋顶，楼梯等等很多种类别。</p>
+        <p>如果按照常规的方式，一个类别对应一个图层，会使得图层的数量急剧膨胀；如果一栋建筑对应一个图层，也会导致性能与效果的问题。</p>
+        <p>如何组织处理该类数据，是本文档主要介绍的内容。</p>
+        <h2 class="title">重新组织数据结构<a name="Summary"></a></h2>
+        <p>数据结构组织原则：内外分离、地上地下分离。</p>
+         <div>
+             <h3>1.1内外分离：</h3>
+             <p>将所有建筑的外壳对象，整理到一个图层里面；再将所有建筑的内部结构对象整理到一个图层里面。通过设置图层的可见距离，在远处观察时，只加载建筑外壳的数据；进入到建筑内部时，再加载内部结构的数据。</p>
+             <p>例如：</p>
+             <p>建筑外轮廓图层：墙、窗、屋顶等对象</p>
+             <p>建筑内部结构图层：家具、结构连接、天花板、楼板边缘、卫浴装置、墙饰条等对象</p>
+             <h3>1.2地上地下分离：</h3>
+             <p>将地上部分的模型与地下部分的模型，分离开来。通过开关按钮等控制方式，只加载需要观察的数据部分。</p>
+             <p>例如：</p>
+             <p>地上部分：地上管道、地上管件、地上软管</p>
+             <p>地下部分：地下管道、地下管件、地下软管</p>
+             <h3>1.3特殊处理对象：</h3>
+             <p>有的模型中，存在有共用次数成百上千的对象，它们是具有实例化信息的，比如螺丝钉、螺丝帽、铁轨枕木、电杆、绝缘子串等等。</p>
+             <p>可把该种类型的对象，单独提取出来，做为一个图层，通过点外挂的方式生成缓存 。</p>
+             <p>生成缓存：具体方法及步骤参考<a href="./Instruction of Export Coordinate and Model of Plugin for Bentley.html"> Bentley导出插件点位+模型功能使用说明及注意事项</a>，如果不是DGN格式的数据，且已经将BIM数据导出为UDBX格式的数据集，需要使用我们提供的工具，来生成支持点外挂的模型数据集。</p>
+             <div class="pageImage"><img src="../images/TopicDOC/BIM01.jpg"></div>
+         </div>
+        <h2 class="title">实际项目数据（厂房数据）<a name="Summary"></a></h2>
+        <p>以实际的一个项目数据进行说明：该项目中的BIM模型主要有：板坯库、水处理、成品库和加热炉。</p>
+        <h3>2.1首先通过Revit插件将每个模型导出为一个UDBX数据源</h3>
+        <h3>2.2然后将每个数据源中的数据集按照上述方法进行整理</h3>
+        <ul class="disc">
+                <li>①板坯库：
+                    <p>建筑外轮廓：墙、窗、屋顶</p>
+                    <p>室内地上：楼板、楼梯、结构基础、结构柱、结构框架、结构连接、栏杆扶手</p>
+                    <p>室外地上：常规模型、坡道</p>
+                    <p>地下（部分模型半地下）：管道、管件、管道附件、管道隔热层、电缆桥架、电缆桥架配件</p>
+                    <p>点外挂数据：机械装置、专用设备</p>
+                </li>
+                <li>②成品库和水处理：
+                    <p>建筑外轮廓：墙、窗、屋顶</p>
+                    <p>室内地上：楼板、楼梯、结构基础、结构柱、结构框架、结构连接、结构加强板、栏杆扶手、风管、风管附件、风管管件、数据设备、门、卫浴装置</p>
+                    <p>室外地上：常规模型、坡道</p>
+                    <p>地下（部分模型半地下）：管道、管件、管道附件、管道隔热层、电缆桥架、电缆桥架配件、线管、线管配件</p>
+                    <p>点外挂数据：机械装置、专用设备、电气装置、电气设备</p>
+                </li>
+                <li>③加热炉：
+                    <p>建筑外轮廓：墙、窗、屋顶</p>
+                    <p>室内地上：卫浴装置、幕墙嵌板、柱、栏杆扶手、楼板、楼板边缘、楼梯、管道附件、结构基础、结构柱、结构框架、结构连接、软风管、门、风管、风管管件、风道末端</p>
+                    <p>室外地上：常规模型、坡道、体量</p>
+                    <p>地下（部分模型半地下）：管道、管件、线管、线管配件</p>
+                    <p>点外挂数据：机械装置、专用设备、照明设备、电器装置、电器设备、电缆桥架、电缆桥架配件</p>
+                </li>
+        </ul>
+        <h3>2.3将四个数据源中的同名数据集合并到一个图层中</h3>
+        <p>这样最终得到建筑外轮廓，室内地上，室外地上，地下，点外挂五个图层。</p>
+        <h3>2.4分别对每个图层生成缓存，具体参数设置如下</h3>
+        <p>建筑外轮廓：瓦片边长600，过滤阈值2，LOD5层（30、50、75、100、100）、非实例化</p>
+        <p>室内地上：瓦片边长600，过滤阈值8，LOD5层（50、75、100、100、100），实例化</p>
+        <p>室外地上：瓦片边长400，过滤阈值16，LOD5层（30、50、75、100、100）、非实例化</p>
+        <p>地下：瓦片边长600，过滤阈值8，LOD5层（30、50、75、100、100）、非实例化</p>
+        <p>点外挂：瓦片边长600，过滤阈值8，LOD5层</p>
+        <h2 class="title">注意事项<a name="Summary"></a></h2>
+        <p>桌面端处理数据时</p>
+        <p>1、如果是少量模型是共用的，不需要勾选实例化；</p>
+        <p>2、如果共用对象较多,类别又比较多的，常规生成缓存有较大切片，可以使用实例化</p>
+        <p>3、如果对象共用次数很多，使用点外挂模型的方式</p>
+        <p>4、注意控制场景中的图层数量不要过多，业务逻辑可以用功能实现（比如属性，而非图层），图层更适合解决性能问题。</p>
+    </div>
+</div>
+<!--法律申明-->
+<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright icl2"
+     data-i18n="footer.copyright">
+    版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8
+    京公网安备11010502008721 甲测资字11002074
+</div>
+<!--footer end-->
+<script type="text/javascript" src="../js/utils.js"></script>
+</body>
+</html>

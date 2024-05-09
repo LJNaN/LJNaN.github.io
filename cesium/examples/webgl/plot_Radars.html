@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description" content="Test">
+    <meta name="cesium-sandcastle-labels" content="Geometries">
+    <title>Plot雷达实例</title> 
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+</head>
+
+<body style=" margin: 0;background: #fff;width: 100%;height:100%;position: absolute;top: 0;">
+
+    <div id="cesiumContainer" class="fullSize" style="position: absolute;width: 100%;height: 100%;">
+
+        <script id="cesium_sandcastle_script">
+            var scene, viewer;
+            let customRadar, parameterRadar;
+            let rotateRadar, rotateRadar2, warningRadar, mechanicalRadar;
+            let scanRadar;
+
+            function onload(Cesium) {
+                'use strict';
+                viewer = new Cesium.Viewer('cesiumContainer');
+                scene = viewer.scene;
+
+                let radarResult = computeCustomRadarPts2();
+
+                customRadar = new Cesium.PlotCustomRadar({
+                    point: new Cesium.PlotPoint3D(110, 35, 100000),
+                    radii: radarResult.radii,
+                    customPts: radarResult.positions,
+                    slicePartitions: radarResult.slicePartitions,
+                    stackPartitions: radarResult.stackPartitions,
+                    subdivisions: radarResult.subdivisions,
+                    show: true,
+                    fill: true,
+                    material: new Cesium.Color(1, 0, 0, 0.5),
+                    isOutline: true,
+                    outlineColor: new Cesium.Color(0, 1, 0, 1),
+                    outlineWidth: 1,
+                    rotate: new Cesium.Cartesian3(0, 0, 0)
+                }, scene);
+
+
+                parameterRadar = new Cesium.PlotParameterRadar({
+                    id: "PlotParameterRadar",
+                    point: new Cesium.Cartesian3(110.0, 40.0, 10000),
+                    rotate: new Cesium.Cartesian3(0, 0, 0),
+                    radii: new Cesium.Cartesian3(150000, 150000, 150000.0),
+                    innerRadii: new Cesium.Cartesian3(10000.0, 10000.0, 10000.0),
+                    minimumCone: 10,
+                    maximumCone: 90,
+                    minimumClock: 0,
+                    maximumClock: 260,
+                    material: Cesium.Color.RED.withAlpha(0.3),
+                    isOutline: true,
+                    isShowScan: true,
+                    scanCount: 5,
+                    scanColor: new Cesium.Color(1, 1, 0, 0.5),
+                    dScanSpeed: 20
+                }, scene)
+
+
+                var rectPts = [new Cesium.Cartesian3(0, 20000, 0),
+                new Cesium.Cartesian3(100000, 40000, 0),
+                new Cesium.Cartesian3(100000, 0, 0),
+                new Cesium.Cartesian3(0, 20000, 0)];
+
+                var rotateAngle = 360;
+                rotateRadar = new Cesium.PlotRotateRadar({
+                    id: "rotateRadar01",
+                    point: new Cesium.Cartesian3(100.0, 40.0, 10000),
+                    rotate: new Cesium.Cartesian3(0, 0, -30),
+                    isOutline: true,
+                    outlineColor: new Cesium.Color(0, 1, 0, 1),
+                    customPts: rectPts,
+                    slicePartitions: rotateAngle / 5,
+                    rotateAngle: rotateAngle,
+                    isShowScan: true,
+                    scanCount: 5
+                }, scene);
+
+                rotateRadar2 = new Cesium.PlotRotateRadar({
+                    id: "rotateRadar02",
+                    point: new Cesium.Cartesian3(95, 35, 10000),
+                    rotate: new Cesium.Cartesian3(0, 0, 0),
+                    isOutline: false,
+                    outlineColor: new Cesium.Color(0, 1, 0, 1),
+                    customPts: getMechanicalPts(),
+                    slicePartitions: rotateAngle / 5,
+                    rotateAngle: rotateAngle,
+                    isShowScan: true,
+                    scanCount: 5,
+                    scanColor:new Cesium.Color(0, 1, 0, 0.5)
+                }, scene);
+
+                warningRadar = new Cesium.PlotWarningRadar({
+                    id: "PlotWarningRadar",
+                    point: new Cesium.Cartesian3(100.0, 37.5, 10000),
+                    rotate: new Cesium.Cartesian3(0, 0, 0),
+                    radii: new Cesium.Cartesian3(50000, 50000, 50000),
+                    isOutline: false,
+                    outlineColor: new Cesium.Color(0, 1, 0, 1),
+                    isShowScan: true,
+                    scanCount: 4,
+                    scanColor:new Cesium.Color(0, 0, 1, 0.5)
+                }, scene);
+
+                mechanicalRadar = new Cesium.PlotMechanicalRadar({
+                    id: "PlotMechanicalRadar",
+                    point: new Cesium.Cartesian3(95.0, 40.0, 10000),
+                    rotate: new Cesium.Cartesian3(0, 0, 0),
+                    radii: new Cesium.Cartesian3(150000, 150000, 150000.0),
+                    isOutline: true,
+                    outlineColor: new Cesium.Color(0, 1, 0, 1),
+                    cellAngle: 5,
+                    isShowScan: true,
+                    scanCount: 5,
+                }, scene);
+
+
+                scanRadar = new Cesium.PlotScanRadar({
+                    id: "PlotScanRadar",
+                    point: new Cesium.Cartesian3(100.0, 35.0, 10000),
+                    scanVAngle: 35,
+                    scanHAngle: 90,
+                    rotate: new Cesium.Cartesian3(0, 0, 135),
+                    radii: new Cesium.Cartesian3(150000, 150000, 150000.0),
+                    material: Cesium.Color.RED.withAlpha(0.3),
+                    outline: true,
+                    outlineColor: new Cesium.Color(0, 1, 0, 1),
+                    isShowScan: true,
+                    dScanSpeed: 20
+                }, scene)
+
+
+
+            }
+
+            function computeCustomRadarPts2() {
+                var positions = [];
+                var radii = new Cesium.Cartesian3(150000, 150000, 150000.0);
+
+                var minimumClock = Cesium.Math.toRadians(0);
+                var maximumClock = Cesium.Math.toRadians(360);
+                var minimumCone = Cesium.Math.toRadians(0);
+                var maximumCone = Cesium.Math.toRadians(90);
+
+                var slicePartitions = 62;//圆上点个数
+                var stackPartitions = 16;//水平圆个数
+
+
+
+                var i;
+                var j;
+                var phis = [minimumCone];
+                var thetas = [minimumClock];
+                for (i = 0; i < stackPartitions; i++) {
+                    phis.push(minimumCone + (i * (maximumCone - minimumCone)) / (stackPartitions - 1));
+                }
+                phis.push(maximumCone);
+                for (j = 0; j < slicePartitions; j++) {
+                    thetas.push(minimumClock + (j * (maximumClock - minimumClock)) / (slicePartitions - 1));
+                }
+                thetas.push(maximumClock);
+                var numPhis = phis.length;
+                var numThetas = thetas.length;
+
+                // Allow for extra indices if there is an inner surface and if we need
+                // to close the sides if the clock range is not a full circl
+
+                // Calculate sin/cos phi
+                var sinPhi = new Array(numPhis);
+                var cosPhi = new Array(numPhis);
+                for (i = 0; i < numPhis; i++) {
+                    sinPhi[i] = Math.sin(phis[i]);
+                    cosPhi[i] = Math.cos(phis[i]);
+                }
+
+                // Calculate sin/cos theta
+                var sinTheta = new Array(numThetas);
+                var cosTheta = new Array(numThetas);
+                for (j = 0; j < numThetas; j++) {
+                    cosTheta[j] = Math.cos(thetas[j]);
+                    sinTheta[j] = Math.sin(thetas[j]);
+                }
+
+                // Create outer surface
+                for (i = 0; i < numPhis; i++) {
+                    var temp = [];
+                    for (j = 0; j < numThetas; j++) {
+                        var x = radii.x * sinPhi[i] * cosTheta[j];
+                        var y = radii.y * sinPhi[i] * sinTheta[j];
+                        var z = radii.z * cosPhi[i];
+                        temp.push(new Cesium.Cartesian3(x, y, z));
+                    }
+                    positions.push(temp);
+                }
+
+                let hasBtoSurface = true;
+                if (hasBtoSurface) {
+                    var temp = [];
+                    for (j = 0; j < numThetas; j++) {
+                        temp.push(new Cesium.Cartesian3());
+                    }
+                    positions.push(temp);
+                    numPhis += 1;
+                }
+
+                return {
+                    positions: positions,
+                    slicePartitions: numThetas,
+                    stackPartitions: numPhis,
+                    radii: radii
+                };
+            }
+
+
+            function getMechanicalPts() {
+                var pts = [];
+                pts.push(new Cesium.Cartesian3(0, 0, 0));
+                pts.push(new Cesium.Cartesian3(1.10296043731977 * 10000, 0.046804145634484 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(2.21610390044188 * 10000, 0.11759698792659 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(3.23948463412258 * 10000, 0.207919742367934 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(4.24306826853316 * 10000, 0.304605633553736 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(5.07593366806073 * 10000, 0.449055607644075 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(6.09774013826592 * 10000, 0.626275021765735 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(6.82649676873021 * 10000, 0.854033937659516 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(7.59836360255064 * 10000, 1.13340451890574 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(8.12046765798091 * 10000, 1.39526442140232 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(8.77215268479149 * 10000, 1.76316819829927 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(9.24420050024946 * 10000, 2.26394442518268 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(9.41437066670075 * 10000, 2.78004341750028 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(9.37677016147896 * 10000, 3.37826190260998 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(9.02402463279236 * 10000, 4.05665157036142 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(8.49067600110484 * 10000, 4.52027646588052 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(7.93178024681909 * 10000, 4.83964546832953 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(7.37859457443028 * 10000, 4.95818525526998 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(6.73933014626123 * 10000, 4.97031713954619 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(6.1144105659988 * 10000, 4.8548345993221 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(5.51606295388907 * 10000, 4.68304158511523 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(4.84103177562709 * 10000, 4.34900006813962 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(4.09846873384157 * 10000, 3.95082720446673 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(3.26846203349058 * 10000, 3.4279079135254 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(2.2493811983941 * 10000, 2.68004157158963 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(1.43802404023069 * 10000, 1.88816148893958 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(0.67580571600966 * 10000, 0.925081705540024 * 10000, 0));
+                pts.push(new Cesium.Cartesian3(0, 0, 0));
+                return pts;
+            }
+
+            if (typeof Cesium !== 'undefined') {
+                window.startupCalled = true;
+                onload(Cesium);
+            }
+        </script>
+    </div>
+</body>
+
+</html>

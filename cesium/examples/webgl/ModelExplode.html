@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<title>模型爆炸</title>
+		<link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+		<link href="./css/font-awesome.min.css" rel="stylesheet">
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/pretty.css" rel="stylesheet">
+		<link href="./css/style.css" rel="stylesheet">
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/config.js"></script>
+		<script src="./js/Convert.js"></script>
+		<script src="./js/tooltip.js"></script>
+		<script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+		<style>
+			input[type=range] {
+				-webkit-appearance: none;
+				width: 160px;
+				height: 2px;
+				border-radius: 10px;
+				/*这个属性设置使填充进度条时的图形为圆角*/
+			}
+			input[type=range]::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				margin-top: -3px;
+				height: 10px;
+				width: 10px;
+			}
+			input[type=range]::-webkit-slider-runnable-track {
+				height: 2px;
+			}
+			.rangeBox {
+				width: 200px;
+			}
+		</style>
+	</head>
+
+	<body class="loading">
+		<div id="cesiumContainer"></div>
+		<div id='loadingbar' class="spinner">
+			<div class="spinner-container container1">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container2">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container3">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+		</div>
+		<div id="toolbar" class="param-container tool-bar">
+			<div style="padding:5px 0">
+				<label style="color: #FFFFFF">模型爆炸</label>
+				<div class="rangeBox">
+					<input type="range" id="scale" min="0" max="3" step="0.002" value="0" data-bind="value: scale, valueUpdate: 'input'">
+				</div>
+			</div>
+		</div>
+		<script>
+			function onload(Cesium) {
+				let viewer = new Cesium.Viewer('cesiumContainer', {
+					timeline: true,
+					orderIndependentTranslucency: false,
+					contextOptions: {}
+				});
+				let scene = viewer.scene;
+				scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+				scene.moom = false;
+				viewer.scene.globe.show = false;
+				scene.debugShowFramesPerSecond = true;
+				// 新增直射光-顶光
+				var position4 = new Cesium.Cartesian3.fromDegrees(106.571378546495, 29.5603965436718, 1000);
+				var targetPosition4 = new Cesium.Cartesian3.fromDegrees(106.571378546495, 29.5603965436718, 10);
+				var dirLightOptions4 = {
+					targetPosition: targetPosition4,
+					color: new Cesium.Color(0.7, 0.7, 0.7, 1),
+					intensity: 1.0
+				};
+				directionalLight_4 = new Cesium.DirectionalLight(position4, dirLightOptions4);
+				scene.addLightSource(directionalLight_4);
+				let widget = viewer.cesiumWidget;
+				let building;
+				let dataUrl = "http://www.supermapol.com/realspace/services/data-BIMBaoZha/rest/data/featureResults.rjson?returnContent=true";
+				let viewModel = {
+					scale: 0.0,
+				};
+				let oExplode = {
+					directions: [], //构件偏移方向
+					directions_normalize: [], //构件偏移方向
+					scale: [], //构件偏移的比例
+					distances: [], //构件离中心距离
+					ids: [], //构件id
+					maxDistance: 1,
+				};
+				let options = {};
+				Cesium.knockout.track(viewModel);
+				let toolbar = document.getElementById('toolbar');
+				Cesium.knockout.applyBindings(viewModel, toolbar);
+				Cesium.knockout.getObservable(viewModel, 'scale').subscribe(
+					function(newValue) {
+						for(let i = 0, j = oExplode.ids.length; i < j; i++) {
+							let cuttpy = Cesium.Cartesian3.multiplyByScalar(
+								oExplode.directions_normalize[i],
+								oExplode.maxDistance * oExplode.scale[i] * Number(newValue), {},
+							);
+							if(i > 109) {
+								options[oExplode.ids[i]] = cuttpy
+							}
+						}
+						building.setBatchObjsTranslate(options)
+					}
+				);
+				$('#loadingbar').remove();
+				try {
+					let promise = scene.open(URL_CONFIG.SCENE_BIM_EXPLODE);
+					Cesium.when(promise, function(layer) {
+						building = viewer.scene.layers.find('ModelEdit_1@DatasourceYYD007');
+						if(building) {
+							modelTranslate(building._position);
+						}
+					}, function() {
+						let title = '加载SCP失败，请检查网络连接状态或者url地址是否正确？';
+						widget.showErrorPanel(title, undefined, e);
+					});
+				} catch(e) {
+					if(widget._showRenderLoopErrors) {
+						let title = '渲染时发生错误，已停止渲染。';
+						widget.showErrorPanel(title, undefined, e);
+					}
+				}
+
+				function modelTranslate(layerCenterPos) {
+					let sqlParameter = {
+						toIndex: -1,
+						datasetNames: ["DatasourceYYD007:info_1"],
+						getFeatureMode: "SQL",
+						queryParameter: {
+							attributeFilter: "smid>=0"
+						},
+						maxFeatures: 5000
+					};
+					let url = dataUrl;
+					let queryData = JSON.stringify(sqlParameter);
+					$.ajax({
+						type: "post",
+						url: url,
+						data: queryData,
+						success: function(result) {
+							let resultObj = JSON.parse(result);
+							for(let item of resultObj.features) {
+								let center = Cesium.Cartesian3.fromDegrees(Number(item.fieldValues[12]), Number(item.fieldValues[13]), Number(item.fieldValues[14]));
+								//将图层中心点变换成4*4矩阵
+								let transform = Cesium.Transforms.eastNorthUpToFixedFrame(layerCenterPos);
+								let inverseTransform = Cesium.Matrix4.inverseTransformation(transform, {});
+								//计算图层中心点矩阵与构建中心点乘积，得到变换矩阵
+								Cesium.Matrix4.multiplyByPoint(inverseTransform, center, center);
+								//计算图层中心点与构建中心点距离
+								let distance = Cesium.Cartesian3.magnitude(center);
+								oExplode.directions.push(Cesium.Cartesian3.clone(center));
+								Cesium.Cartesian3.normalize(center, center);
+								oExplode.distances.push(distance);
+								oExplode.directions_normalize.push(center);
+								oExplode.ids.push(Number(item.fieldValues[0]));
+							}
+							oExplode.maxDistance = Math.max.apply(null, oExplode.distances);
+							oExplode.scale = oExplode.distances.map((distance) => {
+								return distance / oExplode.maxDistance;
+							});
+						},
+						error: function(msg) {
+							
+						},
+					})
+				}
+			}
+			if(typeof Cesium !== 'undefined') {
+				window.startupCalled = true;
+				onload(Cesium);
+			}
+		</script>
+	</body>
+
+</html>

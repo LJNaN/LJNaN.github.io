@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>矢量面拉伸生成模型缓存处理思路及流程</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+    <script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload"
+            src="../js/include-web.js" from="doc"></script>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/examples.css"/>
+    <link rel="stylesheet" href="../css/header.css"/>
+    <link rel='stylesheet' href='../css/sm-extend.css'/>
+    <link rel='stylesheet' href='../css/sm-doc.css'/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+<!-- ./wrapper -->
+
+<header class="header-wrapper main-header icl-header"></header>
+<script>
+    var navigation = {
+        nav: {
+            title: 'SuperMap iClient3D for Cesium',
+            path: '../../web/',
+            isLocal: window.isLocal
+        }
+    };
+    identification = {};
+    utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+</script>
+<!--<div class="wrapper"></div>-->
+<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+  <div class='page-header'>
+        <h1>矢量面拉伸生成模型缓存处理思路及流程</h1>
+        <hr/>
+        <h2 class="title">处理流程<a name="Summary"></a></h2>
+        <p>以 240 万个矢量面为例。</p>
+        <p>1、数据检查:打开数据集的属性表，分别依据层高和层数的字段值对数据进行排序，删除无效以及明显错误的面数据。</p>
+        <p>2、层高预处理：层高字段是作为后续对拉伸模型数据进行分层的参数，如果拉伸模型数据不分层，可以跳过此步骤。如果数据中自带了楼高、层高、层数，桌面会自动根据这个三个参数进行拉伸分层，同样跳过此步骤。</p>
+		<p>3、新建层高字段：选中矢量面数据集，右键操作，选择 “属性”，单击右侧属性面板中的“属性表”，点击添加按钮，将字段名称和别名改为层高，“类型”选择双精度。点击应用按钮。</p>
+		<P>4、添加层高字段值：层高字段值的设置可分为两类：统一设置层高为指定的高度；层高根据楼层高度/楼层数获得。</P>
+		<P>第一种：单击矢量面数据集，右键选择浏览属性表。选中层高字段，右键选择更新列。 例如统一设置为 3 米。</P>
+		<P>第二种：更新层高列，待更新字段选择层高字段，数据来源设置为“双字段运算”，第一 运算字段选择楼高字段，运算方式：除，第二运算字段选择层数字段。（HEIGHT为楼高， FLOORS为层数，两者相除即为层高。）</P>
+      <div class="pageImage"><img src="../images/TopicDOC/Vector01.png"></div>
+	    <p>5、贴图预处理：矢量面拉伸如果要设置纹理，需要在字段中添加侧面及顶部纹理图片字段、贴图模式字段、UV 字段。</p>
+	     <ul class="disc">
+		  <li>①纹理字段：相对路径（相对数据源所在位置）。</li>
+          <li>②贴图方式：真实大小、重复次数两种模式 。</li>
+          <li>③UV字段：贴图的实际尺寸（米）/ 贴图的重复次数（次）；U：水平方向、V：垂直方向。</li>
+		 </ul>
+      <p>6、面拉伸生成模型缓存:将矢量面数据拉伸生成模型缓存。单击“三维数据”-“生成缓存”-“面拉伸生成模型缓存”，界面如下:</p>
+	   <div class="pageImage"><img src="../images/TopicDOC/Vector02.png"></div>
+      <p>7、拉伸高度：建筑的总高度</p>
+      <p>8、底部高程：建筑的底部高程值</p>
+      <p>9、LOD 层级数：对建筑模型进行分级显示</p>
+      <p>10、过滤阈值：在粗糙层，过滤掉像素小于阈值的对象</p>
+	  <P>11、轮廓线：数据生成轮廓线，在 Web 端加载可以显示建筑轮廓为四边形模式</P>
+	  <P>12、简化：LOD 层三角网是否简化</P>
+	  <P>13、贴图模式：支持真实大小，贴图的实际尺寸（米）；重复次数两种模式，贴图的重复次数（次）</P>
+	  <P>14、UV 字段：U：贴图水平方向、V：贴图垂直方向</P>
+	  <P>15、贴图字段:贴图的相对路径字段</P>
+	  <P>16、S3M 版本：需选择 S3M 2.0 版本，S3M 2.0 版本支持pbr材质</P>
+	  <P>17、属性存储类型：ATTRIBUTE支持下载指定字段（属性不需要全部下载，下载指定字段，提升性能）</P>
+	  <P>18、设置完参数后，点击生成，生成模型缓存</P>
+      <div class="pageImage"><img src="../images/TopicDOC/Vector03.png"></div>
+  </div>
+</div>
+<!--法律申明-->
+<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright icl2" data-i18n="footer.copyright">
+    版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8
+    京公网安备11010502008721 甲测资字11002074
+</div>
+<!--footer end-->
+<script type="text/javascript" src="../js/utils.js"></script>
+</body>
+</html>

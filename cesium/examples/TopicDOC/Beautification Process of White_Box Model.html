@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<title>白模数据美化流程</title>
+		<link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico" />
+		<script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload" src="../js/include-web.js" from="doc"></script>
+		<link rel="stylesheet" href="../css/common.css" />
+		<link rel="stylesheet" href="../css/examples.css" />
+		<link rel="stylesheet" href="../css/header.css" />
+		<link rel='stylesheet' href='../css/sm-extend.css' />
+		<link rel='stylesheet' href='../css/sm-doc.css' />
+
+	</head>
+
+	<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+		<!-- ./wrapper -->
+
+		<header class="header-wrapper main-header icl-header"></header>
+		<script>
+			var navigation = {
+				nav: {
+					title: 'SuperMap iClient3D for Cesium',
+					path: '../../web/',
+					isLocal: window.isLocal
+				}
+			};
+			identification = {};
+			utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+		</script>
+
+		<div class="wrapper"></div>
+		<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+			<div class='page-header'>
+				<h1>白模数据美化流程——UE导出PBR材质，在SuperMap iClient3D for Cesium客户端加载</h1>
+				<hr/>
+				<h2 class="title">使用场景<a name="Summary"> </a></h2>
+				<p>如何基于建筑矢量面数据，在超图产品体系中，快速批量制作美化效果，并在三维WebGL客户端加载？</p>
+				<p>本文档从数据处理，材质关联文件，SuperMap iClient3D for Cesium客户端加载三个部分进行介绍。其中涉及到的产品包括：SuperMap iDesktop，SuperMap iClient3D for Cesium客户端</p>
+				<h2 class="title">制作流程<a name="Summary"> </a></h2>
+				<h3>a、数据处理</h3>
+				<p>1、原始数据准备</p>
+				<p>原始数据是建筑矢量面数据，属性表中需要有建筑高度或楼层数相关的属性，便于后期根据此属性拉伸成模型，示例中使用Height中的属性值。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/White-box01.png">
+					<p>图1</p>
+				</div>
+				<p>2、材质素材准备</p>
+				<p>我们提供了11种类型的材质素材，用于设置白模的外观，有需要的用户可以联系我们，用户也可以使用自己的材质素材。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/White-box02.png">
+					<p>图2</p>
+				</div>
+				<p>3、矢量面数据属性处理</p>
+				<p>打开面数据集的属性面板，在其属性中，添加“侧面材质”，“顶面材质”两个文本型属性； </p>
+				<div class="pageImage"><img src="../images/TopicDOC/White-box03.png">
+					<p>图3</p>
+				</div>
+				<P>我们需要在属性表里面，给每个模型对象设置想要被赋予的材质类型：</P>
+				<ul>
+					<ul class="disc">
+						<li>①顶面材质上不做区分，通过更新列的方式，统一设置为“TOPMat”；</li>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box04.png">
+							<p>图4</p>
+						</div>
+						<li>②这里根据建筑矢量面的Height属性，将建筑矢量面划分成11个区间，不同的高度区间，设置不同的材质类型，并将对应的材质名称“CityBuiMat1”-“CityBuiMat11”填入属性表中,<br>比如，0-6m的建筑，设置侧面材质为“CityBuiMat1”；6-12m的建筑，设置侧面材质为“CityBuiMat2”…。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box05.png">
+							<p>图5</p>
+						</div>
+					</ul>
+				</ul>
+				<p>最终结果如下：</p>
+				<div class="pageImage"><img src="../images/TopicDOC/White-box06.png">
+					<p>图6</p>
+				</div>
+				<p>4、生成S3M缓存</p>
+				<p>选择“三维数据-生成缓存-面拉伸生成模型缓存” 功能，在弹出的面板中，选择建筑矢量面数据集。</p>
+				<p>参数设置：指定生成缓存的路径；拉伸高度设置为“Height”；瓦片边长根据数据范围设置，这里由于是整个城市的数据，设置为“6000”；</p>
+				<p>材质设置：首先需要勾选上材质模式，贴图模式选择“真实大小”；贴图字段分别选择“顶面材质”，“侧面材质”；如果使用我们提供的UE材质素材，这里的UV设置为“30”比较合适；</p>
+				<p>设置完成之后，点击生成，得到S3M缓存数据。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/White-box07.png">
+					<p>图7</p>
+				</div>
+				<div class="pageImage"><img src="../images/TopicDOC/White-box08.png">
+					<p>图8</p>
+				</div>
+				<h3>b、材质关联文件</h3>
+				<p>1、手动修改以下文件</p>
+				<ul>
+					<ul class="disc">
+						<li>①将材质文件夹放入刚生成好的缓存文件夹里，打开材质文件里的LayerInfo.json文件，将"LayerName" : "xxxxx"，改为缓存的名字，如"LayerName" : "Building"，然后保存文件。
+							<p>"Materials"中，默认给出了材质的关联关系，其中"AssociateMaterial"后面的材质名称为UE中的材质；"OriginalMaterial"后面的材质名称为S3M缓存数据的材质名称，是在数据处理第三步中，设置的顶面材质与侧面材质的属性值。</p>
+							<p>注：如果使用的是我们提供的材质素材，不需要修改"AssociateMaterial"后面的材质名称。</p>
+						</li>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box09.png">
+							<p>图9</p>
+						</div>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box10.png">
+							<p>图10</p>
+						</div>
+						<li>②打开缓存文件夹里的SCP文件，在"vol":[],后面添加材质文件名和LayerInfo.json存放路径"AssociateMaterialUrl":"./MaterialPackage/LayerInfo.json"},"</li>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box10-1.png">
+							<p>图10-1</p>
+						</div>
+					</ul>
+				</ul>
+				<h3>c、SuperMap iClient3D for Cesium客户端加载</h3>
+				<p>1、发布三维服务</p>
+				<p>在前面步骤中我们生成了白模的缓存数据，放好了材质文件，接下来将白模的缓存发布三维服务，在SuperMap iClient3D for Cesium端加载。具体步骤如下：</p>
+				<ul>
+					<ul class="disc">
+						<li>①在SuperMap iDesktop桌面产品的 “工作空间管理器”中，在“场景”下右键点击“新建球面场景”。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/NewScene.png" width="286" height="280"><br>
+							<p>图11</p>
+						</div>
+						<li>②“图层管理器”下选中“普通图层”，右键点击“添加三维切片缓存图层”，选择上一步骤生成的*.scp文件。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/AddOSGBLayer.png" width="280" height="247"><br>
+							<p>图12</p>
+						</div>
+						<li>③添加缓存图层后，保存场景和工作空间，该工作空间文件将用于发布工作空间类型的三维服务。</li>
+						<li>④保存工作空间后，在 %SuperMap iServer_HOME%/bin 目录下，点击“startup.bat”批处理文件，启动SuperMap iServer服务。</li>
+						<li>⑤打开浏览器，地址栏输入http://localhost:8090/iserver/manager 进入“服务管理”页面，“首页”下点击“快速发布一个或一组服务”按钮。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/PublishQuickly.png" width="393" height="362"><br>
+							<p>图13</p>
+						</div>
+						<li>⑥弹出“快速发布服务-选择发布的数据来源”对话框，在“数据来源”处选择“工作空间”，点击“下一步”。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/DataSource.png" width="509" height="231"><br>
+							<p>图14</p>
+						</div>
+						<li>⑦弹出“快速发布服务-配置数据”对话框，点击“远程浏览”按钮选择前述所保存的工作空间，点击“下一步”。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box11.png">
+							<p>图15</p>
+						</div>
+						<li>⑧弹出“快速发布服务-选择发布的服务类型”对话框，勾选“REST-三维服务”，点击“下一步”。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/Select3DService.png" width="723" height="277"><br>
+							<p>图16</p>
+						</div>
+					</ul>
+				</ul>
+				<p>2、SuperMap iClient3D for Cesium客户端浏览数据</p>
+				<p>发布了三维服务以后，在此步骤中便可通过SuperMap iClient3D for Cesium客户端浏览数据。</p>
+				<ul>
+					<ul class="disc">
+						<li>①获取三维数据url地址，按照如下顺序点击
+							<p>获取：进入服务列表页面（http://localhost:8090/iserver/services），找到并点击上一步骤所发布的三维服务；</p>
+							<p>进入“根目录”页面，点击”realspace“；复制整个地址。如下：“http://localhost:8090/iserver/services/3D-BaiMoMeiHua/rest/realspace”</p>
+						</li>
+						<li>②进入SuperMap iClient3D for Cesium产品包，在“examples”文件夹下，以文本方式打开“White-box_Beautification_for_Cityview.html”范例。（范例里包含白天和夜晚的美化效果,主要以窗景的明暗程度作为区分）先制作白天的效果，首先找到白天的场景地址
+							<div class="pageImage"><img src="../images/TopicDOC/White-box12.png">
+								<p>图17</p>
+							</div>
+							<p>修改为：var promise = scene.open(‘http://localhost:8090/iserver/services/3D-BaiMoMeiHua/rest/realspace’);</p>
+						</li>
+						<li>③如果需要做夜晚的效果，请复制一份材质和缓存数据，将缓存数据的SCP文件命名为“Building_1”，同样将材质文件里的LayerInfo.json文件里的"LayerName" : "xxxxx"，改为缓存的名字，如"LayerName" : "Building_1"，然后保存文件。</li>
+						<li>④用文本的形式打开所有用到的材质文件，以MI_Window_01.json为例，将emissiveFactor的值增大，窗景会更明显（白天通常使用为0-0.1），修改后保存json文件。
+							<div class="pageImage"><img src="../images/TopicDOC/White-box13.png">
+								<p>图18</p>
+							</div>
+						</li>
+						<li>⑤参照“发布三维服务”步骤，将刚复制的夜晚数据发布服务，并获取服务地址。找到范例里夜景的场景地址修改为：var promise = scene.open(‘http://localhost:8090/iserver/services/3D-BaiMoMeiHua_N/rest/realspace’);
+							<div class="pageImage"><img src="../images/TopicDOC/White-box14.png">
+								<p>图19</p>
+							</div>
+						</li>
+						<li>⑥修改好服务地址后，运行范例，可以看到以下类似的场景效果。</li>
+						<P>白天效果</P>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box15.png">
+							<p>图20</p>
+						</div>
+						<P>如果想要调整材质的明暗程度，可以修改metallicFactor和roughnessFactor参数的值，当粗糙度roughnessFactor的值等于0的时候，会没有PBR的效果，所以需要设置大于0。此外还可以在此处添加 "intensityScale"参数来调整。</P>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box16.png">
+							<p>图21</p>
+						</div>
+						<P>傍晚场景效果</P>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box17.png">
+							<p>图22</p>
+						</div>
+						<P>夜晚场景效果</P>
+						<div class="pageImage"><img src="../images/TopicDOC/White-box18.png">
+							<p>图23</p>
+						</div>
+					</ul>
+				</ul>
+				<P>注：</P>
+				<p>1.请使用超图官网上最新的SuperMap iDesktop和SuperMap iClient3D for Cesium客户端版本。软件下载地址: </p>
+				<ul class="disc">
+					<li>SuperMap iDesktop
+						<a href="http://support.supermap.com.cn/product/iDesktop.aspx">http://support.supermap.com.cn/product/iDesktop.aspx</a>
+					</li>
+					<li>SuperMap iClient3D for Cesium
+						<a href="http://support.supermap.com.cn/product/iClient.aspx">http://support.supermap.com.cn/product/iClient.aspx</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--法律申明-->
+		<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright" data-i18n="footer.copyright">
+			版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8 京公网安备11010502008721 甲测资字11002074
+		</div>
+		<!--footer end-->
+		<script type="text/javascript" src="../js/utils.js"></script>
+	</body>
+
+</html>

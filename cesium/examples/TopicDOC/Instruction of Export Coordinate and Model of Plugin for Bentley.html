@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Bentley导出插件点位+模型功能使用说明及注意事项</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+    <script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload"
+            src="../js/include-web.js" from="doc"></script>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/examples.css"/>
+    <link rel="stylesheet" href="../css/header.css"/>
+    <link rel='stylesheet' href='../css/sm-extend.css'/>
+    <link rel='stylesheet' href='../css/sm-doc.css'/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+<!-- ./wrapper -->
+
+<header class="header-wrapper main-header icl-header"></header>
+<script>
+    var navigation = {
+        nav: {
+            title: 'SuperMap iClient3D for Cesium',
+            path: '../../web/',
+            isLocal: window.isLocal
+        }
+    };
+    identification = {};
+    utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+</script>
+<!--<div class="wrapper"></div>-->
+<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+  <div class='page-header'>
+        <h1>Bentley导出插件点位+模型功能使用说明及注意事项</h1>
+        <hr/>
+        <h2 class="title">背景需求<a name="Summary"></a></h2>
+        <p>在交通，电力等行业的应用，往往存在这样一种类型的数据：模型本身为线形，宽度较窄，延伸很长，同时模型是由为数不多的几个对象不断重复构成。</p>
+        <p>比如，铁路轨道，输电线路等。用常规导出模型的方式，会使结果数据集急剧膨胀，加载浏览效果差。</p>
+        <p>为此，我们提出了点位+模型的方式来处理此类数据。</p>
+      <h2 class="title">安装方法<a name="Summary"></a></h2>
+      <p>1、拷贝DgnToUDB_S3MB.dgnlib至如下目录：C:\ProgramData\Bentley\MicroStationCONNECTEdition\Configuration\Organization\Dgnlib\Gui</p>
+      <P>2、拷贝DgnToUDB_S3MB.dll及DgnToUDB_S3MB.ma到Bentley安装目录.../Bentley/MicroStation CONNECT Edtion/MicroStation/Mdlapps下；</P>
+      <P>3、需要超图组件许可；</P>
+      <p>4、Super Map Bin为C++组件包，位置不限；但需要设置为环境变量并确保其在path路径的最前端；</p>
+      <div class="pageImage"><img src="../images/TopicDOC/Bentley01.jpg"></div>
+      <h2 class="title">使用方法<a name="Summary"></a></h2>
+      <h3>1、通过Bentley导出插件以点位+模型的方式导出数据集</h3>
+      <p>通过MicroStation CONNECT软件打开模型数据，在菜单栏-内容模块中，点击超图Dgn插件下的“导出点位+模型”图标，弹出插件导出面板，具体设置如下：</p>
+      <ul class="disc">
+          <li>①插入点XYZ：在MicroStation CONNECT中，是否对坐标系的原点设置了偏移，如果没有，保持默认值0，0，0不变；如果有，此处填写偏移的XYZ值；</li>
+          <li>②偏移值查看方法：MicroStation CONNECT中，绘图辅助-ACS模块下，点击右下角的展开按钮，弹出管理ACS面板，即可查看。</li>
+          <li>③坐标系：不设置的时候，默认以平面坐标系的方式导出，如果设置了投影坐标系，则以设置的投影坐标系的方式导出；</li>
+          <li>④S3MB：外挂对象的储存位置；</li>
+          <li>⑤数据源：导出数据源的存放位置，里面包含了一个三维点位的数据集；</li>
+          <li>⑥简化率：模型骨架的简化程度，默认值为1，可根据需求进行简化或者精细化；</li>
+          <li>⑦材质颜色：默认情况下，不需要勾选材质颜色，此时如果模型存在纹理，就会导出纹理，没有纹理，就导出颜色。如果需要将模型上的纹理与颜色同时导出，才需要勾选材质颜色。</li>
+          <div class="pageImage"><img src="../images/TopicDOC/Bentley02.jpg"></div>
+      </ul>
+      <h3>2、在SuperMap iDesktop中修改坐标系</h3>
+      <p>如果在第1步中已经设置好了坐标系，可跳过此步，直接进行第3步操作。</p>
+      <p>如果在第1步中导出了平面坐标的数据，想要把数据加载到球面场景，需要对三维点数据集的坐标系进行转换。</p>
+      <p>选中数据集，右键单击“属性”按钮，弹出属性窗口。</p>
+      <p>在数据集属性窗口中，选择“坐标系”下的“导入坐标系”功能，导入已有的投影坐标系文件。</p>
+      <div class="pageImage"><img src="../images/TopicDOC/Bentley03.jpg"></div>
+      <h3>3、在SuperMap iDesktop中生成缓存数据</h3>
+      <P>选择三维点数据集，右键单击“浏览属性表”查看属性，可以看到里面记录了“模型路径”，“模型矩阵”等相关信息。</P>
+      <div class="pageImage"><img src="../images/TopicDOC/Bentley04.jpg"></div>
+      <P>点击三维数据-三维瓦片-生成缓存模块下的“点集生成缓存外挂模型”图标，弹出点外挂生成缓存窗口。</P>
+      <p>在参数设置中，设置好缓存名称，缓存路径等参数；模型参数设置中，模型文件路径选择三维点数据集属性里的“模型路径”，矩阵字段选择“模型矩阵”，完成之后，点击生成按钮。</p>
+      <P>最终缓存数据加载效果如下：</P>
+      <div class="pageImage"><img src="../images/TopicDOC/Bentley05.jpg"></div>
+      <h2 class="title">注意事项<a name="Summary"></a></h2>
+      <P>1.三维点数据集为平面坐标系时，生成的缓存只能在平面场景中加载；三维点数据集为投影坐标系时，生成的缓存只能在球面场景中加载；三维点数据集不能是地理坐标系，否则生成的缓存数据加载显示会有位置偏差。</P>
+      <P>2.数据中存在对象的大量共用时，此方法才有比较好的作用，如果不属于此类情况，则不推荐此方法。</P>
+  </div>
+</div>
+<!--法律申明-->
+<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright icl2" data-i18n="footer.copyright">
+    版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8
+    京公网安备11010502008721 甲测资字11002074
+</div>
+<!--footer end-->
+<script type="text/javascript" src="../js/utils.js"></script>
+</body>
+</html>

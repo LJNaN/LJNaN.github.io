@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<title>地质模型相关解决方案</title>
+		<link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico" />
+		<script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload" src="../js/include-web.js" from="doc"></script>
+		<link rel="stylesheet" href="../css/common.css" />
+		<link rel="stylesheet" href="../css/examples.css" />
+		<link rel="stylesheet" href="../css/header.css" />
+		<link rel='stylesheet' href='../css/sm-extend.css' />
+		<link rel='stylesheet' href='../css/sm-doc.css' />
+		<!--短文单独的样式-->
+		<style>
+			.icl2 {
+				position: absolute;
+				bottom: -119px;
+				width: 100%;
+				left: 318px;
+			}
+		</style>
+	</head>
+
+	<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+		<!-- ./wrapper -->
+
+		<header class="header-wrapper main-header icl-header"></header>
+		<script>
+			var navigation = {
+				nav: {
+					title: 'SuperMap iClient3D for Cesium',
+					path: '../../web/',
+					isLocal: window.isLocal
+				}
+			};
+			identification = {};
+			utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+		</script>
+		<!--<div class="wrapper"></div>-->
+		<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+			<div class='page-header'>
+				<h1>地质模型相关解决方案</h1>
+				<hr/>
+				<h2 class="title">使用场景<a name="Summary"></a></h2>
+				<p>本文档主要介绍地质模型导入到 SuperMap 之后，可以用来做哪些功能，实现什么样的效果，在项目上有什么样的应用？<br>在 SuperMap iDesktop 中，我们可以批量修改模型颜色，编辑修改模型纹理。 在SuperMap iClient3D for Cesium中，我们还实现了多种地质体实时分析功能，包括：</p>
+				<ul class="disc">
+					<li>1、实时剖面分析（实时封边，获取被剖切对象ID）</li>
+					<li>2、实时裁剪（多边形裁剪）</li>
+					<li>3、实时开挖（圆柱体、多边形开挖）</li>
+					<li>4、实时表达（爆炸、夸张）</li>
+					<li>5、实时构建虚拟钻孔（实时构建，实时查看）</li>
+				</ul>
+				<h2 class="title">功能实现<a name="Summary"></a></h2>
+				<p>本文从以下三个方面，逐步进行介绍：</p>
+				<ul class="disc">
+					<li>1、在SuperMap iDesktop中，根据项目要求，编辑修改地质模型的材质；</li>
+					<li>2、通过SuperMap iServer将编辑好的UDB/UDBX格式的数据，发布成数据服务；</li>
+					<li>3、在SuperMap iClient3D for Cesium中，加载数据服务，并实现地质体的实时分析功能。</li>
+				</ul>
+				<h3>1、编辑修改地质模型的材质</h3>
+				<p>如果导入的地质体模型没有材质，或者想要修改模型的材质，都可以在SuperMap iDesktop中完成。</p>
+				<p>目前我们提供了三种编辑材质的方法：</p>
+				<ul class="disc">
+					<li>①通过“材质浏览器”功能，实时选中对象修改材质；</li>
+					<li>②通过“批量修改模型材质颜色”功能，根据对象的属性，批量修改模型的颜色；</li>
+					<li>③通过“材质编辑”功能，单独隔离出所选对象，编辑材质。</li>
+				</ul>
+				<h3>1.1、通过“材质浏览器”功能，实时选中对象修改材质</h3>
+				<p>我们以一个Geo3DML文件为例进行说明：</p>
+				<ul class="disc">
+					<li>①通过第三方软件打开该Geo3DML文件，观察其结构由三部分组成：Zone，Layer与Fault。</li>
+					<p>其中，Zone有4个对象；Layer有5个对象，Fault有11个对象，共20个对象。模型本身是没有材质信息的，此时看到的模型颜色是随机生成的，并不是实际的颜色效果。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody01.png">
+					</div>
+					<li>②通过SuperMapiDesktop直接导入Geo3DML文件，得到的数据集中，对象个数与类型与第三方软件中看到的结果一致。</li>
+					<p>但导入的模型没有材质信息，均显示为默认的灰色材质。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody02.png">
+					</div>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody03-1.png">
+					</div>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody03-2.png">
+					</div>
+					<li>③这里介绍如何通过“材质浏览器”的功能来编辑修改材质：</li>
+					<p>1、点击“三维地理设计-模型操作-材质编辑-材质”按钮，弹出材质浏览器面板。</p>
+					<p>2、点击“添加”按钮，并新建一个材质“地层x”，并设置材质颜色及纹理。</p>
+					<P>材质颜色的RGB值可参考下图所示的色标。</P>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody04.png">
+					</div>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody05.png">
+					</div>
+					<p>3、设置好颜色及纹理之后，通过在场景中选择对象，再点击“将材质赋给选中对象”按钮，直接将设置的材质赋给相应的对象。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody06.png">
+					</div>
+					<P>4、依次选择场景中的其它对象，并赋予其材质。</P>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody07.png">
+					</div>
+					<h3>1.2、批量修改模型材质颜色</h3>
+					<p>如下图所示，另一份导入的模型也没有颜色及纹理。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody08.png">
+					</div>
+					<P>“批量修改模型材质颜色”功能，支持根据模型对象的属性信息，过滤出相同材质的对象，然后批量赋予材质。</P>
+					<p>如果导入的数据集本身就已经有记录材质的属性，则可以跳过前面两个步骤，进入第三步。如果没有相关的材质属性，需要先添加一个材质属性。</p>
+					<li>①给数据集添加一个材质属性</li>
+					<p>选中数据集，右键单击“属性”按钮，弹出属性面板；在属性面板中，点击“添加”按钮，添加一个新的属性进来。这里添加一个文本型的属性，命名为“Color”。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody09.png">
+					</div>
+					<li>②在属性表中，设置Color的属性值</li>
+					<p>选中数据集，右键单击“浏览属性表”，可以看到在属性表的最后，显示出了上一步添加的“Color”属性。根据项目要求，给其赋值。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody10.png">
+					</div>
+					<li>③通过批量修改模型材质颜色功能，批量修改模型的材质颜色</li>
+					<p>点击“三维数据-模型处理-修改材质颜色”功能，在弹出的“批量修改模型材质”面板中，选择“条件设置”，通过设置SQL表达式，批量设置模型的颜色。</p>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody11-1.png">
+						</div>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody11-2.png">
+						</div>
+						<p>SQL表达式面板中，选择Color对象，点击获取唯一值，即可得到所有的Color属性，再通过Color=‘颜色’表达式，过滤出相同材质的对象。</p>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody12.png">
+						</div>
+					<p>依次设置不同颜色的过滤条件与过滤色，最后点击确定，生成一个新的带有材质颜色的数据集。</p>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody13.png">
+						</div>
+
+						<h3>1.3 给模型增加或修改纹理</h3>
+					<p>1.2中的功能，只能修改模型的颜色，不能编辑模型的纹理。如果要增加或修改模型的纹理，需要使用“材质编辑器”功能。</p>
+
+						<li>①将需要处理的数据集添加到场景中，选中对象，右键单击，在弹出的对话框中，选择“材质编辑”功能。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody14.png">
+						</div>
+						<li>②页面跳转至材质编辑界面，如果模型没有纹理坐标，是不能贴纹理的，因此，首先对模型的纹理坐标重新进行计算。重复模式选择实际大小，并根据地质体的范围设置合适的“横向大小”与“纵向大小”，然后点击下方的“应用到模型”。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody15.png">
+						</div>
+						<li>③模型设置好纹理坐标之后，就可以设置纹理了。点击顶部的材质按钮，弹出材质编辑对话框。点击纹理编辑下面的添加按钮，即可添加相应的纹理图片。如果不合适，可进行替换，删除操作。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody16.png">
+						</div>
+						<li>④在材质浏览器中，给出了当前数据集中的所有材质。如果需要对新的模型设置已有的材质，只需要在材质浏览器中，选择对应的材质即可。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody17.png">
+						</div>
+						<li>⑤点击保存到模型，得到带有纹理效果的地质模型。</li>
+						<div class="pageImage"><img src="../images/TopicDOC/geologicBody18.png">
+						</div>
+						<h3>1.4总结</h3>
+						<p>“材质浏览器”功能，可以实时选中对象修改材质，及将做好的材质直接赋给选中的模型，比较接近常规建模软件中的做法，方便材质的管理及设置。</p>
+						<p>“批量修改模型材质颜色”功能，能够根据对象的属性，批量修改模型的颜色，适合对象数比较多的数据，但不支持设置带有纹理贴图的材质。</p>
+						<p>“材质编辑”功能，可以单独将选中的对象进行隔离观察，并修改其颜色及纹理。如果对象在整体场景中不容易观察，可通过该功能进行编辑。</p>
+						<p>以上三种编辑材质的方法，各有所长，实际使用过程中，根据数据的特征进行选择。</p>
+		      </ul>
+
+				<h2 class="title">2、将模型数据发布数据服务<a name="Summary"></a></h2>
+
+				<h3>2.1 将处理好的数据集通过 SuperMap iServer 发布为数据服务</h3>
+				<ul class="disc">
+					<p>启动 SuperMap iServer，进入快速创建服务页面，点击“快速发布一个或一组服务”， 依次选择“工作空间”-“REST-数据服务”。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody19-1.png"></div>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody19-2.png"></div>
+					<p>发布成功之后，页面会弹出“快速发布服务-配置完成”窗口。</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody20.png"></div>
+
+					<h3>2.2获取地质体对象的服务地址</h3>
+					<p>点击进入配置完成窗口中的服务地址，依次点击进入“data-datasource-数据源名-datasets-数据集名-features”。该页面列出了当前数据集下面GEOMODEL的要素数量，这里的示范数据集下面有11个几何对象，所以要素数量为11。</p>
+					<p>即该数据集下面第一个地质模型对象的服务地址为：http://localhost:8090/iserver/services/data-WenDangBianXie-2/rest/data/datasources/数据源名称/datasets/数据集名称/features/1.stream<br> 数据集中后续模型对象的服务地址依次为：http://localhost:8090/iserver/services/data-WenDangBianXie-2/rest/data/data sources/数据源名称/datasets/数据集名称/features/2.stream</p>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody21.png">
+					</div>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody22.png">
+					</div>
+				</ul>
+
+				<h2 class="title">3、在 SuperMap iClient3D for Cesium 中，加载数据服务，并实现地质体的实时分析功能。<a name="Summary"></a></h2>
+				<p>通过引用上述步骤中发布的数据发布，根据提供的相关接口即可实现相关的实时分析功能。</p>
+				<h3>3.1实时剖面分析</h3>
+				<p>在SuperMap iClient3D for Cesium中，通过剖切来观察地质体的内部构造形态及沿剖切面上的变化。</p>
+				<ul class="disc">
+					<ul>
+						<li>实时剖切范例参考：
+							<a href="http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyOperation">http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyOperation</a>
+						</li>
+					</ul>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody23.png">
+					</div>
+					<h3>3.2实时裁剪</h3>
+					<P>在SuperMap iClient3D for Cesium中，可以通过裁剪功能将地质体裁剪为任意形状。</P>
+					<ul>
+						<li>实时裁剪范例参考：
+							<a href="http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyClip">http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyClip</a>
+						</li>
+					</ul>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody24.png">
+					</div>
+					<h3>3.3实时开挖</h3>
+					<P>在SuperMap iClient3D for Cesium中，可以通过开挖功能对地质体进行任意形状的开挖。</P>
+					<ul>
+						<li>实时开挖范例参考：
+							<a href="http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyClip">http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyClip</a>
+						</li>
+					</ul>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody25.png">
+					</div>
+					<h3>3.4实时表达-夸张表达</h3>
+					<P>实际中的场景可能会有这样的情况：在真实比例下，不容易寻找及浏览那些地质意义重大，但本身厚度较薄的对象；有些厚度较大，但范围较窄的地质体也不方便进行整体的浏览观察。这时，可通过改变模型在垂直方向的缩放来方便观察。</P>
+					<ul>
+						<li>实时表达-夸张表达范例参考：
+							<a href="http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyOperation">http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyOperation</a>
+						</li>
+					</ul>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody26.png">
+					</div>
+					<h3>3.5实时构建虚拟钻孔</h3>
+					<P>在SuperMap iClient3D for Cesium中，提供的实时构建虚拟钻孔功能，可模拟对地质体打钻孔的效果。</P>
+					<li>实时构建虚拟钻孔范例参考：
+						<a href="http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyClip">http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyClip</a>
+					</li>
+				</ul>
+				<div class="pageImage"><img src="../images/TopicDOC/geologicBody27.png">
+				</div>
+				<h3>3.6实时表达-地质爆炸</h3>
+				<P>目前有两种方式可用来做地质爆炸的效果：</P>
+				<p>1.通过数据服务的方式</p>
+				<p>2.通过动态图层加载本地数据的方式</p>
+				<p>首先介绍数据服务的方式：数据服务的方式不需要对模型数据集进行进一步的处理，直接使用步骤2.2中得到的服务就可以。</p>
+				<ul class="disc">
+					<li>①数据的引用方式方式仍同3.1中的方法；</li>
+					<li>②通过模型数据流的地址，获取到每一个地质层，然后改变每一层在z轴的偏移值，实现爆炸的效果。</li>
+					<pre>
+               $('#explode').click(function(){
+                  	 var curInstance = solidModelsProfile._s3mInstanceCollection._group[modelUrls[0] +'.stream'].instances._array[0]
+	                 var enu = Cesium.Transforms.eastNorthUpToFixedFrame(
+	                     curInstance.position,Cesium.Ellipsoid.WGS84, new Cesium.Matrix4()
+	                     ); 
+	                 var offset = new Cesium.Cartesian3(0, 0, 900);
+                     var newPos = Cesium.Matrix4.multiplyByPoint(
+                         enu, offset, new Cesium.Cartesian3()
+                         ); 
+                     curInstance.updatePosition(newPos);
+	                 curInstance = solidModelsProfile._s3mInstanceCollection._group[modelUrls[1] +'.stream'].instances._array[0]
+                     enu = Cesium.Transforms.eastNorthUpToFixedFrame(
+                         curInstance.position, Cesium.Ellipsoid.WGS84, new Cesium.Matrix4()
+                         ); 
+                     offset = new Cesium.Cartesian3(0, 0, 800);
+                     newPos = Cesium.Matrix4.multiplyByPoint(
+                         enu, offset, new Cesium.Cartesian3()
+                         ); 
+                     curInstance.updatePosition(newPos);
+                    </pre>
+					<li>③通过设置地质层在z轴的反向偏移，恢复爆炸前的效果。</li>
+					<pre>
+		 	  $("#reset").click(function(){
+		 	      	 var curInstance = solidModelsProfile._s3mInstanceCollection._group[modelUrls[0]+'.stream'].instances._array[0]
+	                 var enu = Cesium.Transforms.eastNorthUpToFixedFrame(
+	                     curInstance.position,Cesium.Ellipsoid.WGS84, new Cesium.Matrix4()
+	                     ); 
+	                 var offset = new Cesium.Cartesian3(0, 0, -900);
+                     var newPos = Cesium.Matrix4.multiplyByPoint(
+                         enu, offset, new Cesium.Cartesian3()
+                         );
+                     curInstance.updatePosition(newPos);
+	                 curInstance = solidModelsProfile._s3mInstanceCollection._group[modelUrls[1]+'.stream'].instances._array[0]
+	                 enu = Cesium.Transforms.eastNorthUpToFixedFrame(
+	                     curInstance.position, Cesium.Ellipsoid.WGS84, new Cesium.Matrix4()
+	                     ); 
+	                 offset = new Cesium.Cartesian3(0, 0, -800);
+                     newPos = Cesium.Matrix4.multiplyByPoint(
+                          enu, offset, new Cesium.Cartesian3()
+                         ); 
+                     curInstance.updatePosition(newPos);
+	                </pre>
+				</ul>
+				<p>通过动态图层加载本地数据的方式:</p>
+				<p>动态图层目前仅支持加载.s3m与.s3mb格式的文件，不支持.json格式的文件，所以需要对模型数据集进行进一步的处理。</p>
+				<P>在SuperMap iClient3D for Cesium中通过设置模型插入点的方式来确定地质体对象的位置，因此需要在页面中填入模型插入点的位置坐标。如果数据为投影坐标系，需要将投影坐标系转为地理坐标系后<br>再获取模型的插入点坐标。</P>
+				<ul class="disc">
+					<li>①将模型添加到球面场景中，选中对象，右键编辑模型，在弹出的窗口中，给出了模型的空间位置信息。</li>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody28.png"></div>
+					<li>②选择三维地理设计-模型编辑-坐标归零功能，在弹出的对话框中，将需要处理的数据集全部添加进去，选择“模型绝对坐标Z归零”，生成一个新的模型数据集。</li>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody29.png"></div>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody30.png"></div>
+					<li>③将上一步骤中得到的数据集添加到场景中，通过选中模型，右键单击，导出模型命令，将每层地质体导出为一个s3m对象。</li>
+					<div class="pageImage"><img src="../images/TopicDOC/geologicBody31.png"></div>
+					<li>④在SuperMap iClient3D for Cesium中通过动态图层的方式实现地质体爆炸的效果，具体步骤如下：</li>
+				</ul>
+				<p>1、新建动态图层，并将地质体添加到对应的动态图层上面。</p>
+				<pre>
+		         var cell1 = '../data/Layer1.s3m'; 
+		         var cell2 = '../data /Layer2.s3m'
+		         …
+                         var layer = new Cesium.DynamicLayer3D(
+                          scene._context, [cell1,cell2…]
+                          );
+                         layer.updateInterval = 500;//动态图层更新时间
+                         layer.enableLocalOffset = false;//禁止模型局部偏移
+                         scene.primitives.add(layer)
+		        </pre>
+				<p>2、写入步骤①中得到的插入点的值</p>
+				<pre>
+		         var points = [
+                         [11x. 000,3x. 000,-46.56],
+                         …
+                         ];
+                </pre>
+				<p>3、设置地质体的颜色等信息，如果本身已经有颜色，不需要再设置</p>
+				<Pre>
+		         var point1 = points[0];
+                         var cellState1 = new Cesium.DynamicObjectState({ 
+                     	 id:1, longitude: point1[0], 
+                    	 latitude: point1[1], 
+                    	 altitude: point1[2],
+	                     color:new Cesium.Color(94/255, 179/255, 59/255, 1)
+                         });
+                </Pre>
+				<p>4、分别控制每个动态图层的偏移量</p>
+				<Pre>
+		           document.getElementById("explode").onclick = function() { 
+		            	 keymap[cell1][0].altitude =keymap[cell1][0].altitude+5000; 
+		                 keymap[cell1][0].lockOrientation = true;
+		                 layer.updateObjectWithModel(
+		                       cell1, keymap[cell1
+		                       ])
+                             …
+                             }
+                </Pre>
+				<ul class="disc">
+					<li>实时表达-地质爆炸范例参考：
+						<a href="http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyExplode">http://support.supermap.com.cn:8090/webgl/examples/webgl/editor.html#geologicBodyExplode</a>
+					</li>
+				</ul>
+				<div class="pageImage"><img src="../images/TopicDOC/geologicBody32.png"></div>
+				<P>通过数据服务的方式实现的爆炸效果，地质模型的运动没有过渡效果；通过动态图层加载本地数据的方式，地质模型的运动有平滑过渡效果。</P>
+				<h3>备注</h3>
+				<p>1、在编辑模型材质的时候，需要SuperMap iDesktop 10i(2020)版本才有材质编辑器的功能。</p>
+				<p>2、文档中提到的地质体实时分析功能需要SuperMap_iClient3D_10i(2020)版本才支持。</p>
+				<p>3、数据集的坐标系必须是地理坐标系，如果是投影坐标系，需要转成地理坐标系再进行操作。</p>
+				<p>4、iServer 需要10.12版本</p>
+				</ul>
+			</div>
+		</div>
+		<!--法律申明-->
+		<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright" data-i18n="footer.copyright">
+			版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8 京公网安备11010502008721 甲测资字11002074
+		</div>
+		<!--footer end-->
+		<script type="text/javascript" src="../js/utils.js"></script>
+	</body>
+
+</html>

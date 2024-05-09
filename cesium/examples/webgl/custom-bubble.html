@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<title>自定义气泡</title>
+		<link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+		<link href="./css/pretty.css" rel="stylesheet">
+		<link href="./css/style.css" rel="stylesheet">
+		<script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+		<script type="text/javascript" src="./js/tooltip.js"></script>
+		<script type="text/javascript" src="./js/bubble/popup.js"></script>
+		<script type="text/javascript" src="./js/jquery.min.js"></script>
+		<script type="text/javascript" src="./js/config.js"></script>
+		<script type="text/javascript" src="./js/bootstrap-select.min.js"></script>
+		<style>
+			input[type=checkbox] {
+				margin: 0px 4px 0 0px;
+			}
+			
+			label {
+				display: inline-block;
+			}
+			
+			.param-container {
+				border: none;
+			}
+			
+			.titleBox {
+				margin-bottom: 0px;
+			}
+			
+			.sm-div-graphic {
+				position: absolute;
+				color: #fff;
+				font-size: 14px;
+			}
+			
+			#test .divpoint {
+				background: url(./images/qipao1.png) no-repeat;
+				background-size: cover;
+				width: 128px;
+				height: 216px;
+			}
+			
+			#test3 .divpoint {
+				background: url(./images/qipao2.png) no-repeat;
+				background-size: cover;
+				width: 230px;
+				height: 150px;
+			}
+			
+			#test .label-wrap {
+				display: flex;
+				justify-content: center;
+				align-content: center;
+				height: 50px;
+			}
+			
+			#test3 .label-wrap {
+				padding-left: 100px;
+				padding-top: 8px;
+				box-sizing: border-box;
+			}
+			
+			#test .pop-title {
+				color: #fff;
+				margin-top: 11px;
+				margin-bottom: 4px;
+				display: flex;
+				align-items: center;
+				font-size: 18px;
+			}
+			
+			
+			#test .data-li {
+				font-size: 14px;
+				margin-top: 15px;
+				margin-bottom: 5px;
+			}
+			
+			#test3 .data-li {
+				font-size: 14px;
+				margin-top: 6px;
+			}
+			
+			#test2 .divpoint {
+				background: url(./images/qipao3.png) no-repeat;
+				background-size: cover;
+				width: 116px;
+				height: 120px;
+			}
+			
+			#test2 .label-wrap {
+				box-sizing: border-box;
+				padding-top: 10px;
+				padding-left: 51px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="cesiumContainer"></div>
+		<div id="toolbar" class="param-container tool-bar">
+			<div class="titleBox">
+				<div class="titl WhiteBox">动态气泡</div>
+				<span class="close2" aria-hidden="false">×</span>
+			</div>
+			<div class="param-item" style="margin-bottom: 0px;">
+				<label class="WhiteLabel" for="show">显示气泡</label>
+				<input type="checkbox" id="show" checked>
+			</div>
+		</div>
+
+		<!-- 自定义气泡 -->
+		<div id="test" class="sm-div-graphic" style="pointer-events: all; display: block;  z-index: 9999;">
+			<div class="divpoint divpoint-theme-29baf1">
+				<div class="label-wrap">
+					<div class="pop-title">水立方</div>
+				</div>
+			</div>
+		</div>
+	
+
+		<!-- 点击气泡 -->
+		<div id="test2" class="sm-div-graphic" style="pointer-events: all; display: block;  z-index: 8920788;">
+			<div class="divpoint divpoint-theme-29baf1">
+				<div class="label-wrap">
+					<div class="pop-title">建筑名</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 移动气泡 -->
+		<div id="test3" class="sm-div-graphic" style="pointer-events: all; display: block;  z-index: 8920788;">
+			<div class="divpoint divpoint-theme-29baf1">
+				<div class="label-wrap">
+					<div class="pop-title">移动的弹窗</div>
+					<div class="label-content">
+						<div class="data-li">
+							<div class="data-label">速度：10km/h</div>
+						</div>
+						<div class="data-li">
+							<div class="data-label">目的地：xxxx</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function onload(Cesium) {
+				var viewer = new Cesium.Viewer('cesiumContainer');
+				var scene = viewer.scene
+				scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+				
+				viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+					key: URL_CONFIG.BING_MAP_KEY, //当场景出现黑球时可至官网（https://www.bingmapsportal.com/）申请key
+					url: URL_CONFIG.BINGMAP
+				}));
+				viewer.scene.debugShowFramesPerSecond = true; //帧率
+				var tooltip = createTooltip(document.body);
+				var promise = scene.open(URL_CONFIG.SCENE_NIAOCHAO);
+				promise.then(function(layers) {
+					//设置相机视角	
+					scene.camera.setView({
+						destination: new Cesium.Cartesian3(-2173826.727369, 4377906.899545, 4098952.6560310004),
+						orientation: {
+							heading: 5.5512975000815095,
+							pitch: -0.546480271361288,
+							roll: 6.283185307179586
+						}
+					});
+				})
+
+				//创建气泡
+				//1.固定显示弹框 
+				var popup1 = new Popup({
+					viewer: viewer,
+					element: document.getElementById('test'),
+					show: true,
+					position: {
+						x: -2171621.969632494,
+						y: 4377507.708339876,
+						z: 4099102.659194449
+					},
+					pixelOffset: new Cesium.Cartesian2(-64, -216),
+					scaleByDistance: new Cesium.NearFarScalar(1000, 1, 10000, 0.2),
+					distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 11000),
+				});
+			
+				//2.点击出现弹框  
+				var popup2 = new Popup({
+					viewer: viewer,
+					element: document.getElementById('test2'),
+					pixelOffset: new Cesium.Cartesian2(0, -120),
+					translucencyByDistance: new Cesium.NearFarScalar(0, 1, 10000, 0.5),
+					distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 11000),
+				});
+				viewer.screenSpaceEventHandler.setInputAction(function(evt) {
+					tooltip.showAt(evt.endPosition, '<p>点击鼠标左键添加气泡</p>');
+				}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+				viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement) {
+					var worldPosition = viewer.scene.pickPosition(movement.position);
+					popup2.setPosition(worldPosition);
+				}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+				// 3.动画弹框  (就是一直改变弹框位置:调用 setPosition（position）)
+				var popup3 = new Popup({
+					viewer: viewer,
+					element: 'test3',
+					pixelOffset: new Cesium.Cartesian2(0, -150),
+					scaleByDistance: new Cesium.NearFarScalar(1000, 1, 10000, 0.2),
+					hideOnBehindGlobe: true,
+				});
+
+				setTimeout(() => animation(), 1000)
+				var t1
+				let point1 = {
+					x: -2171636.010578585,
+					y: 4376508.091653258,
+					z: 4100112.7077919883
+				};
+				let point2 = {
+					x: -2172473.312875775,
+					y: 4377343.829874016,
+					z: 4098777.6134203686
+				};
+				let points = [];
+				let count = 200;
+				for(let i = 1, j = count; i <= j; i++) {
+					points.push(
+						Cesium.Cartesian3.lerp(
+							point1,
+							point2,
+							i / count,
+							new Cesium.Cartesian3()
+						)
+					);
+				}
+
+				function animation() {
+					let i = 0;
+					t1 = setInterval(() => {
+						popup3.setPosition(points[i]);
+						i++;
+						if(i >= 200) {
+							clearInterval(t1)
+						}
+					}, 50);
+				}
+				// 修改气泡的缩放中心点
+				document.getElementById('test').style.transformOrigin = 'center bottom 0px'; //缩放中心点
+				document.getElementById('test2').style.transformOrigin = 'center bottom 0px'; //缩放中心点
+				document.getElementById('test3').style.transformOrigin = 'center bottom 0px'; //缩放中心点
+
+				$('#show').on('input change', function() {
+					if(this.checked) {
+						popup1.show()
+						popup2.show()
+						popup3.show()
+					} else {
+						popup1.close()
+						popup2.close()
+						popup3.close()
+					}
+				})
+
+			}
+			if(typeof Cesium !== 'undefined') {
+				window.startupCalled = true;
+				onload(Cesium);
+			}
+		</script>
+	</body>
+
+</html>

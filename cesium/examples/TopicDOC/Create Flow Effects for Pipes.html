@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<title>管道流动效果的制作流程</title>
+		<link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico" />
+		<script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload" src="../js/include-web.js" from="doc"></script>
+		<link rel="stylesheet" href="../css/common.css" />
+		<link rel="stylesheet" href="../css/examples.css" />
+		<link rel="stylesheet" href="../css/header.css" />
+		<link rel='stylesheet' href='../css/sm-extend.css' />
+		<link rel='stylesheet' href='../css/sm-doc.css' />
+
+		<style type="text/css">
+			<!-- .STYLE2 {
+				font-weight: bold
+			}
+			
+			.STYLE3 {
+				font-family: Arial, Helvetica, sans-serif
+			}
+			
+			-->
+		</style>
+	</head>
+
+	<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+		<!-- ./wrapper -->
+
+		<header class="header-wrapper main-header icl-header"></header>
+		<script>
+			var navigation = {
+				nav: {
+					title: 'SuperMap iClient3D for Cesium',
+					path: '../../web/',
+					isLocal: window.isLocal
+				}
+			};
+			identification = {};
+			utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+		</script>
+
+		<div class="wrapper"></div>
+		<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+			<div class='page-header'>
+				<h1>管道流动效果的制作流程</h1>
+				<hr/>
+				<h2 class="title">背景需求<a name="Summary"> </a></h2>
+
+				<p>在SuperMap iClient3D for Cesium上暂不支持Gif格式的纹理贴图，那要怎么才能表达动态的效果呢？这里以管道的水流为例，通过动态纹理表达水流的方向与速度。 </p>
+
+				<h2 class="title">制作流程</h2>
+				<p>主要分为三个部分： </p>
+				<ul>
+					<ul class="disc">
+						<li>①通过SuperMap iDesktop生成模型数据集并设置静态纹理；</li>
+						<li>②通过SuperMap iServer发布三维服务；</li>
+						<li>③在SuperMap iClient3D for Cesium上设置纹理的运动方向及速度；</li>
+					</ul>
+				</ul>
+				<h3>1.通过SuperMap iDesktop生成模型数据集并设置静态纹理</h3>
+				<p><strong>1.</strong><strong>1 </strong><strong>启动SuperMap iDesktop，打开管线数据，并将线数据集添加到场景中。</strong></p>
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine01.jpg" width="1920" height="1080"><br>
+					<p>图1</p>
+			  </div>
+
+				<p><strong>1</strong><strong>.2</strong><strong> </strong><strong>在三维地理设计-规则建模下，选择“放样”功能，弹出放样窗口，进行设置。</strong><strong> </strong></p>
+
+				<p>勾选“所有对象参与操作”；点击“绘制”按钮，弹出绘制面窗口：选择圆面进行绘制，默认单位为“米”，这里修改为分米，并绘制一个直径为1分米的圆；点击确定按钮，完成截面的绘制。</p>
+
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine02.jpg"><br>
+					<p>图2</p>
+				</div>
+				<p>截面绘制完成之后，接着点击“材质设置”按钮，进行材质设置。材质纹理通过“+”进行添加，设置为处理好的jpg或png等格式的图片，这里设置为一张带有向上箭头符号的jpg图片。重复模式设置为实际大小，横向大小设置为截面的周长（0.314m），纵向根据需要进行设置，不过要注意保持贴图的比例。点击确定之后，生成带有静态纹理贴图的模型数据集。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine03.jpg"><br>
+					<p>图3</p>
+				</div>
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine04.jpg"><br>
+					<p>图4</p>
+				</div>
+				<p><strong>1.3重新生成法线，优化管线显示效果</strong></p>
+				<p>如果生成的管线模型表面不够圆滑，可通过三维数据-模型-模型工具下面的“计算法线”功能对模型重新计算法线处理。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine05.jpg"><br>
+					<p>图5</p>
+				</div>
+				<p><strong>1.4对处理后的模型数据集生成缓存</strong></p>
+				<p>将处理后的模型数据集添加到场景中，移除其它多余的数据集，保存场景，并对场景生成缓存。在弹出的“生成场景缓存”窗口中，修改缓存路径，其它参数保持默认即可。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine06.jpg"><br>
+					<p>图6</p>
+				</div>
+				<h3>2.通过SuperMap iServer发布三维服务</h3>
+
+				<p>将上一步骤中得到的场景数据通过SuperMap iServer发布为三维服务。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine07.jpg"><br>
+					<p>图7</p>
+				</div>
+				<h3>3.在SuperMap iClient3D for Cesium上设置纹理的运动方向及速度</h3>
+
+				<p>在SuperMap iClient3D for Cesium上打开发布的场景，找到管道缓存数据所在图层，并设置其运动状态。</p>
+				<p>其中，textureUVSpeed用于控制贴图纹理的运动方向及速度。该场景中，只需要箭头纹理顺着管道进行移动，因此U方向上的速度设置为零，只需要改变V方向上的速度即可。代码设置及最终显示效果如下：</p>
+				<pre>
+            var promise = scene.open('http://localhost:8090/iserver/services/3D-XuanChuanChangJing/rest/realspace');
+            Cesium.when(promise, function(layer){
+                var guandao = scene.layers.find("ReComputeNormalResult@管线");
+                guandao.textureUVSpeed = new Cesium.Cartesian2(0,-1);
+                }
+            )
+                </pre>
+				
+				<div class="pageImage"><img src="../images/TopicDOC/FlowingPipeLine08.jpg"><br>
+					<p>图8</p>
+				</div>
+
+			</div>
+		</div>
+		<!--法律申明-->
+		<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright" data-i18n="footer.copyright">
+			版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8 京公网安备11010502008721 甲测资字11002074
+		</div>
+		<!--footer end-->
+		<script type="text/javascript" src="../js/utils.js"></script>
+	</body>
+
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>自定义气泡弹窗</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/tooltip.js"></script>
+    <script src="./js/bubble/popup.js"></script>
+    <link rel="stylesheet" href="./js/bubble/bubble.css">
+</head>
+
+<body>
+    <div id="cesiumContainer"></div>
+
+    <div style=' position: absolute;z-index: 999;top:20px;left:50px'>
+        <button id="creat">显示</button>
+        <button id="close">关闭</button>
+        <button id="destroy">销毁</button>
+    </div>
+
+    <!-- 自定义气泡 -->
+    <div id="test" class="sm-div-graphic" style="pointer-events: all; display: block;  z-index: 9999;">
+        <div class="divpoint divpoint-theme-29baf1">
+            <div class="divpoint-wrap">
+                <div class="area">
+                    <div class="arrow-lt"></div>
+                    <div class="b-t"></div>
+                    <div class="b-r"></div>
+                    <div class="b-b"></div>
+                    <div class="b-l"></div>
+                    <div class="arrow-rb"></div>
+                    <div class="label-wrap">
+                        <div class="title">水立方</div>
+                        <div class="label-content">
+                            <div class="data-li">
+                                <div class="data-label">经度：</div>
+                                <div class="data-value"><span class="label-num">116.3853707</span><span
+                                        class="label-unit">°</span>
+                                </div>
+                            </div>
+                            <div class="data-li">
+                                <div class="data-label">纬度：</div>
+                                <div class="data-value"><span class="label-num">39.9922182</span><span
+                                        class="label-unit">°</span>
+                                </div>
+                            </div>
+                            <div class="data-li">
+                                <div class="data-label">高度：</div>
+                                <div class="data-value"><span class="label-num">41.199600</span><span
+                                        class="label-unit">m</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="b-t-l"></div>
+                <div class="b-b-r"></div>
+            </div>
+            <div class="arrow"></div>
+        </div>
+    </div>
+
+    <div id="test2" class="sm-div-graphic" style="pointer-events: all; display: block;  z-index: 8920788;">
+        <div class="divpoint divpoint-theme-29baf1">
+            <div class="divpoint-wrap">
+                <div class="area">
+                    <div class="arrow-lt"></div>
+                    <div class="b-t"></div>
+                    <div class="b-r"></div>
+                    <div class="b-b"></div>
+                    <div class="b-l"></div>
+                    <div class="arrow-rb"></div>
+                    <div class="label-wrap">
+                        <div class="title">文本三</div>
+                        <div class="label-content">
+                            <div class="data-li">
+                                <div class="data-label">内容一：</div>
+                                <div class="data-value"><span class="label-num">xxxxx</span><span
+                                        class="label-unit">m³/s</span>
+                                </div>
+                            </div>
+                            <div class="data-li">
+                                <div class="data-label">内容二：</div>
+                                <div class="data-value"><span class="label-num">3.1415926</span>
+                                </div>
+                            </div>
+                            <div class="data-li">
+                                <div class="data-label">内容三：</div>
+                                <div class="data-value"><span class="label-tag data-value-status-1"
+                                        alt="中间状态">状态1</span><span class="label-tag data-value-status-0"
+                                        alt="关闭状态">状态2</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="b-t-l"></div>
+                <div class="b-b-r"></div>
+            </div>
+            <div class="arrow"></div>
+        </div>
+    </div>
+
+    <div id="test3" class="sm-div-graphic" style="pointer-events: all; display: block;  z-index: 8920788;">
+        <div class="divpoint divpoint-theme-29baf1">
+            <div class="divpoint-wrap">
+                <div class="area">
+                    <div class="arrow-lt"></div>
+                    <div class="b-t"></div>
+                    <div class="b-r"></div>
+                    <div class="b-b"></div>
+                    <div class="b-l"></div>
+                    <div class="arrow-rb"></div>
+                    <div class="label-wrap">
+                        <div class="title">我是移动的弹窗</div>
+                        <div class="label-content">
+                            <div class="data-li">
+                                <div class="data-label">我的速度：</div>
+                                <div class="data-value"><span class="label-num">20</span><span
+                                        class="label-unit">m/s</span>
+                                </div>
+                            </div>
+                            <div class="data-li">
+                                <div class="data-label">目的地</div>
+                                <div class="data-value"><span class="label-num">我也不知道要去哪</span><span
+                                        class="label-unit">？</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="b-t-l"></div>
+                <div class="b-b-r"></div>
+            </div>
+            <div class="arrow"></div>
+        </div>
+    </div>
+
+    <script>
+        function onload(Cesium) {
+            var viewer = new Cesium.Viewer('cesiumContainer');
+            var scene = viewer.scene
+            scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+            viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+                key: URL_CONFIG.BING_MAP_KEY,//可至官网（https://www.bingmapsportal.com/）申请key
+                url: URL_CONFIG.BINGMAP
+            }));
+
+            viewer.scene.debugShowFramesPerSecond = true; //帧率
+            var tooltip = createTooltip(document.body);
+            viewer.scene.open('http://www.supermapol.com/realspace/services/3D-OlympicGreen20200416/rest/realspace')
+            //设置相机视角
+            scene.camera.setView({
+                destination: { x: -2173826.727369, y: 4377906.899545, z: 4098952.6560310004 },
+                orientation: {
+                    heading: 5.5512975000815095,
+                    pitch: -0.546480271361288,
+                    roll: 6.283185307179586
+                }
+            });
+
+            //创建气泡
+            //1.固定显示弹框
+            var popup1 = new Popup({
+                viewer: viewer,
+                element: document.getElementById('test'),
+                show: true,
+                position: { x: -2171602.7892560638, y: 4377472.065779291, z: 4099150.157805687 },
+                pixelOffset: new Cesium.Cartesian2(0, -233),
+                scaleByDistance: new Cesium.NearFarScalar(1000, 1, 10000, 0.2),
+                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 11000),
+            });
+
+            //2.点击出现弹框
+            var popup2 = new Popup({
+                viewer: viewer,
+                element: document.getElementById('test2'),
+                pixelOffset: new Cesium.Cartesian2(0, -233),
+                // scaleByDistance: new Cesium.NearFarScalar(1000, 1, 10000, 0.2),
+                translucencyByDistance: new Cesium.NearFarScalar(0, 1, 10000, 0.5),
+                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 11000),
+            });
+            viewer.screenSpaceEventHandler.setInputAction(function (evt) {
+                    tooltip.showAt(evt.endPosition, '<p>点击鼠标左键添加气泡</p>');
+                }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+            viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement) {
+                var worldPosition = viewer.scene.pickPosition(movement.position);
+                popup2.setPosition(worldPosition);
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+            // 3.动画弹框  (就是一直改变弹框位置:调用 setPosition（position）)
+            var popup3 = new Popup({
+                viewer: viewer,
+                element: 'test3',
+                pixelOffset: new Cesium.Cartesian2(0, -233),
+                scaleByDistance: new Cesium.NearFarScalar(1000, 1, 10000, 0.2),
+                hideOnBehindGlobe: true,
+            }); 
+
+            setTimeout(() => animation(), 1000)
+            var t1
+            let point1 = { x: -2171636.010578585, y: 4376508.091653258, z: 4100112.7077919883 };
+            let point2 = { x: -2172473.312875775, y: 4377343.829874016, z: 4098777.6134203686 };
+            let points = [];
+            let count = 200;
+            for (let i = 1, j = count; i <= j; i++) {
+                points.push(
+                    Cesium.Cartesian3.lerp(
+                        point1,
+                        point2,
+                        i / count,
+                        new Cesium.Cartesian3()
+                    )
+                );
+            }
+            function animation() {
+                let i = 0;
+                t1 = setInterval(() => {
+                    popup3.setPosition(points[i]); 
+                    i++;
+                    if (i >= 200) {
+                        clearInterval(t1)
+                    }
+                }, 50);
+            }
+
+
+            document.getElementById('creat').onclick = function () {
+                popup1.show()
+                popup2.show()
+                popup3.show()
+            }
+
+            document.getElementById('close').onclick = function () {
+                popup1.close()
+                popup2.close()
+                popup3.close()
+            }
+            document.getElementById('destroy').onclick = function () {
+                popup1.destroy();
+                popup2.destroy();
+                popup3.destroy();
+                tooltip.setVisible(false);
+            }
+
+        }
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            onload(Cesium);
+        }
+    </script>
+</body>
+
+</html>

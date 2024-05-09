@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>淹没分析（地形）</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/tooltip.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+</head>
+
+<body>
+    <div id="cesiumContainer"></div>
+    <div id='loadingbar' class="spinner">
+        <div class="spinner-container container1">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+        <div class="spinner-container container2">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+        <div class="spinner-container container3">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+    </div>
+    <div id="toolbar" class="param-container tool-bar">
+
+        <div class="form-group">
+            <input id="maxHeight" value="9000" required="required" class="form-control" />
+            <label class="form-label">最大高度 (米) : </label>
+        </div>
+        <div class="form-group">
+            <input id="minHeight" value="4000" required="required" class="form-control" />
+            <label class="form-label">最小高度 (米) :</label>
+        </div>
+        <div class="form-group">
+            <input id="speed" value="500" required="required" class="form-control" />
+            <label class="form-label">淹没速度(米/秒):</label>
+        </div>
+        <div style="margin: 10px;">
+            <button type="button" id="begin" class="button black">开始</button>
+            <button type="button" id="clear" class="button black">清除</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function onload(Cesium) {
+            //初始化viewer部件，添加STK World Terrain地形服务
+            viewer = new Cesium.Viewer('cesiumContainer', {
+                terrainProvider: new Cesium.CesiumTerrainProvider({
+                    url: URL_CONFIG.STK,
+                    requestWaterMask: true,
+                    requestVertexNormals: true,
+                    isSct: false
+                })
+            });
+            viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+                url: 'https://dev.virtualearth.net',
+                mapStyle: Cesium.BingMapsStyle.AERIAL,
+                key: URL_CONFIG.BING_MAP_KEY
+            }));
+            //设置相机视角
+            viewer.scene.camera.setView({
+                destination: Cesium.Cartesian3.fromDegrees(88.3648, 29.0946, 90000),
+                orientation: {
+                    heading: 6.10547067016156,
+                    pitch: -0.8475077031996778,
+                    roll: 6.2831853016686185
+                }
+            });
+
+            // 初始化数据
+            var interval = null;
+            var scene = viewer.scene;
+            scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+            let hypFlood;
+
+            function init() {
+                hypFlood = new Cesium.HypsometricSetting();
+                let floodColorTable = new Cesium.ColorTable();
+                colorTableInit(floodColorTable);
+                hypFlood.DisplayMode = Cesium.HypsometricSettingEnum.DisplayMode.FACE;
+                hypFlood._lineColor = new Cesium.Color(1.0, 0.0, 0.0, 1.0);
+                hypFlood.MinVisibleValue = 0;
+                hypFlood.MaxVisibleValue = 0;
+                hypFlood.ColorTableMinKey = 1;
+                hypFlood.ColorTableMaxKey = 9000;
+                hypFlood.ColorTable = floodColorTable;
+                hypFlood.Opacity = 0.8;
+                hypFlood.LineInterval = 200.0;
+            }
+            init();
+
+            // 默认设置淹没分析颜色
+            function colorTableInit(floodColorTable) {
+                floodColorTable.insert(
+                    9000,
+                    new Cesium.Color(210 / 255, 15 / 255, 15 / 255)
+                );
+                floodColorTable.insert(
+                    6000,
+                    new Cesium.Color(221 / 255, 224 / 255, 7 / 255)
+                );
+                floodColorTable.insert(
+                    5000,
+                    new Cesium.Color(20 / 255, 187 / 255, 18 / 255)
+                );
+                floodColorTable.insert(4000, new Cesium.Color(0, 161 / 255, 1));
+                floodColorTable.insert(0, new Cesium.Color(9 / 255, 9 / 255, 212 / 255));
+            }
+
+            //绘制多边形
+            var tooltip = createTooltip(document.body);
+            var polygonHandler = new Cesium.DrawHandler(viewer, Cesium.DrawMode.Polygon);
+            polygonHandler.activeEvt.addEventListener(function (isActive) {
+                if (isActive == true) {
+                    viewer.enableCursorStyle = false;
+                    viewer._element.style.cursor = '';
+                    $('body').removeClass('drawCur').addClass('drawCur');
+                } else {
+                    viewer.enableCursorStyle = true;
+                    $('body').removeClass('drawCur');
+                }
+            });
+            polygonHandler.movingEvt.addEventListener(function (windowPosition) {
+                tooltip.showAt(windowPosition, '<p>开始绘制分析区域，右键结束绘制</p>');
+            });
+            polygonHandler.drawEvt.addEventListener(function (polygon) {
+                polygonHandler.polygon.show = false;
+                polygonHandler.polyline.show = false;
+                tooltip.setVisible(false);
+                var array = [].concat(polygon.object.positions);
+                let positions = [];
+                for (var i = 0, len = array.length; i < len; i++) {
+                    var cartographic = Cesium.Cartographic.fromCartesian(array[i]);
+                    var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+                    var latitude = Cesium.Math.toDegrees(cartographic.latitude);
+                    var h = cartographic.height;
+                    if (positions.indexOf(longitude) == -1 && positions.indexOf(latitude) == -1) {
+                        positions.push(longitude);
+                        positions.push(latitude);
+                        positions.push(h);
+                    }
+                }
+                floodUpdate(positions);
+                polygonHandler.deactivate();
+            });
+
+            // 更新淹没分析
+            function floodUpdate(positions) {
+                hypFlood.CoverageArea = positions;
+                let maxValue = parseInt(document.getElementById("maxHeight").value);
+                let minValue = parseInt(document.getElementById("minHeight").value);
+                let currentHeight = minValue;
+                hypFlood.MinVisibleValue = minValue;
+                interval = self.setInterval("flood()", 100);
+                currentHeight = minValue;
+                window.flood = () => {
+                    if (currentHeight > maxValue) {
+                        self.clearInterval(interval);
+                        return;
+                    }
+                    hypFlood.MaxVisibleValue = currentHeight;
+
+                    viewer.scene.globe.HypsometricSetting = {
+                        hypsometricSetting: hypFlood,
+                        analysisMode: Cesium.HypsometricSettingEnum.AnalysisRegionMode.ARM_REGION
+                    };
+                    currentHeight += (parseInt(document.getElementById("speed").value)) / 10;
+                }
+            }
+
+
+            // 激活绘制
+            document.getElementById("begin").onclick = function () {
+                clear();
+                polygonHandler.activate()
+            };
+
+            // 清除
+            function clear() {
+                self.clearInterval(interval);
+                polygonHandler.deactivate();
+                polygonHandler.clear();
+                tooltip.setVisible(false);
+                viewer.scene.globe.HypsometricSetting = undefined;
+            }
+            document.getElementById("clear").onclick = function () {
+                clear();
+            };
+            $('#toolbar').show();
+            $('#loadingbar').remove();
+            if (!scene.pickPositionSupported) {
+                alert('不支持深度拾取,淹没分析功能无法使用（无法交互绘制面）！');
+            }
+
+        }
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            onload(Cesium);
+        }
+    </script>
+</body>
+
+</html>

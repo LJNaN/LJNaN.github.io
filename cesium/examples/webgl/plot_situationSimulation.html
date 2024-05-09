@@ -1,0 +1,3158 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description" content="Test">
+    <meta name="cesium-sandcastle-labels" content="Geometries">
+    <title>SuperMap 态势仿真</title>
+
+    <!-- <script type="text/javascript" src="../Source/ThirdParty/Workers/PlotAlgo/PlotAlgoInclude.js"></script>
+    <script type="module" src="./js/load-cesium-es6.js"></script>
+    <link href="../Source/Widgets/widgets.css" rel="stylesheet"> -->
+
+    <script type="text/javascript" src="../../Build/Cesium/ThirdParty/Workers/PlotAlgo/PlotAlgoInclude.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+    <script src="js/jquery.min.js"></script>
+
+    <!--当前示例需要下载Layui第三方界面库，下载地址：https://layui.org.cn/index.html。下载后解压后将layui文件夹放到当前文件同级目录。-->
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.js"></script>
+
+    <style type="text/css">
+        .layui-tab-title .layui-this {
+            color: #ffffff;
+            font-weight: bolder;
+            background-color: #009688;
+        }
+
+        .layui-layer-btn {
+            background-color: rgb(40, 43, 51);
+        }
+
+        p {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html"
+    style="margin: 0px; overflow: hidden;background: #ffffff;height: 100%;">
+    <!-- 增强特效样式编辑 -->
+    <div id="geoEffectAugment-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none; margin-left: auto; margin-right: auto; padding: 10px; width: 420px;">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="Width:100px; text-align: left;">资源路径：</label>
+                </div>
+                <div class="layui-inline" style="width:200px">
+                    <input type="text" value="" placeholder="请输入增强资源路径" class="layui-input" id="augmentUrlPath-input">
+                </div>
+                <div class="layui-inline" style="left:-11px;">
+                    <button type="button" class="layui-btn-xs" id="augmentUrlDBS-btn"><i
+                            class="layui-icon">&#xe671</i></button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <!-- 扫描棱锥样式编辑 -->
+    <div id="geoEffectScancone-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none; margin-left: auto; margin-right: auto; padding: 10px; width: 420px;">
+        <div class="layui-inline">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">棱锥半径：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入棱锥半径" class="layui-input"
+                            id="scanconeRadius-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">米</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">水平夹角：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入棱锥水平夹角度数" class="layui-input"
+                            id="scanconeHAngle-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">°</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">竖直夹角：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入棱锥竖直夹角度数" class="layui-input"
+                            id="scanconeVAngle-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">°</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">底面样式：</label>
+                    </div>
+                    <div class="layui-inline" style="color: black; width: 200px;">
+                        <select id="scanconeType-select">
+                            <option value="0">弧形底面</option>
+                            <option value="1">平面底面</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">探测速度：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入探测速度" class="layui-input"
+                            id="scanconescanSpeed-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">竖直探测角度：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入竖直探测角度值" class="layui-input"
+                            id="scanconePitchAngle-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">°</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">水平探测范围：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入水平探测范围值" class="layui-input"
+                            id="scanconeScanRange-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">°</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">显示填充：</label>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="checkbox" title="" lay-skin="primary" class="layui-input-inline"
+                            id="scanconeIsFill-checkbox" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">显示轮廓：</label>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="checkbox" title="" lay-skin="primary" class="layui-input-inline"
+                            id="scanconeIsOutLineColor-checkbox" checked>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 标牌特效样式编辑 -->
+    <div id="geoEffectSign-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none; margin-left: auto; margin-right: auto; padding: 10px; width: 420px;">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="Width:100px; text-align: left;">选择样式：</label>
+                </div>
+                <div class="layui-inline" style="color: black; width: 200px;">
+                    <select id="geoEffectSignType-select">
+                        <option value="0">自定义标牌</option>
+                        <!-- <option value="1">带标题标牌</option> -->
+                        <option value="2">带背景标牌1</option>
+                        <option value="3">带背景标牌2</option>
+                        <option value="4">带背景标牌3</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <!-- 扩散圆特效样式编辑 -->
+    <div id="geoEffectAnnularDiffusion-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none; margin-left: auto; margin-right: auto; padding: 10px; width: 420px;">
+        <div class="layui-inline">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">扩散圈数：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入圈数" class="layui-input"
+                            id="geoEffectDiffusionCount-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">圈</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">扩散颜色：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="text" value="" placeholder="请输入或选择扩散颜色" class="layui-input"
+                            id="geoEffectDiffusionColor-input">
+                    </div>
+                    <div class="layui-inline" style="left:-11px;">
+                        <div id="geoEffectDiffusionColor-form"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 尾焰特效样式编辑 -->
+    <div id="geoEffectTailFrame-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none; margin-left: auto; margin-right: auto; padding: 10px; width: 420px;">
+        <div class="layui-inline">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">尾焰直径：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入尺寸" class="layui-input"
+                            id="geoEffectDiameter-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">米</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-collapse" style="border-color:rgb(40, 43, 51);" lay-accordion>
+                        <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                            <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">偏移量
+                            </h2>
+                            <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">X轴方向：</label>
+                                    <div class="layui-input-block">
+                                        <input type="number" value="" placeholder="设置沿X轴方向的偏移" class="layui-input"
+                                            id="geoEffectOffsetX-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">Y轴方向：</label>
+                                    <div class="layui-input-block">
+                                        <input type="number" value="" placeholder="设置沿Y轴方向的偏移" class="layui-input"
+                                            id="geoEffectOffsetY-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">Z轴方向：</label>
+                                    <div class="layui-input-block">
+                                        <input type="number" value="" placeholder="设置沿Z轴方向的偏移" class="layui-input"
+                                            id="geoEffectOffsetZ-input">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">随模型变化：</label>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="checkbox" title="" lay-skin="primary" class="layui-input-inline"
+                            id="bChangeSizeFlowModel-checkbox" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="Width:100px; text-align: left;">显示特效：</label>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="checkbox" title="" lay-skin="primary" class="layui-input-inline"
+                            id="geoEffectVisible-checkbox" checked>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 卫星组样式编辑页 -->
+    <div id="satelliteGroup-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none; margin-left: auto; margin-right: auto; padding: 10px;">
+        <div class="layui-inline">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">缩放比例：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入模型缩放" class="layui-input"
+                            id="satelliteModelScale-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">资源路径：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="text" value="" placeholder="请输入模型路径" class="layui-input"
+                            id="satelliteModelPath-input">
+                    </div>
+                    <div class="layui-inline" style="left:-11px;">
+                        <button type="button" class="layui-btn-xs" id="satelliteModelDBS-btn"><i
+                                class="layui-icon">&#xe671</i></button>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">显示卫星：</label>
+                    </div>
+                    <div class="layui-inline" style="margin-left:5px;">
+                        <input type="checkbox" title="" lay-skin="primary" class="layui-input-inline"
+                            id="satelliteModelVisible-checkbox" lay-filter="satelliteModelVisible-checkbox" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">轨道线宽：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="number" value="" placeholder="请输入轨道线宽" class="layui-input" id="orbitWidth-input"
+                            checked>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-label">px</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">轨道线色：</label>
+                    </div>
+                    <div class="layui-inline" style="width:200px">
+                        <input type="text" value="" placeholder="请输入或选择轨道线色" class="layui-input" id="orbitColor-input">
+                    </div>
+                    <div class="layui-inline" style="left:-11px;">
+                        <div id="orbitColor-form"></div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">显示轨道：</label>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="checkbox" title="" lay-skin="primary" class="layui-input-inline"
+                            id="orbitVisible-checkbox" lay-filter="orbitVisible-checkbox" checked>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="position:absolute;top:0px;bottom:0px;left:0px;right:0px;padding:0px;width: 400px; z-index:9999;">
+        <div style="background-color:rgb(40, 43, 51);color: #ffffff;">
+            <form class="layui-form" action="">
+                <div class="layui-collapse" style="border-color:rgb(40, 43, 51);" lay-accordion>
+                    <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                        <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">方案管理</h2>
+                        <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" label-width="auto">方案列表：</label>
+                            </div>
+                            <div class="layui-form-item">
+                                <ul class="schmemList" style="margin-left: 100px;" id="schmemList">
+                                </ul>
+                            </div>
+                            <div class=" layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" style="margin-left: 30px;" type="button"
+                                            onClick=" saveScheme()">保存方案</button>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="closeScheme()">关闭方案</button>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="deleteScheme()">删除方案</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">方案名：</label>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <input type="text" id="schmemName" style="width: 100px;" placeholder="请输入方案名"
+                                            autocomplete="off" class="layui-input" />
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="createCase()">新建方案</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item ">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">自动保存：</label>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <input type="checkbox" id="autoSaveScheme" lay-filter="autoSaveScheme"
+                                            lay-skin="switch" lay-text="开启|关闭" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item ">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">当前方案：</label>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label" id="currentScheme"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                        <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">军事地理实体
+                        </h2>
+                        <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                            <label class="layui-form-label">添加实体：</label>
+                            <div class="layui-inline">
+                                <div class="layui-form-item">
+                                    <button class="layui-btn" type="button" onclick="addGeoEntityModel()">添加模型</button>
+                                    <button class="layui-btn" type="button" onclick="addGeoEntityDot()">添加标号</button>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">实体列表：</label>
+                                    </div>
+                                    <div class="layui-inline" style="color: black;width: 120px;">
+                                        <select id="geoEntitys" onclick="geoEntitySelectedChanged()">
+                                        </select>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="editGeoEntity()"><i
+                                                class="layui-icon">&#xe642</i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">实体定位：</label>
+                                <button class="layui-btn" type="button" onclick="flyGeoEntity()">定位</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                        <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">特效</h2>
+                        <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">特效类型：</label>
+                                    </div>
+                                    <div class="layui-inline" style="color: black;width: 120px;">
+                                        <select id="geoEffect" lay-filter="geoEffect">
+                                            <option value="基础线">基础线</option>
+                                            <option value="间断线">间断线</option>
+                                            <option value="流星线">流星线</option>
+                                            <option value="箭头线">箭头线</option>
+                                            <option value="管状线">管状线</option>
+                                            <option value="尾气">尾气</option>
+                                            <option value="尾焰">尾焰</option>
+                                            <option value="燃烧">燃烧</option>
+                                            <option value="爆炸">爆炸</option>
+                                            <option value="打击线">打击线</option>
+                                            <option value="渐变体">渐变体</option>
+                                            <option value="尾迹线">尾迹线</option>
+                                            <option value="机械雷达">机械雷达</option>
+                                            <option value="参数体雷达">参数体雷达</option>
+                                            <option value="旋转体雷达">旋转体雷达</option>
+                                            <option value="扫描雷达">扫描雷达</option>
+                                            <option value="预警雷达">预警雷达</option>
+                                            <option value="探视锥">探视锥</option>
+                                            <option value="增强体">增强体</option>
+                                            <option value="扫描棱锥">扫描棱锥</option>
+                                            <option value="扫描波">扫描波</option>
+                                            <option value="扩散圆">扩散圆</option>
+                                            <option value="标牌">标牌</option>
+                                        </select>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="editGeoEffects()"><i
+                                                class="layui-icon">&#xe642</i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                        <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">卫星</h2>
+                        <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">卫星分组：</label>
+                                    </div>
+                                    <div class="layui-inline" style="color: black;width: 120px;">
+                                        <select id="satelliteGroup">
+                                        </select>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="editSatelliteGroup()"><i
+                                                class="layui-icon">&#xe642</i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">卫星实体：</label>
+                                    </div>
+                                    <div class="layui-inline" style="color: black;width: 120px;">
+                                        <select id="satelliteGeoEntity">
+                                        </select>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn" type="button" onclick="editSatelliteGeoEntity()"><i
+                                                class="layui-icon">&#xe642</i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button class="layui-btn layui-btn-sm" type="button" style="margin-left: 30px;"
+                                    onclick="addSatelliteEntity()">添加卫星实体</button>
+                                <button class="layui-btn layui-btn-sm" type="button"
+                                    onclick="removeSatelliteEntity()">移除卫星实体</button>
+                                <button class="layui-btn layui-btn-sm" type="button"
+                                    onclick="addSatelliteLinkEffect()">添加特效</button>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">卫星定位：</label>
+                                <button class="layui-btn" type="button" onclick="flySatellite()">定位</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                        <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">仿真</h2>
+                        <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                            <div class="layui-form-item">
+                                <button class="layui-btn layui-btn-sm" type="button" style="margin-left: 30px;"
+                                    onclick="startPlay()">开始</button>
+                                <button class="layui-btn layui-btn-sm" type="button" onclick="pausePlay()">暂停</button>
+                                <button class="layui-btn layui-btn-sm" type="button"
+                                    onclick="continuePlay()">继续</button>
+                                <button class="layui-btn layui-btn-sm" type="button" onclick="stopPlay()">停止</button>
+                                <button class="layui-btn layui-btn-sm" type="button" onclick="resetPlay()">复位</button>
+                            </div>
+                            <div class="layui-form-item">
+                                <button class="layui-btn layui-btn-sm" type="button" style="margin-left: 30px;"
+                                    onclick="speedUp()">加速</button>
+                                <button class="layui-btn layui-btn-sm" type="button" onclick="speedDown()">减速</button>
+                                <button class="layui-btn layui-btn-sm" type="button" onclick="forwardPlay()">快进</button>
+                                <button class="layui-btn layui-btn-sm" type="button" onclick="reversePlay()">快退</button>
+                                <button class="layui-btn layui-btn-sm" id="isBackPlay" type="button"
+                                    onclick="backPlay()">反向</button>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">脚本列表：</label>
+                                    </div>
+                                    <div class="layui-inline" style="color: black;width: 120px;">
+                                        <select id="deductionScripts" lay-filter="deductionScripts">
+                                            <option value="脚本1">基础参数变化</option>
+                                            <option value="脚本2">特效变化</option>
+                                            <option value="脚本3">缩放变化</option>
+                                            <option value="脚本4">飘带特效</option>
+                                            <option value="脚本5">文本</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">仿真倍速：</label>
+                                    <label class="layui-form-label" id="playSpeedRate">1</label>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">复位方式：</label>
+                                    <div class="layui-input-block" style="color: black;">
+                                        <select id="resetType">
+                                            <option>不复位</option>
+                                            <option selected="selected">手动复位</option>
+                                            <option>自动复位</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">播放进度：</label>
+                                </div>
+                                <div class="layui-inline">
+                                    <input id="slider-move" type="range" value="0" step="1" min="0" max="100"
+                                        oninput="geoEntityMoveSliderPlayChanged()" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 实体参数编辑页 -->
+    <div id="geoEntity-editor" style="background-color:rgb(40, 43, 51);color: #ffffff;display:none;width: 350px;">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">实体名称：</label>
+                    <label class="layui-form-label" id="geoEntityName" style="width:100px"></label>
+                    <button class="layui-btn" type="button" onclick="editGeoEntityName()"><i
+                            class="layui-icon">&#xe642</i></button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">显示模式：</label>
+                <div class="layui-input-block" style="color: black;">
+                    <select id="showmode" lay-filter="showmode">
+                        <option>模型</option>
+                        <option>图片</option>
+                        <option>矢量</option>
+                        <option>公告板</option>
+                    </select>
+                </div>
+            </div>
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">显示模式自动变化：</label>
+                <input type="checkbox" id="showmodeChange" lay-filter="showmodeChange" lay-skin="switch"
+                    lay-text="开启|关闭" />
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">显示变化最大距离：</label>
+                    </div>
+                    <div class="layui-inline">
+                        <input class="layui-input num" id="showmodeChangeDistance" type="number" value="0" step="1"
+                            min="0" oninput="showmodeChangeDistanced()" />
+                    </div>
+                </div>
+            </div> -->
+            <div class="layui-collapse" style="border-color:rgb(40, 43, 51);" lay-accordion>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">位置</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">经度：</label>
+                            <div class="layui-input-block">
+                                <input class=" layui-input num" id="pos-X" type="number" value="0" step="0.1" min="-180"
+                                    max="180" oninput="geoEntityPosChanged()" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">纬度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="pos-Y" type="number" value="0" step="0.1" min="-90"
+                                    max="90" oninput="geoEntityPosChanged()" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">高度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="pos-Z" type="number" value="0" step="1"
+                                    oninput="geoEntityPosChanged()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">模型参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">旋转：</label>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="modelrotate-X" type="number"
+                                        value="0" step="1" min="-180" max="180" oninput="geoEntityModelParmChanged()" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="modelrotate-Y" type="number"
+                                        value="0" step="1" min="-180" max="180" oninput="geoEntityModelParmChanged()" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="modelrotate-Z" type="number"
+                                        value="0" step="1" min="-180" max="180" oninput="geoEntityModelParmChanged()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">缩放：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="modelscale" type="number" value="0" step="0.1"
+                                    min="0" oninput="geoEntityModelParmChanged()" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">模型路径：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="modelpath" type="text"
+                                    oninput="geoEntityModelParmChanged()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">图片参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">图片大小：</label>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 80px;" id="picture-width" type="number"
+                                        value="0" step="0.1" min="0" oninput="geoEntityPictureParmChanged()" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 80px;" id="picture-height"
+                                        type="number" value="0" step="0.1" min="0"
+                                        oninput="geoEntityPictureParmChanged()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">图片路径：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="picturepath" type="text"
+                                    oninput="geoEntityPictureParmChanged()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">矢量参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">旋转：</label>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="vectorrotate-X"
+                                        type="number" value="0" step="1" min="-180" max="180"
+                                        oninput="geoEntityVectorParmChanged()" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="vectorrotate-Y"
+                                        type="number" value="0" step="1" min="-180" max="180"
+                                        oninput="geoEntityVectorParmChanged()" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="vectorrotate-Z"
+                                        type="number" value="0" step="1" min="-180" max="180"
+                                        oninput="geoEntityVectorParmChanged()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">缩放：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="vectorscale" type="number" value="0" step="0.1"
+                                    min="0" oninput="geoEntityVectorParmChanged()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">标号参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标号库ID：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="plot-ID" type="number" value="0" step="0.1" min="0"
+                                    oninput="geoEntityPlotParmChanged()" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标号dode：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="plot-code" type="number" value="0" step="0.1" min="0"
+                                    oninput="geoEntityPlotParmChanged()" />
+                            </div>
+                        </div>
+                        <!-- <div class="layui-form-item">
+                            <label class="layui-form-label">标号样式：</label>
+                            <button class="layui-btn" type="button" onclick="editPlotStyle()"><i
+                                    class="layui-icon">&#xe642</i></button>
+                        </div> -->
+                    </div>
+                </div>
+                <div id="geoEntityOrbit-div" class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">轨道参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">轨道线宽：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="geoEntityOrbitWidth-input" type="number" value="0"
+                                    step="0.1" min="0" oninput="satelliteEntityOrbitWidthChanged()" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">轨道线色：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="geoEntityOrbitColor-input" type="text" />
+                                <div id="geoEntityOrbitColor-form" class="layui-inline"></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">显示轨道：</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" id="geoEntityOrbitVisible-checkbox"
+                                    lay-filter="geoEntityOrbitVisibleChange" title="" lay-skin="switch"
+                                    class="layui-input" checked />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 修改实体名 -->
+    <div id="geoEntityName-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none;width: 400px;padding: 10px;">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <label class="layui-form-label">实体名称：</label>
+                <div class="layui-input-block">
+                    <input type="text" id="geoEntityName-input" placeholder="请输入新的实体名称" class="layui-input" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 扫描波参数编辑页 -->
+    <div id="scanWave-editor"
+        style="background-color:rgb(40, 43, 51);color: #ffffff;display:none;width: 350px;padding: 10px;">
+        <form class="layui-form" action="">
+            <div class="layui-collapse" style="border-color:rgb(40, 43, 51);" lay-accordion>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">大小</h2>
+                    <div class="layui-colla-content layui-show" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">长度：</label>
+                            <div class="layui-input-block">
+                                <input class=" layui-input num" id="scanWave-length" type="number" value="0" step="1"
+                                    min="0" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">宽度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-width" type="number" value="0" step="1"
+                                    min="0" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">高度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-height" type="number" value="0" step="1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">基础参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">初始旋转角度：</label>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="scanWave-initRotateX"
+                                        type="number" value="0" step="1" min="-180" max="180" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="scanWave-initRotateY"
+                                        type="number" value="0" step="1" min="-180" max="180" />
+                                </div>
+                                <div class="layui-inline">
+                                    <input class="layui-input num" style="width: 50px;" id="scanWave-initRotateZ"
+                                        type="number" value="0" step="1" min="-180" max="180" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">截面边数：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-sectionSlices" type="number" value="0"
+                                    step="1" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">材质或颜色重复次数：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-repeatCount" type="number" value="0"
+                                    step="1" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">材质或颜色流动速度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-flowSpeed" type="number" value="0"
+                                    step="1" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">截面角度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-sectionAngle" type="number" value="0"
+                                    step="1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">扫描参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">扫描旋转轴：</label>
+                            <div class="layui-input-block" style="color: black;">
+                                <select id="scanWave-rotateAxis" lay-filter="scanWave-rotateAxis">
+                                    <option>x轴</option>
+                                    <option>y轴</option>
+                                    <option>z轴</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">扫描速度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-scanSpeed" type="number" value="0"
+                                    step="1" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">扫描角度：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input num" id="scanWave-scanAngle" type="number" value="0"
+                                    step="1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-colla-item" style="border-color:rgb(40, 43, 51);">
+                    <h2 class="layui-colla-title" style="background-color:rgb(57, 61, 73);color: #ffffff;">材质参数</h2>
+                    <div class="layui-colla-content" style="border-color:rgb(40, 43, 51);color: #ffffff;">
+                        <div class="layui-tab" lay-filter="scanWave-colorMode">
+                            <ul class="layui-tab-title"
+                                style="border-color: rgb(57, 61, 73); background-color:rgb(57, 61, 73)">
+                                <li class="layui-this" lay-id="scanWave-modeColor">颜色模式</li>
+                                <li lay-id="scanWave-pictureColor">图片模式</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">背景颜色：</label>
+                                            </div>
+                                            <div class="layui-inline">
+                                                <input type="text" value="" placeholder="请输入或选择颜色" class="layui-input"
+                                                    style="width:110px" id="scanWave-colorBack">
+                                            </div>
+                                            <div class="layui-inline">
+                                                <div id="scanWave-colorBack-form"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">背景颜色增强度：</label>
+                                        <div class="layui-input-block">
+                                            <input class="layui-input num" id="scanWave-colorBackScale" type="number"
+                                                value="0" step="1" />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">前景颜色：</label>
+                                            </div>
+                                            <div class="layui-inline">
+                                                <input type="text" value="" placeholder="请输入或选择颜色" class="layui-input"
+                                                    style="width:110px" id="scanWave-colorForward">
+                                            </div>
+                                            <div class="layui-inline">
+                                                <div id="scanWave-colorForward-form"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">前景颜色增强度：</label>
+                                        <div class="layui-input-block">
+                                            <input class="layui-input num" id="scanWave-colorForwardScale" type="number"
+                                                value="0" step="1" />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">前景色长度占背景色长度比值：</label>
+                                        <div class="layui-input-block">
+                                            <input class="layui-input num" id="scanWave-colorForwardLengthRatio"
+                                                type="number" value="0" step="0.01" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">图片路径：</label>
+                                        <div class="layui-input-block">
+                                            <input class="layui-input" id="scanWave-picturePath" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">增强度：</label>
+                                        <div class="layui-input-block">
+                                            <input class="layui-input num" id="scanWave-pictureColorScale" type="number"
+                                                value="0" step="1" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="cesiumContainer" class="fullSize"
+        style="position: absolute;left: 0;width: 100%;height: 100%;border: 1px solid #3473b7;">
+        <script id="cesium_sandcastle_script">
+            var cesium, scene, viewer, serverUrl, plotting;
+            var plottingLayer;
+            var plotEditControl;
+            var plotDrawControl;
+            var plotPanel;
+
+            var satelliteEntityManager;
+            var situationSimulationManager;
+            var situationSimulationSchemeManager;
+            var deductionScriptManager;
+            var geoEntityManager;
+            var geoEntityRootNode;
+            var geoEntityEffectExtendFactory;
+            var simulationController;
+            var satelliteManager;
+            var geoEntity;
+            var geoEffect;
+
+            function onload(Cesium) {
+                'use strict';
+                cesium = Cesium;
+                //若本地没有标绘相关服务则可访问支持中心的iserver
+                // var host = document.location.toString().match('/file:\/\//') ? 'http://localhost:8090' : 'http://' + document.location.host;
+                var host = 'http://localhost:8090';
+                viewer = new Cesium.Viewer('cesiumContainer', {
+                    timeline: true,
+                    animation: true,
+                    shouldAnimation: true,
+                    // //创建地形服务提供者的实例，url为SuperMap iServer发布的TIN地形服务，地形缓存
+                    // terrainProvider: new Cesium.CesiumTerrainProvider({
+                    //     url: host + "/iserver/services/3D-local3DCache-TWDEMTaiHai/rest/realspace/datas/TW@DEM_TaiHai"
+                    // })
+                });
+                scene = viewer.scene;
+
+
+                situationSimulationManager = Cesium.SituationSimulationManager.getInstance();
+                situationSimulationManager.setScene(scene);
+                situationSimulationManager.setURI(host);
+
+                satelliteEntityManager = situationSimulationManager.getSatelliteEntityManager();
+                deductionScriptManager = situationSimulationManager.getDeductionScriptManager();
+                situationSimulationSchemeManager = situationSimulationManager.getSituationSimulationSchemeManager();
+                geoEntityManager = situationSimulationManager.getGeoEntityManager();
+                geoEntityRootNode = geoEntityManager.getGeoEntityRootNode();
+                geoEntityEffectExtendFactory = situationSimulationManager.getGeoEntityEffectExtendFactory();
+                geoEntityEffectExtendFactory.init({ viewer: viewer, document: document });
+                simulationController = situationSimulationManager.getSimulationController();
+                satelliteManager = situationSimulationManager.getSatelliteManager();
+
+
+
+                // //添加SuperMap iServer发布的影像服务
+                // var layer = viewer.imageryLayers.addImageryProvider(new Cesium.SuperMapImageryProvider({
+                //     url: host + "/iserver/services/map-ugcv5-World/rest/maps/Image"
+                // }));
+
+                // let sceneUrl = "http://172.18.120.109:8090/iserver/services/map-ugcv5-World/rest/maps/Image";
+                // var promise = scene.open(sceneUrl);
+                // promise.then(function (layers) {
+                //     console.log(layers);
+                // });
+
+                // 添加SuperMap iServer发布的影像服务
+                // var layer = viewer.imageryLayers.addImageryProvider(new Cesium.SuperMapImageryProvider({
+                //     url: "http://172.18.120.101:8090/iserver/services/map-ugcv5-World/rest/maps/Image"
+                // }));
+
+
+                scene.globe.depthTestAgainstTerrain = true;
+                scene.debugShowFramesPerSecond = true;
+
+                viewer.timeline.container.style.display = 'true';
+
+                if (Cesium.FeatureDetection.supportsImageRenderingPixelated()) {
+                    viewer.resolutionScale = window.devicePixelRatio;
+                }
+                scene.postProcessStages.fxaa.enabled = true;
+
+                serverUrl = host + '/iserver/services/plot-jingyong/rest/plot';
+                plotting = cesium.Plotting.getInstance(serverUrl, scene);
+
+                initSchemeList();
+                initScene();
+                initSatelliteSelectUI();
+                initSatelliteGeoEntity();
+
+                // viewer.camera.flyTo({
+                //     destination: new Cesium.Cartesian3(557092.7630217023, 4251934.913084203, 6420174.621543783),
+                //     orientation: {
+                //         heading: 2.98182791553226,
+                //         pitch: -0.6506589867992263,
+                //         roll: 6.283185307179586
+                //     }
+                // });
+
+                viewer.camera.flyTo({
+                    destination: new Cesium.Cartesian3(-3025012.4707319164, 4950970.380270567, 2673833.975889878),
+                    orientation: {
+                        heading: 4.094297613796133,
+                        pitch: -0.8381127614274764,
+                        roll: 6.283185307179572
+                    }
+                });
+            }
+
+            layui.form.on("switch(autoSaveScheme)", function (data) {
+                situationSimulationManager.setIsAutoSave(data.elem.checked);
+            });
+
+            function initScene() {
+                let currentName = sessionStorage.getItem("schemeName");
+                if (currentName !== undefined && currentName !== null && currentName.length > 0) {
+                    situationSimulationManager.openScheme(currentName, function (options) {
+                        updateGeoEntitys();
+                    });
+                    document.getElementById("currentScheme").innerHTML = currentName;
+                }
+            }
+
+            function initSchemeList() {
+                let SchemeNames = situationSimulationSchemeManager.getAllSchemeName();
+                let list = document.getElementById('schmemList');
+                list.innerHTML = "";
+                for (let i = 0; i < SchemeNames.length; i++) {
+                    let li = document.createElement("li");
+                    let txt_node = document.createTextNode(SchemeNames[i]);
+                    li.appendChild(txt_node);
+                    list.appendChild(li);
+                }
+
+                $(function () {
+                    $('.schmemList li').click(function () {
+                        let scheme = $(this).text();
+                        openScheme(scheme);
+                        initSatelliteSelectUI();
+                        initSatelliteGeoEntity();
+                    })
+                });
+            }
+
+            function createCase() {
+                let name = document.getElementById('schmemName').value;
+                situationSimulationSchemeManager.newScheme(name);
+                let list = document.getElementById('schmemList');
+                let li = document.createElement("li");
+                let txt_node = document.createTextNode(name);
+                li.appendChild(txt_node);
+                list.appendChild(li);
+
+                $(function () {
+                    $('.schmemList li').click(function () {
+                        let scheme = $(this).text();
+                        openScheme(scheme);
+                    })
+                });
+            }
+
+            if (typeof Cesium !== 'undefined') {
+                window.startupCalled = true;
+                onload(Cesium);
+            }
+
+            function showGeoEntityParm() {
+                var dlg = document.getElementById('geo-entity-parm');
+                dlg.style.display = "block";
+            }
+
+            function closeGeoEntityParm() {
+                var dlg = document.getElementById('geo-entity-parm');
+                dlg.style.display = "none";
+            }
+
+            layui.form.on("select(showmode)", function (data) {
+                let geoEntityParm = new Cesium.GeoEntityParameter();
+                if (data.value === "模型") {
+                    geoEntityParm.setShowMode(Cesium.DotMode.Marker);
+                }
+                else if (data.value === "图片") {
+                    geoEntityParm.setShowMode(Cesium.DotMode.Picture);
+                }
+                else if (data.value === "公告板") {
+                    geoEntityParm.setShowMode(Cesium.DotMode.Grid);
+                }
+                else if (data.value === "矢量") {
+                    geoEntityParm.setShowMode(Cesium.DotMode.Vector);
+                }
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            });
+
+            layui.form.on("switch(showmodeChange)", function (data) {
+                let geoEntityParm = new Cesium.GeoEntityParameter();
+
+                geoEntityParm.setIsDistanceChangeMode(data.elem.checked);
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            });
+
+            function showmodeChangeDistanced() {
+                let geoEntityParm = new Cesium.GeoEntityParameter();
+
+                geoEntityParm.setChangeModeDistance($("#showmodeChangeDistance").val() * 1.0);
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            }
+
+            function geoEntityPosChanged() {
+                let geoEntityParm = geoEntity.getGeoEntityParameter();
+
+                var posX = getElementValueByID("pos-X") * 1; //string转double;
+                var posY = getElementValueByID("pos-Y") * 1;
+                var posZ = getElementValueByID("pos-Z") * 1;
+
+                if (!isNaN(posX) && !isNaN(posY) && !isNaN(posZ)
+                    && (geoEntityParm.getPosition().x !== posX || geoEntityParm.getPosition().y !== posY || geoEntityParm.getPosition().z !== posZ)) {
+                    geoEntityParm.setPosition(new Cesium.PlotPoint3D(posX, posY, posZ));
+                }
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            }
+
+            function geoEntityModelParmChanged() {
+                let geoEntityParm = geoEntity.getGeoEntityParameter();
+
+                var modelRotateX = getElementValueByID("modelrotate-X") * 1;
+                var modelRotateY = getElementValueByID("modelrotate-Y") * 1;
+                var modelRotateZ = getElementValueByID("modelrotate-Z") * 1;
+
+                if (!isNaN(modelRotateX) && !isNaN(modelRotateY) && !isNaN(modelRotateZ) &&
+                    (geoEntityParm.getModelRotate().x !== modelRotateX || geoEntityParm.getModelRotate().y !== modelRotateY
+                        || geoEntityParm.getModelRotate().z !== modelRotateZ)) {
+                    var modelRotate = new Cesium.PlotPoint3D(modelRotateX, modelRotateY, modelRotateZ);
+                    geoEntityParm.setModelRotate(modelRotate);
+                }
+
+                var modelScale = getElementValueByID('modelscale') * 1;
+                if (!isNaN(modelScale) && geoEntityParm.getModelScale() !== modelScale) {
+                    geoEntityParm.setModelScale(modelScale);
+                }
+
+                var modelPath = getElementValueByID('modelpath');
+                if (geoEntityParm.getModelPath() !== modelPath) {
+                    geoEntityParm.setModelPath(modelPath);
+                }
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            }
+
+            function geoEntityPictureParmChanged() {
+                let geoEntityParm = geoEntity.getGeoEntityParameter();
+
+                var pictureWidth = parseInt(getElementValueByID("picture-width"));
+                var pictureHeight = parseInt(getElementValueByID("picture-height"));
+
+
+                if (!isNaN(pictureWidth) && !isNaN(pictureHeight) && (geoEntityParm.getPictureSymbolSize().x !== pictureWidth
+                    || geoEntityParm.getPictureSymbolSize().y !== pictureHeight)) {
+                    var pictureSize = new Cesium.Cartesian2(pictureWidth, pictureHeight);
+                    geoEntityParm.setPictureSymbolSize(pictureSize);
+                }
+
+                var picturePath = getElementValueByID('picturepath')
+                if (geoEntityParm.getPicturePath() !== picturePath) {
+                    geoEntityParm.setPicturePath(picturePath);
+                }
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            }
+
+            function geoEntityVectorParmChanged() {
+                let geoEntityParm = geoEntity.getGeoEntityParameter();
+
+                var vectorRotateX = getElementValueByID("vectorrotate-X") * 1;
+                var vectorRotateY = getElementValueByID("vectorrotate-Y") * 1;
+                var vectorRotateZ = getElementValueByID("vectorrotate-Z") * 1;
+
+
+                if (!isNaN(vectorRotateX) && !isNaN(vectorRotateY) && !isNaN(vectorRotateZ)
+                    && (geoEntityParm.getVectorRotate().x !== vectorRotateX || geoEntityParm.getVectorRotate().y !== vectorRotateY
+                        || geoEntityParm.getVectorRotate().z !== vectorRotateZ)) {
+                    var vectorRotate = new Cesium.PlotPoint3D(vectorRotateX, vectorRotateY, vectorRotateZ);
+                    geoEntityParm.setVectorRotate(vectorRotate);
+                }
+
+                var vectorScale = getElementValueByID('vectorscale') * 1;
+                if (!isNaN(vectorScale) && geoEntityParm.getVectorScale() != vectorScale) {
+                    geoEntityParm.setVectorScale(vectorScale);
+                }
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            }
+
+            function geoEntityPlotParmChanged() {
+                let geoEntityParm = geoEntity.getGeoEntityParameter();
+
+                var plotId = parseInt(getElementValueByID("plot-ID"));
+                var plotCode = parseInt(getElementValueByID("plot-code"));
+
+                if (!isNaN(plotId) && geoEntityParm.getDotPlotLibID() !== plotId) {
+                    geoEntityParm.setDotPlotLibID(plotId);
+                }
+
+                if (!isNaN(plotCode) && geoEntityParm.getDotPlotCode() !== plotCode) {
+                    geoEntityParm.setDotPlotCode(plotCode);
+                }
+
+                geoEntity.setGeoEntityParameter(geoEntityParm);
+            }
+
+            function satelliteEntityOrbitWidthChanged() {
+                let OrbitWidth = $('#geoEntityOrbitWidth-input').val();
+                geoEntity.setOrbitWidth(OrbitWidth);
+            }
+
+            function updateGeoEntitys() {
+                $('#geoEntitys').empty();
+
+                let geoEntitys = geoEntityManager.getGeoEntitys();
+                geoEntitys.forEach((value, key) => {
+                    $('#geoEntitys').append(new Option(value.getName(), key));
+                });
+
+                layui.form.render("select");
+            }
+
+            function geoEntitySelectedChanged() {
+                let option = $("#geoEntitys option:selected");
+                let geoEntityUUID = option.val();
+                geoEntity = geoEntityManager.getGeoEntityByUUID(geoEntityUUID);
+            }
+
+            function satelliteEntitySelectedChanged() {
+                let option = $("#satelliteGeoEntity option:selected");
+                let satelliteUUID = option.val();
+                geoEntity = satelliteEntityManager.getSatelliteEntityByUUID(satelliteUUID);
+            }
+
+            function removeGeoEntity() {
+                let selObj = document.getElementById('geoEntitys');
+                let geoEntityUUID = selObj.options[selObj.selectedIndex].valude;
+                geoEntityManager.removeGeoEntity(geoEntityUUID);
+                updateGeoEntitys();
+            }
+
+            function removeAllGeoEntity() {
+                geoEntityManager.removeAllGeoEntity(true);
+                updateGeoEntitys();
+            }
+
+            function editableChanged() {
+                let checkObj = document.getElementById("isEditable");
+                geoEntityManager.setGeoEntityLayerEditable(checkObj.checked);
+            }
+
+            function showProperty() {
+                $("#geoEntityName").text(geoEntity.getName());
+
+                let geoEntityParm = geoEntity.getGeoEntityParameter();
+                var showMode = geoEntityParm.getShowMode();
+                switch (showMode) {
+                    case Cesium.DotMode.Grid:
+                        setElementValueByID('showmode', '公告板');
+                        break;
+                    case Cesium.DotMode.Vector:
+                        setElementValueByID('showmode', '矢量');
+                        break;
+                    case Cesium.DotMode.Marker:
+                        setElementValueByID('showmode', '模型');
+                        break;
+                    case Cesium.DotMode.Picture:
+                        setElementValueByID('showmode', '图片');
+                        break;
+                    default:
+                        break;
+                }
+
+                // $("#showmodeChange").attr("checked", geoEntityParm.getIsDistanceChangeMode())
+                // layui.form.render("checkbox");
+
+                // $("#showmodeChangeDistance").val(geoEntityParm.getChangeModeDistance());
+
+                var pos = geoEntityParm.getPosition();
+                setElementValueByID('pos-X', pos.x);
+                setElementValueByID('pos-Y', pos.y);
+                setElementValueByID('pos-Z', pos.z);
+
+                let modelRotate = geoEntityParm.getModelRotate();
+                setElementValueByID('modelrotate-X', modelRotate.x);
+                setElementValueByID('modelrotate-Y', modelRotate.y);
+                setElementValueByID('modelrotate-Z', modelRotate.z);
+
+                setElementValueByID('modelscale', geoEntityParm.getModelScale());
+
+                setElementValueByID('modelpath', geoEntityParm.getModelPath());
+
+                var picturesize = geoEntityParm.getPictureSymbolSize();
+                setElementValueByID('picture-width', picturesize.x);
+                setElementValueByID('picture-height', picturesize.y);
+
+                setElementValueByID('picturepath', geoEntityParm.getPicturePath());
+
+                let vectorRotate = geoEntityParm.getVectorRotate();
+                setElementValueByID('vectorrotate-X', vectorRotate.x);
+                setElementValueByID('vectorrotate-Y', vectorRotate.y);
+                setElementValueByID('vectorrotate-Z', vectorRotate.z);
+
+                setElementValueByID('vectorscale', geoEntityParm.getVectorScale());
+
+                setElementValueByID('plot-ID', geoEntityParm.getDotPlotLibID());
+                setElementValueByID('plot-code', geoEntityParm.getDotPlotCode());
+
+                // 处理卫星实体参数  
+                let displayType = $("#geoEntityOrbit-div").css('display');
+                if (displayType == 'block') {
+                    $("#geoEntityOrbitWidth-input").val(geoEntity.getOrbitWidth());
+                    $("#geoEntityOrbitColor-input").val(colorToString(geoEntity.getOrbitColor()));
+                    $("#geoEntityOrbitVisible-checkbox").attr("checked", geoEntity.isOrbitVisible());
+                    layui.form.render("checkbox");
+                }
+            }
+
+            function getElementValueByID(id) {
+                return document.getElementById(id).value;
+            }
+
+            function setElementValueByID(id, value) {
+                document.getElementById(id).value = value;
+            }
+
+            function show_SpeedUp() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                satelliteManager.getSatelliteSimulation().setSimulationSpeed(satelliteManager.getSatelliteSimulation().getSimulationSpeed() * 2);
+            }
+
+            function show_SpeedDown() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                satelliteManager.getSatelliteSimulation().setSimulationSpeed(satelliteManager.getSatelliteSimulation().getSimulationSpeed() / 2);
+            }
+
+            layui.form.on("select(geoEffect)", function (data) {
+                addGeoEffects();
+            });
+
+            function addGeoEffects() {
+
+                geoEntityManager.setGeoEntityLayerEditable(true);
+                // let selObj = document.getElementById('geoEntitys');
+                // let geoEntityUUID = selObj.options[selObj.selectedIndex].valude;
+                // // geoEntitySelected = geoEntityManager.getGeoEntityByUUID(geoEntityUUID); // 选中实体
+                // geoEntitySelected = geoEntityManager.getGeoEntityByUUID(flyUUID); // 选中实体
+                // let geoEntity1 = geoEntityManager.getGeoEntityByUUID(missileCarUUID);  // 实体1
+
+                let geoEntityTmps = [];  // 实体1
+                for (let geoTmp of geoEntityManager.getGeoEntitys().values()) {
+                    geoEntityTmps.push(geoTmp);
+                }
+                let geoEntitySelected = geoEntityTmps[0];
+                let geoEntity1 = geoEntityTmps[1];
+                let geoEntityParameter = geoEntitySelected.getGeoEntityParameter();
+
+                let satelliteEntity = satelliteEntityManager.getSatelliteEntitys()[0]; // 卫星实体1
+                let satelliteEntity1 = satelliteEntityManager.getSatelliteEntitys()[1];// 卫星实体2
+
+                let selectedText = $('#geoEffect').val();
+
+
+                let arrScans = []; // 各个扫描瓣的样式
+                for (let i = 0; i < 3; i++) {
+                    let scaneBase = new Cesium.GeoEntityEffectRadarScanBase({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.5),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                    });
+                    arrScans.push(scaneBase);
+                }
+
+                if (selectedText === "机械雷达") {
+                    geoEffect = new Cesium.GeoEntityEffectMechanicalRadar({
+                        fillColor: new Cesium.Color(0.47, 0.61, 0.56, 0.3),
+                        outlineColor: new Cesium.Color(0.29, 0.85, 0.82, 0.7),
+                        arrGeoEntityEffectRadarScans: arrScans,
+                        radius: 30000
+                    });
+
+                } else if (selectedText === "参数体雷达") {
+                    geoEffect = new Cesium.GeoEntityEffectParameterRadar({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        arrGeoEntityEffectRadarScans: arrScans,
+                        radius: 30000
+                    });
+
+                } else if (selectedText === "旋转体雷达") {
+                    geoEffect = new Cesium.GeoEntityEffectRotateRadar({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        arrGeoEntityEffectRadarScans: arrScans,
+                    });
+
+                } else if (selectedText === "扫描雷达") {
+                    geoEffect = new Cesium.GeoEntityEffectScanRadar({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        scanColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        //arrGeoEntityEffectRadarScans: arrScans,
+                        radius: 30000
+                    });
+
+                } else if (selectedText === "预警雷达") {
+                    geoEffect = new Cesium.GeoEntityEffectWarningRadar({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        arrGeoEntityEffectRadarScans: arrScans,
+                        radius: 30000,
+                        pntOffset: new Cesium.PlotPoint3D(0, 0, -0.5),
+                    });
+
+                } else if (selectedText === "基础线") {
+
+                    geoEffect = new Cesium.BasicLineCommunicationLink({
+                        startUUID: geoEntitySelected.getUUID(),
+                        endUUID: geoEntity1.getUUID(),
+                        speedV: 6.0,
+                        lineWidth: 2.0,
+                        startOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                        endOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                    });
+
+                } else if (selectedText === "间断线") {
+                    geoEffect = new Cesium.DashLineCommunicationLink({
+                        startUUID: geoEntitySelected.getUUID(),
+                        endUUID: geoEntity1.getUUID(),
+                        speedV: -5.0,
+                        lineWidth: 3,
+                        dashLength: 30,
+                        startOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                        endOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                    });
+
+                } else if (selectedText === "流星线") {
+                    geoEffect = new Cesium.MeteorCommunicationLink({
+                        startUUID: geoEntitySelected.getUUID(),
+                        endUUID: geoEntity1.getUUID(),
+                        speed: 7,
+                        gradient: 0.1,
+                        lineWidth: 2,
+                        percent: 0.15,
+                        startOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                        endOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                    });
+
+                } else if (selectedText === "箭头线") {
+                    geoEffect = new Cesium.ArrowCommunicationLink({
+                        startUUID: geoEntitySelected.getUUID(),
+                        endUUID: geoEntity1.getUUID(),
+                        repeatCount: 20,
+                        speedV: 5,
+                        startOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                        endOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                    });
+
+                }
+                else if (selectedText === "管状线") {
+                    geoEffect = new Cesium.TubularCommunicationLink({
+                        startUUID: geoEntitySelected.getUUID(),
+                        endUUID: geoEntity1.getUUID(),
+                        topRadius: 50,
+                        bottomRadius: 200,
+                        startOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                        endOffset: new Cesium.PlotPoint3D(0, 0, 0.5),
+                    });
+                }
+                else if (selectedText === "尾焰") {
+                    geoEffect = new Cesium.GeoEntityEffectTailflame({
+                        crossDiameter: geoEntityParameter.getModelScale(),
+                        pntOffset: new Cesium.PlotPoint3D(0, -0.5, 0.5),
+                    });
+
+                } else if (selectedText === "尾气") {
+                    geoEffect = new Cesium.GeoEntityEffectTailgas({
+                        crossDiameter: geoEntityParameter.getModelScale() * 2.0,
+                        pntOffset: new Cesium.PlotPoint3D(0, -0.5, 0.5),
+                    });
+
+                } else if (selectedText === "爆炸") {
+                    geoEffect = new Cesium.GeoEntityEffectBurst({
+                        burstDiameter: geoEntityParameter.getModelScale() * 5.0,
+                    });
+                }
+                else if (selectedText === "燃烧") {
+                    geoEffect = new Cesium.GeoEntityEffectFiresmoke({
+                        firesmokeDiameter: geoEntityParameter.getModelScale() * 0.8,
+                    });
+
+                } else if (selectedText === "打击线") {
+
+                    let options = {
+                        startGeoEntityUUID: geoEntity1.getUUID(),
+                        targetGeoEntityUUID: geoEntitySelected.getUUID(),
+                        during: 3,
+                        attactModelPath: "./SampleData/situationSimulation/model/DF_31_out/DF_31.gltf",
+                        pathInfo: [{ totalLengthProportion: 0.3, relativeHeight: 5000 },
+                        { totalLengthProportion: 0.5, relativeHeight: 100 }],
+                    }
+
+
+                    geoEffect = new Cesium.GeoEntityEffectAttackline(options);
+
+                } else if (selectedText === "渐变体") {
+                    geoEffect = new Cesium.GeoEntityEffectDynamic({
+                        dynamicModelUrl: "./SampleData/situationSimulation/model/T90-blueV1.gltf",
+                    });
+
+                } else if (selectedText === "尾迹线") {
+                    geoEffect = new Cesium.GeoEntityEffectTrackline();
+                    geoEffect.setGradients([new Cesium.Color(0.04, 0.67, 0.7, 1), new Cesium.Color(0.04, 0.67, 0.7, 0)]);
+                    geoEffect.setShowPntCount(150);
+                    geoEffect.setOffset(new Cesium.PlotPoint3D(0, -0.5, 0.5));
+                    geoEffect.setLineWidth(2);
+
+                } else if (selectedText === "文字") {
+
+                } else if (selectedText === "探视锥") {
+                    geoEffect = new Cesium.GeoEntityEffectDetecttoncone({
+                        bottomPosition: geoEntity1.getGeoEntityParameter().getPosition(),
+                        bottomRadius: 5000,
+                        colorBack: new Cesium.Color(1, 0, 0, 0.3),
+                        colorBackScale: 2,
+                        colorForward: new Cesium.Color(1, 0, 0, 0.3),
+                        colorForwardScale: 2,
+                        pntOffset: new Cesium.PlotPoint3D(0, 0.3, 0.5),
+                        speed: 0.01,
+                        bottomPositionMode: 1,
+                    });
+
+                } else if (selectedText === "增强体") {
+                    geoEffect = new Cesium.GeoEntityEffectAugment({
+                        minDistanceDisplay: 20000,
+                        maxDistanceDisplay: 80000,
+                    });
+                } else if (selectedText === "扫描棱锥") {
+                    geoEffect = new Cesium.GeoEntityEffectScancone({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        radius: 30000,
+                    });
+                } else if (selectedText === "扫描波") {
+                    geoEffect = new Cesium.GeoEntityEffectScanWave({
+                        length: 30000,
+                        width: 6000,
+                        height: 3000,
+                        pntOffset: new Cesium.PlotPoint3D(0, 0.3, 0.5),
+                    });
+                } else if (selectedText === "扩散圆") {
+                    geoEffect = new Cesium.GeoEntityEffectAnnularDiffusion({
+                        radius: 30000,
+                        scanColor: new Cesium.Color(1, 0, 0, 1),
+                        repeat: 1,
+                    });
+                } else if (selectedText === "标牌") {
+                    geoEffect = new Cesium.GeoEntityEffectSign({ text: " 飞机 " });
+                }
+                // let json = geoEffect.toJSON();
+                // geoEffect.fromJSON(json);
+                // geoEffect.addEffectToScene(scene);
+                // geoEffect.setGeoEntityParameter(geoEntityParameter);
+                // geoEffect.setVisible(true);
+
+                geoEntitySelected.updateGeoEntityEffects([geoEffect], true);
+                geoEffect.setGeoEntityParameter(geoEntityParameter);
+                if (selectedText === "渐变体") {
+                    geoEntityParameter.setVisible(false);
+                } else {
+                    geoEntityParameter.setVisible(true);
+                }
+                geoEntitySelected.setGeoEntityParameter(geoEntityParameter);
+            }
+
+            function editGeoEffects() {
+                // let geoEntitySelected = geoEntityManager.getGeoEntityByUUID(flyUUID); // 选中实体
+                // let geoEntityEffects = geoEntitySelected.getGeoEntityEffects();
+                // let geoEntityEffect = geoEntityEffects[0];
+                // geoEntityEffect.setRadius(180000);
+
+
+
+                let curGeoEffect = $("#geoEffect").val();
+                if (curGeoEffect == "尾焰") {
+                    editGeoEffectTailFrame();
+                } else if (curGeoEffect == "扩散圆") {
+                    editGeoEffectAnnularDiffusion();
+                } else if (curGeoEffect == "标牌") {
+                    editGeoEffectSign();
+                } else if (curGeoEffect == "扫描波") {
+                    editScanWave();
+                } else if (curGeoEffect == "扫描棱锥") {
+                    editGeoEffectScancone();
+                } else if (curGeoEffect == "增强体") {
+                    editGeoEffectAugment();
+                }
+            }
+
+
+            // 编辑尾焰特效
+            function editGeoEffectTailFrame() {
+                var $ = layui.$;
+                var layer = layui.layer;
+
+                // 在此处初始化值，获取选中组给弹出框赋值
+                $('#geoEffectDiameter-input').val(geoEffect.getCrossDiameter());
+                let pntOffset = geoEffect.getOffset();
+                $('#geoEffectOffsetX-input').val(pntOffset.x);
+                $('#geoEffectOffsetY-input').val(pntOffset.y);
+                $('#geoEffectOffsetZ-input').val(pntOffset.z);
+                $('#bChangeSizeFlowModel-checkbox').attr("checked", geoEffect.isChangeSizeFlowModel());
+                layui.form.render("checkbox");
+                $('#geoEffectVisible-checkbox').attr("checked", geoEffect.isVisible());
+                layui.form.render("checkbox");
+
+                var layerIndex = layer.open({
+                    type: 1,
+                    title: "修改特效",
+                    // area: ['450px', '500px'],
+                    maxmin: false,
+                    content: $('#geoEffectTailFrame-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    shade: false,
+                    yes: function () {
+
+                        let geoEffectDiameter = $('#geoEffectDiameter-input').val();
+                        let offsetX = $('#geoEffectOffsetX-input').val();
+                        let offsetY = $('#geoEffectOffsetY-input').val();
+                        let offsetZ = $('#geoEffectOffsetZ-input').val();
+                        let bChangeSizeFlowModel = $('#bChangeSizeFlowModel-checkbox').is(':checked');
+                        let geoEffectVisible = $('#geoEffectVisible-checkbox').is(':checked');
+
+                        if (geoEffectDiameter != geoEffect.getCrossDiameter()) {
+                            geoEffect.setCrossDiameter(geoEffectDiameter);
+                        }
+                        let offsetTmp = geoEffect.getOffset();
+                        if (offsetX != offsetTmp.x || offsetY != offsetTmp.y || offsetZ != offsetTmp.z) {
+                            geoEffect.setOffset(new Cesium.PlotPoint3D(offsetX, offsetY, offsetZ));
+                        }
+                        if (bChangeSizeFlowModel != geoEffect.isChangeSizeFlowModel()) {
+                            geoEffect.setChangeSizeFlowModel(bChangeSizeFlowModel);
+                        }
+                        if (geoEffectVisible != geoEffect.isVisible()) {
+                            geoEffect.setVisible(geoEffectVisible);
+                        }
+
+                        //layer.close(layerIndex);
+
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+            }
+
+            // 编辑扩散圆特效
+            function editGeoEffectAnnularDiffusion() {
+                var $ = layui.$;
+                var layer = layui.layer;
+                var colorpicker = layui.colorpicker;
+                // 在此处初始化值，获取选中组给弹出框赋值
+                let colorStr = colorToString(geoEffect.getScanColor());
+                $('#geoEffectDiffusionCount-input').val(geoEffect.getRepeat());
+                $('#geoEffectDiffusionColor-input').val(colorStr);
+
+                // 颜色选择器绑定
+                colorpicker.render({
+                    elem: '#geoEffectDiffusionColor-form',
+                    color: colorStr,
+                    format: 'rgb',
+                    alpha: true,
+                    done: function (color) {
+                        $('#geoEffectDiffusionColor-input').val(color);
+                    }
+                });
+
+
+                var layerIndex = layer.open({
+                    type: 1,
+                    title: "修改特效",
+                    // area: ['450px', '500px'],
+                    maxmin: false,
+                    content: $('#geoEffectAnnularDiffusion-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    yes: function () {
+
+                        let geoEffectDiffusionCount = $('#geoEffectDiffusionCount-input').val();
+                        let geoEffectDiffusionColor = $('#geoEffectDiffusionColor-input').val();
+
+                        if (geoEffectDiffusionCount != geoEffect.getRepeat()) {
+                            geoEffect.setRepeat(geoEffectDiffusionCount);
+                        }
+                        let colorTmp = colorToString(geoEffect.getScanColor());
+                        if (geoEffectDiffusionColor != colorTmp) {
+                            geoEffect.setScanColor(stringToColor(geoEffectDiffusionColor));
+                        }
+
+                        layer.close(layerIndex);
+
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+            }
+
+            // 编辑标牌特效
+            function editGeoEffectSign() {
+                var $ = layui.$;
+                var layer = layui.layer;
+
+                // 在此处初始化值，获取选中组给弹出框赋值（未完成）
+                $('#geoEffectSignType-select').val(geoEffect.getSignType());
+
+                var layerIndex = layer.open({
+                    type: 1,
+                    title: "修改特效",
+                    area: ['450px', '430px'],
+                    maxmin: false,
+                    content: $('#geoEffectSign-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    yes: function () {
+
+                        let signType = parseInt($('#geoEffectSignType-select').val());
+                        if (signType != geoEffect.getSignType()) {
+                            let text = "歼敌机";
+                            // if (signType !== 0) {
+                            //     text = { title: "歼敌机", 型号: "XXXX-10" };
+                            // }
+                            geoEffect.setText(text);
+                            geoEffect.setSignType(signType);
+                        }
+
+                        layer.close(layerIndex);
+
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+            }
+
+            // 编辑扫描棱锥特效
+            function editGeoEffectScancone() {
+                var $ = layui.$;
+                var layer = layui.layer;
+
+                // 在此处初始化值，获取选中组给弹出框赋值
+                $('#scanconeRadius-input').val(geoEffect.getRadius());
+                $('#scanconeHAngle-input').val(geoEffect.getScanHAngle());
+                $('#scanconeVAngle-input').val(geoEffect.getScanVAngle());
+                $('#scanconeType-select').val(geoEffect.getScanConeType());
+                $('#scanconescanSpeed-input').val(geoEffect.getScanSpeed());
+                $('#scanconePitchAngle-input').val(geoEffect.getPitchAngle());
+                $('#scanconeScanRange-input').val(geoEffect.getScanRange());
+
+
+                $("#scanconeIsFill-checkbox").attr("checked", geoEffect.getIsFill());
+                layui.form.render("checkbox");
+                $("#scanconeIsOutLineColor-checkbox").attr("checked", geoEffect.getIsOutline());
+                layui.form.render("checkbox");
+
+                var layerIndex = layer.open({
+                    type: 1,
+                    title: "修改特效",
+                    // area: ['450px', '430px'],
+                    maxmin: false,
+                    content: $('#geoEffectScancone-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    shade: false,
+                    yes: function () {
+
+                        let scanconeRadius = $('#scanconeRadius-input').val();
+                        let scanconeHAngle = $('#scanconeHAngle-input').val();
+                        let scanconeVAngle = $('#scanconeVAngle-input').val();
+                        let scanconeType = $('#scanconeType-select').val();
+                        let scanconescanSpeed = $('#scanconescanSpeed-input').val();
+                        let scanconePitchAngle = $('#scanconePitchAngle-input').val();
+                        let scanconeScanRange = $('#scanconeScanRange-input').val();
+
+                        let scanconeIsFill = $('#scanconeIsFill-checkbox').is(':checked');
+                        let scanconeIsOutLineColor = $('#scanconeIsOutLineColor-checkbox').is(':checked');
+
+                        if (scanconeRadius != geoEffect.getRadius()) {
+                            geoEffect.setRadius(scanconeRadius);
+                        }
+                        if (scanconeHAngle != geoEffect.getScanHAngle()) {
+                            geoEffect.setScanHAngle(scanconeHAngle);
+                        }
+                        if (scanconeVAngle != geoEffect.getScanVAngle()) {
+                            geoEffect.setScanVAngle(scanconeVAngle);
+                        }
+                        if (scanconeType != geoEffect.getScanConeType()) {
+                            geoEffect.setScanConeType(scanconeType);
+                        }
+                        if (scanconescanSpeed != geoEffect.getScanSpeed()) {
+                            geoEffect.setScanSpeed(scanconescanSpeed);
+                        }
+                        if (scanconePitchAngle != geoEffect.getPitchAngle()) {
+                            geoEffect.setPitchAngle(scanconePitchAngle);
+                        }
+                        if (scanconeScanRange != geoEffect.getScanRange()) {
+                            geoEffect.setScanRange(scanconeScanRange);
+                        }
+                        if (scanconeIsFill != geoEffect.getIsFill()) {
+                            geoEffect.setIsFill(scanconeIsFill);
+                        }
+                        if (scanconeIsOutLineColor != geoEffect.getIsOutline()) {
+                            geoEffect.setIsOutline(scanconeIsOutLineColor);
+                        }
+
+                        //layer.close(layerIndex);
+
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+            }
+
+            // 编辑增强特效
+            function editGeoEffectAugment() {
+
+                var $ = layui.$;
+                var layer = layui.layer;
+
+                // 在此处初始化值，获取选中组给弹出框赋值
+                $('#augmentUrlPath-input').val(geoEffect.getAugmentPicture());
+
+                var layerIndex = layer.open({
+                    type: 1,
+                    title: "修改特效",
+                    maxmin: false,
+                    content: $('#geoEffectAugment-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    shade: false,
+                    yes: function () {
+
+                        let augmentUrl = $('#augmentUrlPath-input').val();
+                        geoEffect.setAugmentPicture(augmentUrl);
+                        layer.close(layerIndex);
+
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+
+            }
+            function addGeoEntityModel() {
+                geoEntityManager.addGeoEntityModel("坦克1", new Cesium.PlotPoint3D(121.38609175716589, 24.684481556096536, 1200), './SampleData/situationSimulation/model/T90-blueV1.gltf', function (options) {
+                    flyUUID = options.UUID;
+                    updateGeoEntitys();
+                }, {
+                    modelScale: 100,
+                    modelRotate: new Cesium.PlotPoint3D(0, 0, 254),
+                });
+
+                geoEntityManager.addGeoEntityModel("坦克2", new Cesium.PlotPoint3D(121.35, 24.75, 0), './SampleData/situationSimulation/model/T90-redV1.gltf', function (options) {
+                    missileCarUUID = options.UUID;
+                    updateGeoEntitys();
+                }, {
+                    modelScale: 100,
+                    modelRotate: new Cesium.PlotPoint3D(0, 0, 250),
+                });
+            }
+
+            function addGeoEntityDot() {
+                geoEntityManager.addGeoEntityDotPlot("雷达", new Cesium.PlotPoint3D(121.30747079878837, 24.654671383038526, 1100), 100, 13300, function (options) {
+                    radarUUID = options.UUID;
+                    updateGeoEntitys();
+                }, {
+                    visible: true,
+                });
+            }
+
+            function getGeoEntityUUIDByName(geoEntityName) {
+                let geoEntitys = geoEntityManager.getGeoEntitys();
+                for (const [key, value] of geoEntitys) {
+                    if (value.getName() === geoEntityName) {
+                        return key;
+                    }
+                }
+                return undefined;
+            }
+
+            var allTime = 0;
+            var playSpeedRate = 1.0;
+            var startTime = undefined;
+            function startPlay() {
+                simulationController.reset();
+
+                deductionScriptManager.removeAllScriptGroup();
+                let deductionScriptGroup = deductionScriptManager.createScriptGroup("组1");
+
+                let geoEntityTmps = [];  // 实体1
+                for (let geoTmp of geoEntityManager.getGeoEntitys().values()) {
+                    geoEntityTmps.push(geoTmp);
+                }
+                let geoEntityFly = geoEntityTmps[0];
+
+                let positions1 = [];
+                positions1.push(new Cesium.PlotPoint3D(121.380229, 24.680403, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.367762, 24.672064, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.35969, 24.671319, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.354131, 24.668848, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.346654, 24.67032, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.341674, 24.669372, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.337472, 24.666242, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.332281, 24.665605, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.330464, 24.664276, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.32774, 24.661384, 1200.0));
+                positions1.push(new Cesium.PlotPoint3D(121.321577, 24.656336, 1200.0));
+
+                let positions2 = [];
+                positions2.push(new Cesium.PlotPoint3D(121.380229, 24.680403, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.367762, 24.672064, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.35969, 24.671319, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.354131, 24.668848, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.346654, 24.67032, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.341674, 24.669372, 2500.0));
+                positions2.push(new Cesium.PlotPoint3D(121.338217, 24.669027, 2900.0));
+                positions2.push(new Cesium.PlotPoint3D(121.335523, 24.668049, 2500.0));
+                positions2.push(new Cesium.PlotPoint3D(121.330464, 24.664276, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.32774, 24.661384, 1200.0));
+                positions2.push(new Cesium.PlotPoint3D(121.321577, 24.656336, 1200.0));
+
+                let deductionScriptName = $('#deductionScripts').val();
+                if (deductionScriptName === "脚本1") {
+                    // 基础参数
+                    let deductionScript = deductionScriptGroup.createDeductionScript(geoEntityFly.getUUID());
+
+                    let moveParm = new Cesium.GeoEntityMoveParameter();
+                    moveParm.setTime(20);
+                    moveParm.setOriginGeoEntityUUID(geoEntityFly.getUUID());
+                    moveParm.setPathPoint3D(positions1);
+                    moveParm.setIsCurvePath(true);
+                    deductionScript.setGeoEntityMoveParameter(0, moveParm);
+
+                    let basicParm = new Cesium.GeoEntityBasicParameter();
+                    basicParm.setShowMode(Cesium.DotMode.Marker);
+                    basicParm.setModelPath("./SampleData/situationSimulation/model/T90-redV1.gltf");
+                    deductionScript.setGeoEntityBasicParameter(3, basicParm);
+
+                    let scaleParm = new Cesium.GeoEntityScaleParameter();
+                    scaleParm.setTime(0);
+                    scaleParm.setStartScale(100);
+                    scaleParm.setEndScale(1);
+                    scaleParm.setIsGradient(false);
+                    scaleParm.setCyclicType(Cesium.GeoEntityParamCyclicType.NO);
+                    // scaleParm.setTotalTime(3);
+                    deductionScript.setGeoEntityScaleParameter(10, scaleParm);
+
+                    let basicParm2 = new Cesium.GeoEntityBasicParameter();
+                    basicParm2.setShowMode(Cesium.DotMode.Picture);
+                    deductionScript.setGeoEntityBasicParameter(10, basicParm2);
+
+                    let scaleParm2 = new Cesium.GeoEntityScaleParameter();
+                    scaleParm2.setTime(0);
+                    scaleParm2.setStartScale(1);
+                    scaleParm2.setEndScale(100);
+                    scaleParm2.setIsGradient(false);
+                    scaleParm2.setCyclicType(Cesium.GeoEntityParamCyclicType.NO);
+                    // scaleParm.setTotalTime(3);
+                    deductionScript.setGeoEntityScaleParameter(13, scaleParm2);
+
+                    let basicParm3 = new Cesium.GeoEntityBasicParameter();
+                    basicParm3.setShowMode(Cesium.DotMode.Marker);
+                    // basicParm3.setModelPath("./SampleData/situationSimulation/model/Cesium_Air.gltf");
+                    deductionScript.setGeoEntityBasicParameter(13, basicParm3);
+
+                    // let basicParm3 = new Cesium.GeoEntityBasicParameter();
+                    // basicParm3.setShowMode(Cesium.DotMode.Grid);
+                    // deductionScript.setGeoEntityBasicParameter(5, basicParm3);
+                }
+                else if (deductionScriptName === "脚本2") {
+                    // 特效变化
+                    let deductionScript = deductionScriptGroup.createDeductionScript(geoEntityFly.getUUID());
+
+                    let moveParm = new Cesium.GeoEntityMoveParameter();
+                    moveParm.setTime(20);
+                    moveParm.setOriginGeoEntityUUID(geoEntityFly.getUUID());
+                    moveParm.setPathPoint3D(positions1);
+                    moveParm.setIsCurvePath(true);
+                    deductionScript.setGeoEntityMoveParameter(0, moveParm);
+
+                    let geoEntityParameter = geoEntityFly.getGeoEntityParameter();
+
+                    let geoEffectTailgas = new Cesium.GeoEntityEffectTailgas({
+                        crossDiameter: geoEntityParameter.getModelScale() * 5.0,
+                        pntOffset: new Cesium.PlotPoint3D(0, -0.5, 0.5),
+                    });
+                    let geoEntityEffectParameter1 = new Cesium.GeoEntityEffectParameter([geoEffectTailgas]);
+                    deductionScript.setGeoEntityEffectParameter(0, geoEntityEffectParameter1);
+
+                    let geoEffectTailflame = new Cesium.GeoEntityEffectTailflame({
+                        crossDiameter: geoEntityParameter.getModelScale() * 2.0,
+                        pntOffset: new Cesium.PlotPoint3D(0, -0.5, 0.5),
+                    });
+                    let geoEntityEffectParameter2 = new Cesium.GeoEntityEffectParameter([geoEffectTailflame]);
+
+                    deductionScript.setGeoEntityEffectParameter(3, geoEntityEffectParameter2);
+
+
+                    let geoEffectScancone = new Cesium.GeoEntityEffectScancone({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        radius: 1000,
+                    });
+                    let geoEntityEffectParameter3 = new Cesium.GeoEntityEffectParameter([geoEffectScancone]);
+
+                    deductionScript.setGeoEntityEffectParameter(6, geoEntityEffectParameter3);
+
+
+                    let geoEffectSign = new Cesium.GeoEntityEffectSign({ text: " XX轰炸机 " });
+                    //geoEffectSign.setText({ title: "歼敌机", 型号: "XXXX-10" });
+                    //geoEffectSign.setSignType(Cesium.GeoEntityEffectSignType.PICTUREBACKGROUND_SCIENCE);
+                    let geoEntityEffectParameter4 = new Cesium.GeoEntityEffectParameter([geoEffectSign]);
+
+                    deductionScript.setGeoEntityEffectParameter(9, geoEntityEffectParameter4);
+
+
+                    let geoEntityEffectScanWave = new Cesium.GeoEntityEffectScanWave({
+                        length: 1000,
+                        width: 300,
+                        height: 200,
+                        pntOffset: new Cesium.PlotPoint3D(0, 0.5, 0.5),
+                        repeatCount: 5.0,
+                        flowSpeed: 2.0,
+                    });
+                    let geoEntityEffectParameter5 = new Cesium.GeoEntityEffectParameter([geoEntityEffectScanWave]);
+
+                    deductionScript.setGeoEntityEffectParameter(12, geoEntityEffectParameter5);
+
+                    let arrScans = []; // 各个扫描瓣的样式
+                    for (let i = 0; i < 3; i++) {
+                        let scaneBase = new Cesium.GeoEntityEffectRadarScanBase({
+                            fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                            outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        });
+                        arrScans.push(scaneBase);
+                    }
+
+                    let geoEntityEffectWarningRadar = new Cesium.GeoEntityEffectWarningRadar({
+                        fillColor: new Cesium.Color(0.04, 0.67, 0.7, 0.3),
+                        outlineColor: new Cesium.Color(0.04, 0.67, 0.7, 0.7),
+                        arrGeoEntityEffectRadarScans: arrScans,
+                        radius: 800,
+                        pntOffset: new Cesium.PlotPoint3D(0, 0, -1),
+                    });
+                    let geoEntityEffectParameter6 = new Cesium.GeoEntityEffectParameter([geoEntityEffectWarningRadar]);
+
+                    deductionScript.setGeoEntityEffectParameter(15, geoEntityEffectParameter6);
+
+                    deductionScript.setGeoEntityEffectParameter(18, new Cesium.GeoEntityEffectParameter([]));
+
+                }
+                else if (deductionScriptName === "脚本3") {
+                    //缩放变化
+                    let deductionScript = deductionScriptGroup.createDeductionScript(geoEntityFly.getUUID());
+
+                    let moveParm = new Cesium.GeoEntityMoveParameter();
+                    moveParm.setTime(20);
+                    moveParm.setOriginGeoEntityUUID(geoEntityFly.getUUID());
+                    moveParm.setPathPoint3D(positions1);
+                    moveParm.setIsCurvePath(true);
+                    deductionScript.setGeoEntityMoveParameter(0, moveParm);
+
+                    let scaleParm1 = new Cesium.GeoEntityScaleParameter();
+                    scaleParm1.setTime(1);
+                    scaleParm1.setStartScale(100);
+                    scaleParm1.setEndScale(10);
+                    scaleParm1.setIsGradient(true);
+                    scaleParm1.setCyclicType(Cesium.GeoEntityParamCyclicType.BOTHWAY);
+                    scaleParm1.setTotalTime(4);
+                    deductionScript.setGeoEntityScaleParameter(2, scaleParm1);
+
+                    let scaleParm2 = new Cesium.GeoEntityScaleParameter();
+                    scaleParm2.setTime(0.5);
+                    scaleParm2.setStartScale(0);
+                    scaleParm2.setEndScale(100);
+                    scaleParm2.setIsGradient(false);
+                    scaleParm2.setCyclicType(Cesium.GeoEntityParamCyclicType.BOTHWAY);
+                    scaleParm2.setTotalTime(3);
+                    deductionScript.setGeoEntityScaleParameter(8, scaleParm2);
+
+                    let scaleParm3 = new Cesium.GeoEntityScaleParameter();
+                    scaleParm3.setTime(2);
+                    scaleParm3.setStartScale(100);
+                    scaleParm3.setEndScale(10);
+                    scaleParm3.setIsGradient(true);
+                    scaleParm3.setCyclicType(Cesium.GeoEntityParamCyclicType.NO);
+                    // scaleParm4.setTotalTime(5);
+                    deductionScript.setGeoEntityScaleParameter(13, scaleParm3);
+
+                    let scaleParm4 = new Cesium.GeoEntityScaleParameter();
+                    scaleParm4.setTime(2);
+                    scaleParm4.setStartScale(10);
+                    scaleParm4.setEndScale(100);
+                    scaleParm4.setIsGradient(true);
+                    scaleParm4.setCyclicType(Cesium.GeoEntityParamCyclicType.NO);
+                    // scaleParm4.setTotalTime(5);
+                    deductionScript.setGeoEntityScaleParameter(17, scaleParm4);
+                }
+                else if (deductionScriptName === "脚本4") {
+                    // 旋转变化
+                    let deductionScript = deductionScriptGroup.createDeductionScript(geoEntityFly.getUUID());
+
+                    let moveParm = new Cesium.GeoEntityMoveParameter();
+                    moveParm.setTime(20);
+                    moveParm.setOriginGeoEntityUUID(geoEntityFly.getUUID());
+                    moveParm.setPathPoint3D(positions2);
+                    moveParm.setIsCurvePath(true);
+                    deductionScript.setGeoEntityMoveParameter(0, moveParm);
+
+                    let rotateParm = new Cesium.GeoEntityRotationParameter();
+                    rotateParm.setTime(3);
+                    rotateParm.setStartRotation(new Cesium.PlotPoint3D(0, 0, 0));
+                    rotateParm.setEndRotation(new Cesium.PlotPoint3D(0, 360, 0));
+                    rotateParm.setIsGradient(true);
+                    rotateParm.setCyclicType(Cesium.GeoEntityParamCyclicType.NO);
+                    rotateParm.setTotalTime(3);
+                    deductionScript.setGeoEntityRotationParameter(1, rotateParm);
+
+                    let rotateParm2 = new Cesium.GeoEntityRotationParameter();
+                    rotateParm2.setTime(3);
+                    rotateParm2.setStartRotation(new Cesium.PlotPoint3D(0, 360, 0));
+                    rotateParm2.setEndRotation(new Cesium.PlotPoint3D(0, 0, 0));
+                    rotateParm2.setIsGradient(true);
+                    rotateParm2.setCyclicType(Cesium.GeoEntityParamCyclicType.NO);
+                    rotateParm2.setTotalTime(3);
+                    deductionScript.setGeoEntityRotationParameter(5, rotateParm2);
+
+                    let effectParm = new Cesium.GeoEntityEffectParameter();
+
+                    let geoEffect = new Cesium.GeoEntityEffectTrackline();
+                    geoEffect.setTrackType(Cesium.GeoEntityEffectTrackLineType.STREAMER);
+                    // geoEffect.setTrackType(Cesium.GeoEntityEffectTrackLineType.AXES);
+                    // geoEffect.setGradients([new Cesium.Color(0.04, 0.67, 0.7, 1), new Cesium.Color(0.04, 0.67, 0.7, 0)]);
+                    geoEffect.setGradients([new Cesium.Color(1, 0, 0, 0.7), new Cesium.Color(1, 1, 0, 0)]);
+                    geoEffect.setStreamerWidth(0.5);
+                    // geoEffect.setLineWidth(3);
+                    geoEffect.setShowPntCount(200);
+                    geoEffect.setOffset(new Cesium.PlotPoint3D(0, -0.5, 0.5));
+                    effectParm.setGeoEntityEffects([geoEffect]);
+                    deductionScript.setGeoEntityEffectParameter(0, effectParm);
+
+                    let effectParm1 = new Cesium.GeoEntityEffectParameter();
+                    deductionScript.setGeoEntityEffectParameter(20, effectParm1);
+                }
+                else if (deductionScriptName === "脚本5") {
+                    // 文字
+                    let text1 = {};
+                    text1.position = {
+                        type: 2,
+                        customPos: new Cesium.Cartesian2(10, 10)
+                    };
+
+                    text1.paddingLeft = 10;
+                    text1.paddingRight = 10;
+                    text1.paddingTop = 10;
+                    text1.paddingBottom = 10;
+
+                    text1.borderWidth = 2;
+                    text1.borderStyle = "dashed";
+                    text1.borderColor = (new Cesium.Color(1, 1, 0, 1)).toCssColorString();
+
+                    text1.borderRadius = 5;
+
+                    text1.backColor = (new Cesium.Color(1, 0, 0, 0.3)).toCssColorString();
+                    text1.texts = [
+                        {
+                            text: "测试标题1",
+                            fontSize: 45,
+                            lineHeight: 1.0,
+                            color: (new Cesium.Color(0, 1, 0, 1.0)).toCssColorString(),
+                            textAlign: "center",
+                            margin: 80,
+                            letterSpacing: 10,
+                            textDecoration: { type: "underline", color: (new Cesium.Color(0.5, 0.5, 1, 1.0)).toCssColorString() },
+                            stroke: { width: 1, color: (new Cesium.Color(0.5, 0.5, 1, 1.0)).toCssColorString() },
+                        },
+                        {
+                            text: "测试正文1",
+                            fontSize: 25,
+                            fontFamily: "宋体",
+                            textAlign: "left",
+                            margin: 10,
+                            fontStyle: "italic",
+                            lineHeight: 0.5,
+                            color: (new Cesium.Color(1, 1, 0, 1.0)).toCssColorString(),
+                            // textShadow: ""
+                        }];
+                    text1.time = 5;
+
+                    let geoEntityEffectExtendText = geoEntityEffectExtendFactory.createTextExtendEffect(text1);
+
+                    let text2 = {};
+                    text2.position = {
+                        type: 6,
+                        customPos: new Cesium.Cartesian2(10, 10)
+                    };
+
+                    text2.paddingLeft = 10;
+                    text2.paddingRight = 10;
+                    text2.paddingTop = 10;
+                    text2.paddingBottom = 10;
+                    text2.borderRadius = 5;
+
+                    text2.backColor = (new Cesium.Color(1, 0, 0, 0.3)).toCssColorString();
+                    text2.texts = [
+                        {
+                            text: "测试标题2",
+                            fontSize: 45,
+                            lineHeight: 1.0,
+                            color: (new Cesium.Color(0, 1, 0, 1.0)).toCssColorString(),
+                            textAlign: "center",
+                            margin: 80,
+                            letterSpacing: 10,
+                            // textDecoration: { type: "underline", color: (new Cesium.Color(0.5, 0.5, 1, 1.0)).toCssColorString() },
+                            stroke: { width: 1, color: (new Cesium.Color(0.5, 0.5, 1, 1.0)).toCssColorString() },
+                        },
+                        {
+                            text: "测试正文2",
+                            fontSize: 25,
+                            fontFamily: "宋体",
+                            textAlign: "left",
+                            margin: 10,
+                            // fontStyle: "italic",
+                            lineHeight: 0.5,
+                            color: (new Cesium.Color(1, 1, 0, 1.0)).toCssColorString(),
+                            // textShadow: ""
+                        }];
+                    text2.time = 5;
+                    let geoEntityEffectExtendText1 = geoEntityEffectExtendFactory.createTextExtendEffect(text2);
+
+                    let text3 = {};
+                    text3.position = {
+                        type: 8,
+                        customPos: new Cesium.Cartesian2(10, 10)
+                    };
+
+                    text3.paddingLeft = 10;
+                    text3.paddingRight = 10;
+                    text3.paddingTop = 10;
+                    text3.paddingBottom = 10;
+                    text3.borderRadius = 5;
+
+                    text3.backColor = (new Cesium.Color(1, 0, 0, 0.3)).toCssColorString();
+                    text3.texts = [
+                        {
+                            text: "测试标题3",
+                            fontSize: 45,
+                            lineHeight: 1.0,
+                            color: (new Cesium.Color(0, 1, 0, 1.0)).toCssColorString(),
+                            textAlign: "center",
+                            margin: 80,
+                            letterSpacing: 10,
+
+                            stroke: { width: 1, color: (new Cesium.Color(0.5, 0.5, 1, 1.0)).toCssColorString() },
+                        },
+                        {
+                            text: "测试正文3",
+                            fontSize: 25,
+                            fontFamily: "宋体",
+                            textAlign: "left",
+                            margin: 10,
+                            // fontStyle: "italic",
+                            lineHeight: 0.5,
+                            color: (new Cesium.Color(1, 1, 0, 1.0)).toCssColorString(),
+                            textDecoration: { type: "underline", color: (new Cesium.Color(0.5, 0.5, 1, 1.0)).toCssColorString() },
+                            // textShadow: ""
+                        }];
+                    text3.time = 3;
+                    let geoEntityEffectExtendText2 = geoEntityEffectExtendFactory.createTextExtendEffect(text3);
+
+                    let geoEntityEffectParameter = new Cesium.GeoEntityEffectParameter([geoEntityEffectExtendText]);
+                    let geoEntityEffectParameter1 = new Cesium.GeoEntityEffectParameter([geoEntityEffectExtendText1]);
+                    let geoEntityEffectParameter2 = new Cesium.GeoEntityEffectParameter([geoEntityEffectExtendText2]);
+
+                    let deductionScriptExtend = deductionScriptGroup.getDeductionScriptExtend();
+                    deductionScriptExtend.setGeoEntityEffectExtendParameter(1, geoEntityEffectParameter);
+                    deductionScriptExtend.setGeoEntityEffectExtendParameter(3, geoEntityEffectParameter1);
+                    deductionScriptExtend.setGeoEntityEffectExtendParameter(6, geoEntityEffectParameter2);
+                }
+
+                let resetType = Cesium.DeductionScriptExecuteResetType.ManualReset;
+                let selResetTypeObj = document.getElementById('resetType');
+                let selResetType = selResetTypeObj.options[selResetTypeObj.selectedIndex].text;
+                if (selResetType === "不复位") {
+                    resetType = Cesium.DeductionScriptExecuteResetType.NoReset;
+                }
+                else if (selResetType === "手动复位") {
+                    resetType = Cesium.DeductionScriptExecuteResetType.ManualReset;
+                }
+                else if (selResetType === "自动复位") {
+                    resetType = Cesium.DeductionScriptExecuteResetType.AutoReset;
+                }
+
+                simulationController.setResetType(resetType);
+
+                allTime = 0;
+
+                allTime = simulationController.start();
+
+                simulationController.removeExecuteCallBackEvent(executeCallBack);
+                simulationController.addExecuteCallBackEvent(executeCallBack);
+
+                startTime = simulationController.getSimulationTime();
+            }
+
+            function executeCallBack(options) {
+                if (options !== undefined && options !== null) {
+                    let allPassTime = options.allPassTime;
+                    let value = allPassTime / allTime;
+                    setElementValueByID('slider-move', value * 100);
+                }
+            }
+
+            function pausePlay() {
+                simulationController.pause();
+            }
+
+            function continuePlay() {
+                simulationController.continue();
+            }
+
+            function stopPlay() {
+                simulationController.stop();
+            }
+
+            function resetPlay() {
+                simulationController.reset();
+                simulationController.setSimulationTime(startTime);
+            }
+
+            function speedUp() {
+                playSpeedRate = playSpeedRate * 2.0;
+                simulationController.setSimulationSpeed(playSpeedRate);
+                $("#playSpeedRate").text(playSpeedRate);
+            }
+
+            function speedDown() {
+                if (playSpeedRate > 1) {
+                    playSpeedRate = playSpeedRate / 2.0;
+                    simulationController.setSimulationSpeed(playSpeedRate);
+                    $("#playSpeedRate").text(playSpeedRate);
+                }
+            }
+
+            function forwardPlay() {
+                simulationController.setExecutePassTimeOffset(2 * 1000 * simulationController.getSimulationSpeed());
+            }
+
+            function reversePlay() {
+                simulationController.setExecutePassTimeOffset(-2 * 1000 * simulationController.getSimulationSpeed());
+            }
+
+            function backPlay() {
+                let isBack = false;
+                if ($("#isBackPlay").text() === "正向") {
+                    isBack = false;
+                }
+                else {
+                    isBack = true;
+                }
+                simulationController.setIsReverse(isBack);
+
+                if (isBack) {
+                    $("#isBackPlay").text("正向");
+                }
+                else {
+                    $("#isBackPlay").text("反向");
+                }
+            }
+
+            function geoEntityMoveSliderPlayChanged() {
+                let valude = getElementValueByID('slider-move');
+
+                let time = startTime + allTime * (valude * 1.0 / 100);
+
+                simulationController.setSimulationTime(time);
+            }
+
+
+
+            var executeManagerUUID;
+            function play() {
+                executeManagerUUID = deductionScriptManager.startAllDeductionScriptGroup(Cesium.DeductionScriptExecuteResetType.AutoReset);
+            }
+
+            function reset() {
+                deductionScriptManager.reset(executeManagerUUID);
+            }
+
+            function modifyScript() {
+                let deductionScriptGroup1 = deductionScriptManager.getDeductionScriptGroups()[0];
+                let deductionScript = deductionScriptGroup1.getDeductionScripts()[1];
+
+                // let geoEffect = new Cesium.GeoEntityEffectWarningRadar({
+                //     radius: 300000
+                // });
+
+                let geoEffectTrackline = new Cesium.GeoEntityEffectTrackline();
+                geoEffectTrackline.setTrackColor(new Cesium.Color(0, 1, 0, 0));
+                geoEffectTrackline.setGradients([new Cesium.Color(0, 1, 0, 0), new Cesium.Color(0, 1, 0, 1)]);
+                geoEffectTrackline.setShowPntCount(120);
+                deductionScript.setGeoEntityEffectArray(0, [geoEffectTrackline]);
+
+                let deductionScript1 = deductionScriptGroup1.getDeductionScripts()[2];
+
+                let geoEffectTrackline1 = new Cesium.GeoEntityEffectTrackline();
+                geoEffectTrackline1.setTrackColor(new Cesium.Color(0, 1, 0, 0));
+                geoEffectTrackline1.setGradients([new Cesium.Color(0, 1, 0, 0), new Cesium.Color(0, 1, 0, 1)]);
+                geoEffectTrackline1.setShowPntCount(120);
+
+                deductionScript1.setGeoEntityEffectArray(0, [geoEffectTrackline1]);
+            }
+
+            function openScheme(scheme) {
+                situationSimulationManager.closeScheme();
+                situationSimulationManager.openScheme(scheme, function (options) {
+                    updateGeoEntitys();
+                });
+                sessionStorage.setItem("schemeName", scheme);
+                document.getElementById("currentScheme").innerHTML = scheme;
+                initSatelliteSelectUI();
+            }
+
+            function saveScheme() {
+                let schemeName = sessionStorage.getItem("schemeName");
+                if (schemeName != null) {
+                    situationSimulationManager.saveScheme(schemeName);
+                }
+            }
+
+            function closeScheme() {
+                $("#currentScheme").text("");
+                situationSimulationManager.closeScheme();
+            }
+
+            function deleteScheme() {
+                $("#currentScheme").text("");
+                situationSimulationManager.closeScheme();
+                let currentScheme = sessionStorage.getItem("schemeName");
+                if (currentScheme !== undefined && currentScheme !== null && currentScheme.length > 0) {
+                    situationSimulationSchemeManager.deleteScheme(currentScheme);
+                    sessionStorage.setItem("schemeName", "");
+
+                }
+
+                initSchemeList();
+
+            }
+
+            function deleteAllScheme() {
+                $("#currentScheme").text("");
+                let SchemeNames = situationSimulationSchemeManager.getAllSchemeName();
+                for (let i = 0; i < SchemeNames.length; i++) {
+                    situationSimulationSchemeManager.deleteScheme(SchemeNames[i]);
+                }
+                initSchemeList();
+
+            }
+
+            function closediag() {
+                var dlg = document.getElementById('geo-entity-parm');
+                dlg.style.display = "none";
+            }
+
+            function initSatellite() {
+
+
+
+                // let url = "./SampleData/situationSimulation/Satellite/SatelliteInfo.xml";
+                // satelliteManager.loadFromXML(url);
+
+                satelliteManager.initSatelliteToScene();
+            }
+
+            function modifyOrbitStyle() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                const satelliteGroup = satelliteManager.getGroups()[1];
+                let nWidth = satelliteGroup.getOrbitsWidth();
+                nWidth += 1.0;
+                satelliteGroup.setOrbitsWidth(nWidth);
+                satelliteGroup.setOrbitsColor(new Cesium.Color(1, 0, 0, 0.5));
+            }
+
+            function modifySatelliteGroupVisible() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                satelliteManager.getGroups().forEach(element => {
+                    element.setVisible(!element.isVisible());
+                });
+            }
+
+            function modifyySatelliteGroupOrbitVisible() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                satelliteManager.getGroups().forEach(element => {
+                    element.setOrbitsVisible(!element.isOrbitsVisible());
+                });
+            }
+
+            function satelliteSimulationPlay() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                const satelliteSimulation = satelliteManager.getSatelliteSimulation();
+                satelliteSimulation.play();
+
+            }
+
+            function satelliteSimulationStop() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                satelliteManager.getSatelliteSimulation().stop();
+            }
+
+            function satelliteSimulationReverse() {
+                if (null == satelliteManager) {
+                    return;
+                }
+                satelliteManager.getSatelliteSimulation().setIsReverse();
+            }
+
+            function addSatelliteEntity() {
+                satelliteEntityManager = situationSimulationManager.getSatelliteEntityManager();
+                if (null == satelliteManager) {
+                    return;
+                }
+                const satelliteGroup = satelliteManager.getGroups()[1];
+                let satellite = satelliteGroup.getSatellites(satelliteGroup.getSatelliteFileNames()[0])[0];
+                satelliteEntityManager.addSatelliteEntity(satellite.getUUID(), satelliteManager, satelliteGroup.getGroupName());
+
+                let satellite1 = satelliteGroup.getSatellites(satelliteGroup.getSatelliteFileNames()[0])[1];
+                satelliteEntityManager.addSatelliteEntity(satellite1.getUUID(), satelliteManager, satelliteGroup.getGroupName());
+
+                initSatelliteGeoEntity();
+            }
+
+            function initSatelliteGeoEntity() {
+                $('#satelliteGeoEntity').empty();
+
+                let geoEntitys = satelliteEntityManager.getSatelliteEntitys();
+                geoEntitys.forEach((element) => {
+                    $('#satelliteGeoEntity').append(new Option(element.getName(), element.getUUID()));
+                });
+
+                layui.form.render('select');
+            }
+
+            function removeSatelliteEntity() {
+                let nCount = satelliteEntityManager.getSatelliteEntitys().length;
+                for (let i = nCount - 1; i >= 0; --i) {
+                    let SatelliteEntity = satelliteEntityManager.getSatelliteEntitys()[i];
+                    satelliteEntityManager.removeSatelliteEntity(SatelliteEntity.getUUID(), satelliteManager);
+                }
+                $('#satelliteGeoEntity').empty();
+                layui.form.render('select');
+            }
+
+            function addSatelliteLinkEffect() {
+
+                let satelliteEntity = satelliteEntityManager.getSatelliteEntitys()[0]; // 卫星实体1
+                let satelliteEntity1 = satelliteEntityManager.getSatelliteEntitys()[1];// 卫星实体2
+
+                let geoEffect = new Cesium.ArrowCommunicationLink({
+                    startUUID: satelliteEntity.getUUID(),
+                    endUUID: satelliteEntity1.getUUID(),
+                    pntStart: satelliteEntity.getGeoEntityParameter().getPosition(),
+                    pntEnd: satelliteEntity1.getGeoEntityParameter().getPosition(),
+                    speedV: 5,
+                });
+                satelliteEntity.addGeoEntityEffect(geoEffect);
+            }
+
+            function modifySatelliteEntity() {
+                let nCount = satelliteEntityManager.getSatelliteEntitys().length;
+                if (nCount > 0) {
+                    let SatelliteEntity = satelliteEntityManager.getSatelliteEntitys()[nCount - 1];
+                    let nWidth = SatelliteEntity.getOrbitWidth();
+                    nWidth += 1.0
+                    let param = SatelliteEntity.getGeoEntityParameter();
+                    param.setPictureSymbolSize(new Cesium.Cartesian2(30, 30));
+                    SatelliteEntity.setGeoEntityBasicParameter(param);
+                    SatelliteEntity.setOrbitWidth(nWidth);
+                    SatelliteEntity.setOrbitVisible(true);
+                    SatelliteEntity.setOrbitColor(new Cesium.Color(1, 0, 0, 0.5));
+                }
+            }
+
+            function flySatellite() {
+                viewer.camera.flyTo({
+                    destination: new Cesium.Cartesian3(-21771496.304625537, 3209680.3478643177, 106636948.8211599),
+                    orientation: {
+                        heading: 1.8735020342001993,
+                        pitch: -1.4711454562838044,
+                        roll: 0.30210282083246387
+                    }
+                });
+            }
+
+            function show_AddLinkEffect() {
+
+                let satelliteEntity = satelliteEntityManager.getSatelliteEntitys()[0]; // 卫星实体1
+                let satelliteEntity1 = satelliteEntityManager.getSatelliteEntitys()[1];// 卫星实体2
+
+                let geoEffect = new Cesium.BasicLineCommunicationLink({
+                    startUUID: satelliteEntity.getUUID(),
+                    endUUID: satelliteEntity1.getUUID(),
+                    pntStart: satelliteEntity.getGeoEntityParameter().getPosition(),
+                    pntEnd: satelliteEntity1.getGeoEntityParameter().getPosition(),
+                });
+                satelliteEntity.addGeoEntityEffect(geoEffect);
+            }
+
+            // 初始化卫星分组Select
+            function initSatelliteSelectUI() {
+                $('#satelliteGroup').empty();
+
+                satelliteManager.getGroups().forEach(element => {
+                    let groupName = element.getGroupName();
+                    $('#satelliteGroup').append(new Option(groupName));
+                });
+
+                layui.form.render('select');
+            }
+
+
+            function colorToString(color) {
+                return "rgba(" + (color.red * 255).toString() + ", " + (color.green * 255).toString() + ", " + color.blue * 255 + ", " + color.alpha.toString() + ")";
+            }
+
+            function stringToColor(strColor) {
+                let values = strColor.replace('rgba(', '').replace(')', '').split(',');
+
+                let color = new WebGLPlot.Color();
+                color.red = parseInt(values[0]) / 255.0;
+                color.green = parseInt(values[1]) / 255.0;
+                color.blue = parseInt(values[2]) / 255.0;
+                color.alpha = parseFloat(values[3]);
+
+                return color;
+            }
+
+            // 编译卫星组
+            function editSatelliteGroup() {
+
+                var $ = layui.$;
+                var layer = layui.layer;
+                var colorpicker = layui.colorpicker;
+
+
+                let groupName = $('#satelliteGroup').val();
+                let satelliteGroup = satelliteManager.getGroup(groupName);
+                let orignalSatelliteScale = satelliteGroup.getAllSatelliteScale();
+                let orignalSatelliteModelPath = satelliteGroup.getGroupModelPath();
+                let orignalSatelliteModelVisible = satelliteGroup.isVisible();
+                let orignalOrbitWidth = satelliteGroup.getOrbitsWidth();
+                let orignalOrbitColor = colorToString(satelliteGroup.getOrbitsColor());
+                let orignalOrbitVisible = satelliteGroup.isOrbitsVisible();
+                // 在此处初始化值，获取选中组给弹出框赋值（未完成）
+                $('#satelliteModelScale-input').val(orignalSatelliteScale);
+                $('#satelliteModelPath-input').val(orignalSatelliteModelPath);
+                //$('#satelliteModelVisible-checkbox')[0].checked = orignalSatelliteModelVisible;
+                $('#orbitWidth-input').val(orignalOrbitWidth);
+                $('#orbitColor-input').val(orignalOrbitColor);
+                //$('#orbitVisible-checkbox')[0].checked = orignalOrbitVisible;
+                $('#orbitVisible-checkbox').attr("checked", orignalOrbitVisible);
+                layui.form.render("checkbox");
+                $("#satelliteModelVisible-checkbox").attr("checked", orignalSatelliteModelVisible);
+                layui.form.render("checkbox");
+
+
+                // 颜色选择器绑定
+                colorpicker.render({
+                    elem: '#orbitColor-form',
+                    color: orignalOrbitColor,
+                    format: 'rgb',
+                    alpha: true,
+                    done: function (color) {
+                        $('#orbitColor-input').val(color);
+                    }
+                });
+
+                let title = "修改" + satelliteGroup.getGroupName() + "卫星组样式"
+                // 弹出框
+                var layerIndex = layer.open({
+                    type: 1,
+                    title: title,
+                    maxmin: false,
+                    content: $('#satelliteGroup-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    shade: false,
+                    yes: function () {
+
+                        let satelliteModelScale = $('#satelliteModelScale-input').val();
+                        let satelliteModelPath = $('#satelliteModelPath-input').val();
+                        let satelliteModelVisible = $('#satelliteModelVisible-checkbox').is(':checked');
+                        let orbitWidth = $('#orbitWidth-input').val();
+                        let orbitColor = $('#orbitColor-input').val();
+                        let orbitVisible = $('#orbitVisible-checkbox').is(':checked');
+
+                        // 在此处获取卫星组样式值，调用接口(未完成)
+                        if (satelliteModelScale !== satelliteGroup.getAllSatelliteScale()) {
+                            satelliteGroup.setAllSatelliteScale(satelliteModelScale);
+                        }
+                        if (satelliteModelPath !== satelliteGroup.getGroupModelPath()) {
+                            satelliteGroup.setGroupModelPath(satelliteModelPath);
+                        }
+                        if (satelliteModelVisible !== satelliteGroup.isVisible()) {
+                            satelliteGroup.setVisible(satelliteModelVisible);
+                        }
+                        if (orbitWidth !== satelliteGroup.getOrbitsWidth()) {
+                            satelliteGroup.setOrbitsWidth(orbitWidth);
+                        }
+                        if (orbitColor !== colorToString(satelliteGroup.getOrbitsColor())) {
+                            satelliteGroup.setOrbitsColor(stringToColor(orbitColor));
+                        }
+                        if (orbitVisible !== satelliteGroup.isOrbitsVisible()) {
+                            satelliteGroup.setOrbitsVisible(orbitVisible);
+                            if (!satelliteGroup.isVisible() && orbitVisible) {
+                                alert("轨道显示受卫星显示影响！");
+                            }
+                        }
+
+                        //layer.close(layerIndex);
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+            }
+
+            function editGeoEntity() {
+                let $ = layui.$;
+                let layer = layui.layer;
+
+                $('#geoEntityOrbit-div').hide();
+
+                geoEntitySelectedChanged();
+                showProperty();
+
+                layer.open({
+                    type: 1,
+                    title: "编辑实体",
+                    maxmin: false,
+                    shade: false,
+                    content: $('#geoEntity-editor'),
+                });
+            }
+
+            function flyGeoEntity() {
+                viewer.camera.flyTo({
+                    destination: new Cesium.Cartesian3(-3025012.4707319164, 4950970.380270567, 2673833.975889878),
+                    orientation: {
+                        heading: 4.094297613796133,
+                        pitch: -0.8381127614274764,
+                        roll: 6.283185307179572
+                    }
+                });
+            }
+
+            function editSatelliteGeoEntity() {
+                var $ = layui.$;
+                var layer = layui.layer;
+
+                $('#geoEntityOrbit-div').show();
+
+                satelliteEntitySelectedChanged();
+                showProperty();
+
+                layui.colorpicker.render({
+                    elem: '#geoEntityOrbitColor-form',
+                    color: colorToString(geoEntity.getOrbitColor()),
+                    format: 'rgb',
+                    alpha: true,
+                    done: function (color) {
+                        geoEntity.setOrbitColor(stringToColor(color));
+                    }
+                });
+
+                layui.form.on("switch(geoEntityOrbitVisibleChange)", function (data) {
+                    geoEntity.setOrbitVisible(data.elem.checked);
+                });
+
+                layer.open({
+                    type: 1,
+                    title: "编辑实体",
+                    maxmin: false,
+                    shade: false,
+                    content: $('#geoEntity-editor'),
+                });
+            }
+
+            function editGeoEntityName() {
+                let $ = layui.$;
+                let layer = layui.layer;
+
+                $('#geoEntityName-input').text(geoEntity.getName());
+
+                // 弹出框
+                let layerIndex = layer.open({
+                    type: 1,
+                    title: "修改名称",
+                    maxmin: false,
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    content: $('#geoEntityName-editor'),
+                    yes: function () {
+                        let geoEntityName = $('#geoEntityName-input').val();
+                        geoEntity.setName(geoEntityName);
+
+                        $("#geoEntityName").text(geoEntityName);
+                        let option = $("#geoEntitys option:selected");
+                        option.text(geoEntityName);
+                        layui.form.render("select");
+
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+                });
+            }
+
+            function editScanWave() {
+                let $ = layui.$;
+                let layer = layui.layer;
+                let colorpicker = layui.colorpicker;
+
+                $("#scanWave-length").val(geoEffect.getLength());
+                $("#scanWave-width").val(geoEffect.getWidth());
+                $("#scanWave-height").val(geoEffect.getHeight());
+                $("#scanWave-scanAngle").val(geoEffect.getScanAngle());
+                $("#scanWave-sectionSlices").val(geoEffect.getSectionSlices());
+                $("#scanWave-initRotateX").val(geoEffect.getInitRotate().x);
+                $("#scanWave-initRotateY").val(geoEffect.getInitRotate().y);
+                $("#scanWave-initRotateZ").val(geoEffect.getInitRotate().z);
+                $("#scanWave-repeatCount").val(geoEffect.getRepeatCount());
+                $("#scanWave-flowSpeed").val(geoEffect.getFlowSpeed());
+
+                if (geoEffect.getScanAxis() === 0) {
+                    $("#scanWave-rotateAxis").val("x轴");
+                }
+                else if (geoEffect.getScanAxis() === 1) {
+                    $("#scanWave-rotateAxis").val("y轴");
+                }
+                else if (geoEffect.getScanAxis() === 2) {
+                    $("#scanWave-rotateAxis").val("z轴");
+                }
+
+                layui.form.render("select");
+
+                $("#scanWave-scanSpeed").val(geoEffect.getScanSpeed());
+                $("#scanWave-colorBack").val(colorToString(geoEffect.getColorBack()));
+                $("#scanWave-colorBackScale").val(geoEffect.getColorBackScale());
+                $("#scanWave-colorForward").val(colorToString(geoEffect.getColorForward()));
+                $("#scanWave-colorForwardScale").val(geoEffect.getColorForwardScale());
+                $('#scanWave-colorForwardLengthRatio').val(geoEffect.getColorForwardLengthRatio());
+                $("#scanWave-picturePath").val(geoEffect.getPicturePath());
+                $("#scanWave-pictureColorScale").val(geoEffect.getPictureColorScale());
+                $("#scanWave-sectionAngle").val(geoEffect.getSectionAngle());
+
+                if (geoEffect.getMode() === Cesium.GeoEntityEffectScanWaveColorMode.ColorMode) {
+                    layui.element.tabChange("scanWave-colorMode", "scanWave-modeColor");
+                }
+                else {
+                    layui.element.tabChange("scanWave-colorMode", "scanWave-pictureColor");
+                }
+
+                // 颜色选择器绑定
+                colorpicker.render({
+                    elem: '#scanWave-colorBack-form',
+                    color: colorToString(geoEffect.getColorBack()),
+                    format: 'rgb',
+                    alpha: true,
+                    done: function (color) {
+                        $('#scanWave-colorBack').val(color);
+                    }
+                });
+
+                colorpicker.render({
+                    elem: '#scanWave-colorForward-form',
+                    color: colorToString(geoEffect.getColorForward()),
+                    format: 'rgb',
+                    alpha: true,
+                    done: function (color) {
+                        $('#scanWave-colorForward').val(color);
+                    }
+                });
+
+                let showMode = geoEffect.getMode();
+
+                layui.element.on("tab(scanWave-colorMode)", function (data) {
+                    let title = data.elem.context.innerText;
+                    if (title === "颜色模式") {
+                        showMode = Cesium.GeoEntityEffectScanWaveColorMode.ColorMode;
+                    } else if (title === "图片模式") {
+                        showMode = Cesium.GeoEntityEffectScanWaveColorMode.PictureMode;
+                    }
+                });
+
+                // 弹出框
+                let layerIndex = layer.open({
+                    type: 1,
+                    title: "修改样式",
+                    maxmin: false,
+                    content: $('#scanWave-editor'),
+                    btn: ["确定", "取消"],
+                    btnAlign: 'c',
+                    shade: false,
+                    yes: function () {
+                        geoEffect.setLength($("#scanWave-length").val() * 1.0);
+                        geoEffect.setWidth($("#scanWave-width").val() * 1.0);
+                        geoEffect.setHeight($("#scanWave-height").val() * 1.0);
+                        geoEffect.setScanAngle($("#scanWave-scanAngle").val() * 1.0);
+                        geoEffect.setSectionSlices($("#scanWave-sectionSlices").val() * 1.0);
+                        geoEffect.setInitRotate(new Cesium.PlotPoint3D(
+                            $("#scanWave-initRotateX").val() * 1.0, $("#scanWave-initRotateY").val() * 1.0, $("#scanWave-initRotateZ").val() * 1.0));
+                        geoEffect.setRepeatCount($("#scanWave-repeatCount").val() * 1.0);
+                        geoEffect.setFlowSpeed($("#scanWave-flowSpeed").val() * 1.0);
+
+                        if ($("#scanWave-rotateAxis").val() === "x轴") {
+                            geoEffect.setScanAxis(0);
+                        } else if ($("#scanWave-rotateAxis").val() === "y轴") {
+                            geoEffect.setScanAxis(1);
+                        } else if ($("#scanWave-rotateAxis").val() === "z轴") {
+                            geoEffect.setScanAxis(2);
+                        }
+
+                        geoEffect.setScanSpeed($("#scanWave-scanSpeed").val() * 1.0);
+                        geoEffect.setColorBack(stringToColor($("#scanWave-colorBack").val()));
+                        geoEffect.setColorBackScale($("#scanWave-colorBackScale").val() * 1.0);
+                        geoEffect.setColorForward(stringToColor($("#scanWave-colorForward").val()));
+                        geoEffect.setColorForwardScale($("#scanWave-colorForwardScale").val() * 1.0);
+                        geoEffect.setColorForwardLengthRatio($("#scanWave-colorForwardLengthRatio").val() * 1.0);
+                        geoEffect.setPicturePath($("#scanWave-picturePath").val());
+                        geoEffect.setPictureColorScale($("#scanWave-pictureColorScale").val() * 1.0);
+                        geoEffect.setSectionAngle($("#scanWave-sectionAngle").val() * 1.0);
+
+                        geoEffect.setMode(showMode);
+
+                        //layer.close(layerIndex);
+                    },
+                    btn2: function () {
+                        layer.close(layerIndex);
+                    },
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        layer.setTop(layero);
+                    },
+
+                });
+            }
+
+        </script>
+    </div>
+</body>
+
+
+</html>

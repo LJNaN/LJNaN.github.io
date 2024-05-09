@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title>倾斜摄影模型单体化与属性查询操作手册</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+	<script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload"
+			src="../js/include-web.js" from="doc"></script>
+	<link rel="stylesheet" href="../css/common.css"/>
+	<link rel="stylesheet" href="../css/examples.css"/>
+	<link rel="stylesheet" href="../css/header.css"/>
+	<link rel='stylesheet' href='../css/sm-extend.css'/>
+	<link rel='stylesheet' href='../css/sm-doc.css'/>
+
+</head>
+	<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+		<!-- ./wrapper -->
+
+		<header class="header-wrapper main-header icl-header"></header>
+		<script>
+            var navigation = {
+                nav: {
+                    title: 'SuperMap iClient3D for Cesium',
+                    path: '../../web/',
+                    isLocal: window.isLocal
+                }
+            };
+            identification = {};
+            utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+		</script>
+
+
+		<div class="wrapper"></div>
+		<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+			<div class='page-header'>
+				<h1>倾斜摄影模型单体化与属性查询操作手册</h1>
+				<hr/>
+				<h2 class="title">概述<a name="Summary"> </a></h2>
+				<p>倾斜摄影模型通常被称作“一张皮”的模型，为发挥倾斜摄影模型应用价值，超图三维率先采用了模型叠加矢量面的方式对倾斜摄影模型进行单体化，此方式操作简单，并且在矢量面数据的属性表中存储业务方面的各类属性信息，实现单体化的同时，能够在倾斜摄影模型进行属性查询。 </p>
+				<p>目前，SuperMap  iClient3D for Cesium提供了众多示范程序，其中“动态单体化”范例便演示了倾斜摄影模型实现动态单体化选择和属性查询的效果。</p>
+				<p>本文档将依照范例的效果，指导用户如何利用自己的倾斜摄影模型在for Cesium客户端上实现属性查询，本操作主要流程如下：</p>
+				<ol>
+					<ol class="list">
+						<li><a href="#01PrepareData">数据准备</a></li>
+						<li><a href="#04Publish3DService">发布三维服务和数据服务</a></li>
+						<li><a href="#05BrowseOblique">客户端浏览及属性查询</a></li>
+					</ol>
+				</ol>
+				<h2 class="title">操作流程</h2>
+				<h3><a name="01PrepareData" style="padding-top:100px; margin-top:-100px;"></a>1.数据准备</h3>
+				<p>必备数据包括：</p>
+				<p>（1）<strong>倾斜摄影模型数据</strong>：如*.osgb格式的倾斜摄影模型及配置文件（*.scp），若无配置文件，请参照<a href="LoadObliqueModel_OperateTopic.html" target="_blank">加载倾斜摄影模型操作手册</a>。</p>
+				<p>（2）<strong>二维矢量面数据</strong>：矢量面数据与倾斜摄影模型位置匹配，完善矢量面数据的属性表；矢量面数据存放于文件数据源（*.udb/*.udbx）中。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/AttributeQueryofObliqueModel_AttributeStructure.png"><br>
+                    <p>图 1：矢量面属性表</p>
+                </div>
+				<p>在“工作空间管理器”中选中数据集并打开其属性表，在功能区“属性表”，即可查看、修改数据的属性结构，并且请根据业务需求为矢量数据添加属性字段、完善属性值。</p>
+				<h3><a name="04Publish3DService" style="padding-top:100px; margin-top:-100px;"></a>2. 发布三维服务和数据服务</h3>
+				<h4>操作说明</h4>
+				<br>
+				<p>在此步骤将S3M格式的倾斜摄影模型以三维服务的形式发布到本地或远程服务器上，实现Web网络资源共享，为实现属性查询，还将发布一个数据服务。</p>
+				<h4>操作步骤</h4><br>
+				<p>（1）在SuperMap iDesktop桌面产品的 “工作空间管理器”中，在“数据源”处右键点击“打开文件型数据源”，打开存有<strong>矢量面数据的数据源（*.udb/*.udbx）</strong>。</p>
+				<p>（2）新建一个球面场景，在“<strong>图层管理器</strong>”下选中“<strong>普通图层</strong>”，右键点击“<strong>添加三维切片缓存图层</strong>” 。 </p>
+				<div class="pageImage"><img src="../images/TopicDOC/AddOSGBLayer.png" width="280" height="247">
+                    <p>图 2：向场景添加三维切片缓存</p>
+                </div>
+				<p>（3）加载数据后，定位到图层并设置合适观察角度，保存场景和工作空间；保存后须关闭当前工作空间，占用可能导致后续服务发布失败。</p>
+				<p>（4）启动SuperMap iServer服务：在<strong>SuperMap iServer/bin </strong>目录下，点击“<strong>startup.bat</strong>“批处理文件启动服务。</p>
+				<p>（5）打开浏览器，地址栏输入http://localhost:8090/iserver/manager进入“<strong>服务管理“</strong>页面，“<strong>首页</strong>”下点击“<strong>快速发布一个或一组服务</strong>“按钮。 </p>
+				<div class="pageImage"><img src="../images/TopicDOC/PublishQuickly.png">
+                    <p>图 3：快速发布一个或一组服务</p>
+                </div>
+				<p>（6）弹出“<strong>快速发布服务</strong><strong>-选择发布的数据来源</strong>”对话框，在”<strong>数据来源</strong>“处选择”<strong>工作空间</strong>“，点击”<strong>下一步</strong>“。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/DataSource.png" width="509" height="231">
+                    <p>图 4：数据来源选择工作空间</p>
+                </div>
+				<p>（7）弹出“<strong>快速发布服务</strong><strong>-</strong><strong>配置数据</strong>“对话框，点击”<strong>远程浏览</strong>“按钮选择前述所保存的工作空间，点击”<strong>下一步</strong>“。 </p>
+				<div class="pageImage"><img src="../images/TopicDOC/LoadOblique_SelectWorkspace.png" width="723" height="277">
+                    <p>图 5：选择工作空间配置数据</p>
+                </div>
+				<p>（8）弹出“<strong>快速发布服务-选择发布的服务类型</strong>“对话框，勾选”<strong>REST-数据服务</strong>“和”<strong>REST-三维服务</strong>“，点击”<strong>下一步</strong>“。 </p>
+				<div class="pageImage"><img src="../images/TopicDOC/AttributeQueryofObliqueModel_Select3D&DataService.png" width="516" height="269">
+                    <p>图 6：勾选三维服务和数据服务</p>
+                </div>
+				<p>至此，服务发布已配置完成，按照提示点击“完成“和”关闭“按钮。</p>
+				<h3><a name="05BrowseOblique"style="padding-top:100px; margin-top:-100px;"></a>3. 客户端浏览及属性查询</h3>
+				<h4>操作说明</h4><br>
+				<p>（1）在操作前请将 for Cesium产品包存放在<strong> SuperMap iServer/webapps</strong> 目录下。</p>
+				<p>（2）进入 for Cesium产品包存放路径<strong>SuperMap iServer/webapps</strong>，在“examples/webgl”文件夹下，文本方式打开“<strong>dynamicDTH.html</strong>“范例，修改如下图的内容。</p>
+				<div class="pageImage"><img src="../images/TopicDOC/AttributeQueryofObliqueModel_ModifySample1.png"><br>
+					<p>图 7：修改范例部分参数</p>
+                </div>
+				<ul>
+					<ul class="disc">
+					<li>①修改倾斜摄影图层地址<strong>scene.</strong> <strong>addS3MTilesLayerByScp ()</strong>函数：将地址修改为iServer发布的<strong>url</strong><strong>服务地址</strong>，并更改name里的信息。</li>
+					<li>②修改倾斜摄影数据服务地址<strong>dataServiceUrl</strong>及<strong>dataSourceName</strong>为数据源的名称、<strong>dataSetName</strong>为矢量面数据集的名称。</li>
+					<li>③修改<strong>Cesium.Cartesian3()</strong><strong>请更改为</strong><strong>scp</strong><strong>文件中的插入点坐标</strong>，用于飞行定位到倾斜摄影模型位置。</li>
+					</ul>
+				</ul>
+				<p>(3)在“<strong>dynamicDTH.html</strong>“范例中设置属性查询参数，即修改<strong>queryObj</strong>及<strong>ajax请求</strong>部分，如下图：</p>
+				<div class="pageImage"><img src="../images/TopicDOC/AttributeQueryofObliqueModel_ModifySample2.png">
+                    <p>图 8：修改范例属性查询参数</p>
+                </div>
+				<ul>
+					<ul class="disc">
+						<li>①其中，url为数据服务的地址，粘贴“数据服务的根节点(data)“页面的url地址。</li>
+						<li>②dataSourceName为数据源的名称。</li>
+						<li>③dataSetName为矢量面数据集的名称。</li>
+					</ul>
+				</ul>
+				<p>(5) 范例修改完毕，以localhost方式打开“<strong>dynamicDTH</strong>.html “网页。</p>
+				<h4>操作结果</h4><br>
+				<p>网页加载完毕，相机飞至倾斜摄影模型所在位置，点击任一模型，模型高亮并弹出窗口显示属性，效果如下图： </p>
+				<div class="pageImage"><img src="../images/TopicDOC/AttributeQueryofObliqueModel_BrowseResult.jpg"style="width:90%">
+                    <p>图 9: 在倾斜摄影模型上进行属性查询效果图</p>
+                </div>
+			</div>
+		</div>
+		<!--法律申明-->
+		<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright" data-i18n="footer.copyright">版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8
+			京公网安备11010502008721 甲测资字11002074
+		</div>
+		<!--footer end-->
+		<script type="text/javascript" src="../js/utils.js"></script>
+	</body>
+</html>

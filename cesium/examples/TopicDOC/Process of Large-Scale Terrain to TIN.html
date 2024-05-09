@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>大规模地形数据生成TIN处理流程</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+    <script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload"
+            src="../js/include-web.js" from="doc"></script>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/examples.css"/>
+    <link rel="stylesheet" href="../css/header.css"/>
+    <link rel='stylesheet' href='../css/sm-extend.css'/>
+    <link rel='stylesheet' href='../css/sm-doc.css'/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+<!-- ./wrapper -->
+
+<header class="header-wrapper main-header icl-header"></header>
+<script>
+    var navigation = {
+        nav: {
+            title: 'SuperMap iClient3D for Cesium',
+            path: '../../web/',
+            isLocal: window.isLocal
+        }
+    };
+    identification = {};
+    utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+</script>
+<!--<div class="wrapper"></div>-->
+<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+  <div class='page-header'>
+        <h1>大规模地形数据生成TIN处理流程</h1>
+        <hr/>
+        <h2 class="title">操作流程<a name="Summary"></a></h2>
+        <p>1、全部数据按照投影带进行划分任务区（每个任务区不要跨带），人工划分为多个任务区，可以多台机器同时进行处理。</p>
+        <p>2、按照任务区导入 tif/asc/..数据。用桌面导入任务区内的所有地形数据，然后进行镶嵌处理。</p>
+		<div class="pageImage"><img src="../images/TopicDOC/Terrain01.png"></div>
+        <P>3、对每个任务区导入的数据进行坐标转换，转为地理坐标系。</P>
+        <div class="pageImage"><img src="../images/TopicDOC/Terrain02.png"></div>
+	    <p>4、对每个任务区分别生成TIN。同样如果追求更高的加载性能和体验，存储类型建议选择块存储。</p>
+		<div class="pageImage"><img src="../images/TopicDOC/Terrain03.png"></div>
+      <p>5、对生成的 TIN 地形进行两两合并（三维数据-TIN工具-合并TIN缓存），如果两个地形有重叠，高精度的地形在上面（TIN缓存1的位置），如果只是拼接操作，可以不考虑顺序。</p>
+	   <div class="pageImage"><img src="../images/TopicDOC/Terrain04.png"></div>
+      <p>6、SuperMap iClient3D for Cesium中批量请求加载。如果是 10.1之前的版本，TIN 地形要生成紧凑存储类型，在SuperMap iClient3D for Cesium中开启批量请求，也能体验10.1版本块存储的加载效果。<br>块存储的数据不需要再加 packingRequest:1 这句代码。</p>
+      <pre>
+     var provider_terrain=new Cesium.CesiumTerrainProvider({
+             url : url,
+             isSct : true,//地形服务源自SuperMap iServer 发布时需设置isSct为true
+             packingRequest:1//批量请求
+			 });
+       </pre>
+	   <h3>注意事项：</h3>
+	   <ul class="disc">
+					<li>①如果需要对TIN缓存进行坡度坡向分析等操作，生成TIN缓存时，一定要勾选带法线复选框。</li>
+					<li>②如果需要从TIN缓存提取三维数据等操作，生成TIN缓存时，一定要勾选高精度复选框。</li>
+					<li>③如果DEM数据的精度特别高，如精度误差0.1米，生成TIN缓存时，可勾选保留精度复选框。</li>
+		</ul>
+  </div>
+</div>
+<!--法律申明-->
+<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright icl2" data-i18n="footer.copyright">
+    版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8
+    京公网安备11010502008721 甲测资字11002074
+</div>
+<!--footer end-->
+<script type="text/javascript" src="../js/utils.js"></script>
+</body>
+</html>

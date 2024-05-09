@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<title>模型动态拉伸</title>
+		<link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+		<link href="./css/font-awesome.min.css" rel="stylesheet">
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/pretty.css" rel="stylesheet">
+		<link href="./css/style.css" rel="stylesheet">
+		<link rel="stylesheet" href="./css/liMarquee.css">
+		<link rel="stylesheet" href="./css/InfoGrid-skyline.css">
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/bootstrap-select.min.js"></script>
+		<script src="./js/config.js"></script>
+		<script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+		<style>
+			input[type=range] {
+				-webkit-appearance: none;
+				width: 160px;
+				height: 2px;
+				border-radius: 10px; /*这个属性设置使填充进度条时的图形为圆角*/
+			}
+			input[type=range]::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				margin-top: -3px;
+				height: 10px;
+				width: 10px;
+			}
+			input[type=range]::-webkit-slider-runnable-track {
+				height: 2px;
+			}
+
+			input[type=text] {
+				width: 62px;
+				height: 28px;
+				background: rgba(51, 51, 51, 1);
+				border: 1px solid rgba(74, 74, 74, 1);
+				border-radius: 4px;
+				margin: 0;
+				box-sizing: border-box;
+			}
+			.strenchScale {
+				color: #FFFFFF;
+			}
+			
+			.rangeBox{
+				width: 200px;
+			}
+			
+			#checkBox {
+				margin-top: -4px;
+			}
+			
+			.cameraHeightLabel {
+				color: #FFFFFF;
+				display: inline-block;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="cesiumContainer"></div>
+		<div id="toolbar" class="param-container tool-bar">
+			<div style="padding:5px 0">
+				<label class="strenchScale">拉伸比例</label>
+				<div class="rangeBox">
+					<input type="range" id="z" min="0.01" max="2.0" step="0.01" value="1.0">
+				</div>
+			</div>
+			<div style="padding:5px 0">
+				<input type="checkbox" id="checkBox">
+				<label class="cameraHeightLabel">跟随相机高度设置拉伸</label>
+			</div>
+			<button id="start">拉伸动画</button>
+		</div>
+		<script type="text/javascript">
+			function onload(Cesium) {
+				var viewer = new Cesium.Viewer('cesiumContainer', {
+					timeline: true
+				});
+				viewer.imageryLayers.addImageryProvider(Cesium.createOpenStreetMapImageryProvider({
+					url: 'https://a.tile.openstreetmap.org/'
+				}));
+				var scene = viewer.scene;
+				scene.debugShowFramesPerSecond = true;
+				viewer.scene.screenSpaceCameraController.zoomFactor = 2.0;
+				var timer = undefined;
+				var isCameraController = false;
+				let maxScaleHeight = 1500,
+					minScaleHeight = 500;
+				// 设置环境光
+				scene.lightSource.ambientLightColor = new Cesium.Color(0.4, 0.4, 0.4, 1);
+				// 新增直射光1
+				var position = new Cesium.Cartesian3.fromDegrees(106.282013734667, 29.7615756638933, 630);
+				var targetPosition1 = new Cesium.Cartesian3.fromDegrees(106.756840202248, 29.3980661015228, 500);
+				var dirLightOptions = {
+					targetPosition: targetPosition1,
+					color: new Cesium.Color(0.6, 0.6, 0.6, 1),
+					intensity: 1.0
+				};
+				directionalLight_1 = new Cesium.DirectionalLight(position, dirLightOptions);
+				scene.addLightSource(directionalLight_1);
+				// 新增直射光2
+				var position2 = new Cesium.Cartesian3.fromDegrees(106.756840202248, 29.3980661015228, 500);
+				var targetPosition2 = new Cesium.Cartesian3.fromDegrees(106.282013734667, 29.7615756638933, 630);
+				var dirLightOptions2 = {
+					targetPosition: targetPosition2,
+					color: new Cesium.Color(0.7, 0.7, 0.7, 1),
+					intensity: 1.0
+				};
+				directionalLight_2 = new Cesium.DirectionalLight(position2, dirLightOptions2);
+				scene.addLightSource(directionalLight_2);
+				// 新增直射光3
+				var position3 = new Cesium.Cartesian3.fromDegrees(106.452, 29.573, 1);
+				var targetPosition3 = new Cesium.Cartesian3.fromDegrees(106.454, 29.581, 91);
+				var dirLightOptions3 = {
+					targetPosition: targetPosition3,
+					color: new Cesium.Color(0.5, 0.5, 0.5, 1),
+					intensity: 1.0
+				};
+				directionalLight_3 = new Cesium.DirectionalLight(position3, dirLightOptions3);
+				scene.addLightSource(directionalLight_3);
+				// 新增直射光-顶光
+				var position4 = new Cesium.Cartesian3.fromDegrees(106.571378546495, 29.5603965436718, 1000);
+				var targetPosition4 = new Cesium.Cartesian3.fromDegrees(106.571378546495, 29.5603965436718, 10);
+				var dirLightOptions4 = {
+					targetPosition: targetPosition4,
+					color: new Cesium.Color(0.7, 0.7, 0.7, 1),
+					intensity: 1.0
+				};
+				directionalLight_4 = new Cesium.DirectionalLight(position4, dirLightOptions4);
+				scene.addLightSource(directionalLight_4);
+				var promise = scene.open(URL_CONFIG.SCENE_CHONGQING_TX);
+				promise.then(function(layers) {
+					//设置相机位置，定位至模型
+					scene.camera.setView({
+						destination: new Cesium.Cartesian3(-1583124.0816723537, 5317591.742892992, 3150766.314206999),
+						orientation: {
+							heading: 3.289678270609447,
+							pitch: -0.5949627316377812,
+							roll: 6.28317031625836
+						}
+					});
+					var layer = scene.layers.find("CQmodel");
+					//设置线框
+					var initialColor = "rgb(0,0,0)";
+					layer.style3D.lineColor = Cesium.Color.fromCssColorString(initialColor);
+					layer.style3D.fillStyle = Cesium.FillStyle.Fill_And_WireFrame;
+					layer.wireFrameMode = Cesium.WireFrameType.EffectOutline;
+					function updateHeightScale() {
+						var currentHeight = viewer.scene.camera._positionCartographic.height;
+						var heightScale = 1.0 - (currentHeight - minScaleHeight) / (maxScaleHeight - minScaleHeight);
+						layer.heightScale = parseFloat(Cesium.Math.clamp(heightScale, 0.0, 1.0));
+					}
+					viewer.camera.changed.addEventListener((e) => {
+						if(isCameraController) {
+							updateHeightScale()
+						}
+					})
+					$('#z').on('input propertychange', function() {
+						var value = Number($(this).val());
+						layer.heightScale = value;
+					});
+					$("#checkBox").on("change", function() {
+						isCameraController = this.checked;
+					})
+					$("#start").click(function() {
+						layer.heightScale = 0;
+						var val = 0;
+						cancelAnimationFrame(timer);
+						timer = requestAnimationFrame(function fn(t) {
+							val += 0.01;
+							layer.heightScale = val;
+							if(val < 1) {
+								timer = requestAnimationFrame(fn)
+							} else {
+								cancelAnimationFrame(timer)
+							}
+						})
+					})
+				});
+			}
+			if(typeof Cesium !== 'undefined') {
+				window.startupCalled = true;
+				onload(Cesium);
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>大规模地形影像数据处理流程</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+    <script type="text/javascript" include="jquery,bootstrap,template,admin-lte,jquery.scrollto,lazyload"
+            src="../js/include-web.js" from="doc"></script>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/examples.css"/>
+    <link rel="stylesheet" href="../css/header.css"/>
+    <link rel='stylesheet' href='../css/sm-extend.css'/>
+    <link rel='stylesheet' href='../css/sm-doc.css'/>
+    <!--短文单独的样式-->
+    <!--<style>-->
+    <!--.icl2{-->
+    <!--position: absolute;-->
+    <!--bottom: 0px;-->
+    <!--width: 100%;-->
+    <!--}-->
+    <!--</style>-->
+</head>
+<body class="hold-transition skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollSpy">
+<header class="header-wrapper main-header icl-header"></header>
+<script>
+    var navigation = {
+        nav: {
+            title: 'SuperMap iClient3D for Cesium',
+            path: '../../web/',
+            isLocal: window.isLocal
+        }
+    };
+    identification = {};
+    utils.loadTemplate('.icl-header', '../template/header.html', navigation);
+</script>
+<div id='container' class='container' style="width: 90%; padding-top: 75px;">
+    <div class='page-header'>
+        <h1>大规模地形影像数据处理流程</h1>
+        <hr/>
+        <h2 class="title">背景需求<a name="Summary"></a></h2>
+
+        <p>地形影像数据是项目中最基础的底图数据，小范围的数据量有很多种处理方式，都可以快速生成瓦片，加载体验也不会很差。</p>
+
+        <p>然而随着项目的范围越来越大，用户对大规模地形影像的处理效率及加载性能都有比较高的要求。</p>
+
+        <p>因此，本文总结了一些地形影像数据处理的经验，供用户参考。</p>
+
+        <h2 class="title">处理流程<a name="Summary"></a></h2>
+        <ul class="disc">
+            <li>①全部数据按照投影带进行划分任务区（每个任务区不要跨带），人工划分为多个任务区，可以多台机器同时进行处理</li>
+            <li>②用桌面软件创建镶嵌数据集
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain05.jpg"></div>
+            </li>
+            <li>③镶嵌数据集具体操作参考以下链接：<a href="https://blog.csdn.net/supermapsupport/article/details/74452385">https://blog.csdn.net/supermapsupport/article/details/74452385</a>
+            </li>
+            <li>④生成全球剖分的地图瓦片：将镶嵌数据集添加到地图中，设置边界、标签、轮廓三个图层为不可见（否则生成的瓦片会带上），设置影像图层的背景透明、无效值颜色透明两个属性。
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain06.jpg"></div>
+                <p>如果恰好在有效区域中存在无效的颜色值，则用另外一种方式剔除无效区域，右键点击镶嵌数据集，选择“重建范围”；可以导入有效区域的边界，或者自动计算镶嵌数据集的有效范围。</p>
+
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain07.jpg"></div>
+                <p>对投影坐标系的地图，设置动态投影转换，转换为对应的地理坐标系（并非所有的都转为 4326，China2000 的投影坐标系要设置动态转换为 China2000 的地理坐标系）</p>
+
+                <p>保存地图，多任务（可多机并行）生成全球剖分的地图瓦片。</p>
+
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain08.jpg"></div>
+                <p>层级选择：01.米影像分辨率生成最高层级 21 层；0.2 米 20 层；0.5 米 19 层；1 米 18 层；2 米 17 层；4 米 16 层，以此类推。</p>
+
+                <p>如果最终只是在三维场景中加载，那么可以只生成最高层的瓦片，用第五步转换为 sci3d 会自动生成金字塔层。</p>
+            </li>
+            <li>⑤生成的地图缓存转换为sci3d影像缓存工具地址：链接<a
+                    href="https://eyun.baidu.com/s/3dzbgVO">https://eyun.baidu.com/s/3dzbgVO</a>密码：8SsM
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain09.jpg"></div>
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain10.jpg"></div>
+                <p>webp 有更高的压缩比，建议勾选。如果地图中有矢量数据（点、线、面），则必须勾选“矢量数据”选项，否则不用勾选。</p>
+
+                <p>为了提升地形影像的下载及加载效率，10.1 及后续版本提供了地形影像缓存的块存储的方式，该工具可以直接升级为块存储。</p>
+
+                <p>在 iDesktop10.1 版本中，同样提供将非块存储的地形、影像瓦片升级为块存储，同时也支持将地形影像瓦片保存到MongoDB，方便组织管理。</p>
+
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain11.jpg">
+                    <h5>“三维数据”选项卡中，“缓存工具”下的“地形影像块存储”</h5></div>
+                <div class="pageImage"><img src="../images/TopicDOC/Terrain12.jpg">
+                    <h5>“三维数据”选项卡中，“保存到 MongoDB”</h5></div>
+                <p>如果追求更高的加载性能和体验，建议生成块存储的瓦片。性能最高的是块大文件存储、其次是MongoDB。</p>
+
+                <p>同一分辨率的影像最好放在一个地图里生成，不同分辨率的影像分不同的地图生成。</p>
+            </li>
+            <li>⑥前端批量请求加载（10.01 版本非块存储的影像，前端支持批量下载）
+                <p>如果是 10.1 之前的版本，仅用工具转换为 sci3d 即可（不要勾选块存储，10.1 之前版本不支持）。</p>
+
+                <p>在前端开启批量请求，也能体验 10.1 版本块存储的加载效果，块存储的数据不需要再加 packingRequest:1 这行代码。</p>
+			<pre>var provider_img = new Cesium.SuperMapImageryProvider({
+                   url : 'url',
+                   packingRequest:1//批量请求
+                 });
+			</pre>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--法律申明-->
+<div style="background-color: #1c1c1c;color: rgba(222,222,222,0.71)" class="icl-copyright icl2"
+     data-i18n="footer.copyright">
+    版权所有 © 2000-2023 北京超图软件股份有限公司 京ICP备11032883号-8
+    京公网安备11010502008721 甲测资字11002074
+</div>
+<!--footer end-->
+<script type="text/javascript" src="../js/utils.js"></script>
+</body>
+</html>

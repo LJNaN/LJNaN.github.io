@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<title>连通性淹没分析</title>
+		<link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+		<link href="./css/pretty.css" rel="stylesheet">
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/config.js"></script>
+		<script src="./js/tooltip.js"></script>
+		<script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+		<style>
+			.waterinput {
+				width: 87px;
+				background: #303336;
+				color: white;
+				padding: 5px;
+				border-radius: 4px;
+				border: none;
+				margin-left: 3px;
+				border: 1px solid #444;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="cesiumContainer"></div>
+		<div id='loadingbar' class="spinner">
+			<div class="spinner-container container1">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container2">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container3">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+		</div>
+		<div id="toolbar" class="param-container tool-bar" style="padding-top: 10px;">
+			<div class="param-item">
+				<b>水面高度</b>
+				<input id="waterHeight" type="number" value="8.6" class="waterinput" />
+			</div>
+			<div class="param-item">
+				<b>水面模式</b>
+				<select id="WaterMode" class="cesium-button" style="width: 100px">
+					<option value="0">贴地</option>
+					<option value="1" selected>绝对高度</option>
+				</select>
+			</div>
+			<div style="display: flex;justify-content: end;">
+				<button id="start" class="button black" type="button">开始</button>
+				<button id="clear" class="button black" type="button" style="margin-right: 0">清除</button>
+			</div>
+		</div>
+		<script>
+			function onload(Cesium) {
+				var viewer = new Cesium.Viewer('cesiumContainer', {
+					timeline: true
+				});
+				var scene = viewer.scene;
+				scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+				
+				var promise = scene.open(URL_CONFIG.SCENE_XGPARK_LT);
+				var layerS3M;
+				Cesium.when(promise, function(layers) {
+					layerS3M = layers[0];
+					scene.camera.setView({
+						destination: {
+							x: -2418187.606667652,
+							y: 5377269.836405936,
+							z: 2433404.25783032
+						},
+						orientation: {
+							heading: 4.843239315937758,
+							pitch: -0.8483985917931864,
+							roll: 6.281842456812987
+						}
+					});
+				}, function(e) {
+					if(widget._showRenderLoopErrors) {
+						var title = '加载SCP失败，请检查网络连接状态或者url地址是否正确？';
+						widget.showErrorPanel(title, undefined, e);
+					}
+				});
+				var damBreak = new Cesium.FloodAnalysis3D(viewer.scene);
+				function FloodAnalysis3D() {
+					if(!damBreak) {
+						damBreak = new Cesium.FloodAnalysis3D(viewer.scene);
+					}
+					damBreak.floodPosition = new Cesium.Cartesian3(114.21215320240138, 22.426297098303007, 8.29031689687963);
+					damBreak.terrainURL('http://www.supermapol.com/realspace/services/data-KeJiYuan/rest/data/datasources/kejiyuan/datasets/DatasetDSM');
+					damBreak.waterHeight = Number($('#waterHeight').val());
+					damBreak.waterMode = Number($('#WaterMode').val()); //Cesium.WaterMode.Clamp /Absolute
+					damBreak.layer = layerS3M;
+					var points = [
+						114.21212928149606, 22.426265509497185, 8.385971993455133, 114.21218170348008, 22.426330064447377, 8.710407511576252,
+						114.21215523708862, 22.426356228712955, 8.914770393931189, 114.21220962283093, 22.42640094659324, 8.089846381912087,
+						114.21205317913817, 22.426580637921305, 7.754076834093487, 114.21199171528804, 22.426625368012594, 7.9625659815797905,
+						114.21192268989154, 22.426646816235436, 7.778280202200631, 114.21187540173518, 22.426701191998657, 7.889624467142687,
+						114.21159649114377, 22.426912570360013, 7.540775624494344, 114.21156842597607, 22.4269091996321, 7.53520860179541,
+						114.21138342171037, 22.42706138604219, 7.486991202571056, 114.21086378232438, 22.427404032636343, 7.677289198249827,
+						114.21072782972686, 22.42752692011059, 7.682224874897269, 114.21048297745527, 22.42771246393822, 7.576565499252194,
+						114.21043765732185, 22.42771348378755, 7.697034868773991, 114.21040502155157, 22.42768940509561, 7.629310145076785,
+						114.21038194426922, 22.427641077764402, 7.6863466925568575, 114.21035521522418, 22.42761648409034, 7.766240049121049,
+						114.2103234876809, 22.42760808426811, 7.777426080134598, 114.21030446483836, 22.427598445203802, 7.909657017094082,
+						114.21030420242981, 22.427579138618334, 7.940645158722456, 114.21039606308118, 22.42746816866371, 7.904170077740542,
+						114.2105189725731, 22.427388718074667, 7.891480063771587, 114.21062663657779, 22.42735287881097, 7.9223070240973925,
+						114.21079845803088, 22.427277062168756, 7.904043797799583, 114.21093085847086, 22.427189622120512, 7.99319161557909,
+						114.21104298520804, 22.427102092136938, 7.929115755103409, 114.2111562479426, 22.426986442075123, 8.086031478539185,
+						114.21123480443414, 22.426873352840584, 8.1703989331456, 114.21128862947835, 22.426792874897004, 8.335547233730482,
+						114.21137753377836, 22.426731993498358, 8.374676589109217, 114.21147840631963, 22.426674389099933, 8.228975379161364,
+						114.21169401860583, 22.42662054259135, 8.133554914355773, 114.2118251680166, 22.42655459204297, 8.067611051899132,
+						114.21193747630336, 22.42647601264309, 8.158435311100758, 114.21203584552828, 22.42638499559225, 8.207056370476788
+					];
+					damBreak.qureyRegion({
+						position: points
+					})
+					damBreak.build();
+				}
+				document.getElementById("start").onclick = function() {
+					FloodAnalysis3D();
+				};
+				document.getElementById("clear").onclick = function() {
+					if(damBreak) {
+						damBreak.destroy();
+						damBreak = undefined;
+					}
+				};
+				$('#loadingbar').remove();
+				$('#toolbar').show();
+			}
+			if(typeof Cesium !== 'undefined') {
+				window.startupCalled = true;
+				onload(Cesium);
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description" content="Test">
+    <meta name="cesium-sandcastle-labels" content="Geometries">
+    <title>SuperMap 动画制作</title>
+
+    <script type="text/javascript" src="../../Build/Cesium/ThirdParty/Workers/PlotAlgo/PlotAlgoInclude.js"></script>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <script src="js/plotPanelControl/PlottingUI.Include.js"></script>
+    <link href="./css/font-awesome.min.css" rel="stylesheet">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-select.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/spectrum.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+    <script type="text/javascript" include="bootstrap-css,responsive,colorpicker"
+            src="js/jquery.colorpicker.js"></script>
+    <script type="text/javascript" src="js/plotPanelControl/AnimationPanel.js"></script>
+    <script src="./js/tooltip.js"></script>
+
+
+    <style>
+        label {
+            display: inline-block;
+            margin-right: 1rem;
+        }
+
+        label>input,
+        label>span {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+
+</head>
+
+<body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html"
+      style="margin: 0px; overflow: hidden;background: #fff;height: 100%;">
+<div id="toolbar" class="param-container tool-bar" style="border-radius: 4px; left: 55%; display: block; width: 900px"hidden="hidden">
+    <select id="animationType" class="selectpicker show-tick "style="border-radius: 4px;width: 200px; ">
+        <option value="NONE" selected>设置动画</option>
+        <option value="ATTRIBUTE" >属性动画</option>
+        <option value="BLINK">闪烁动画</option>
+        <option value="GROW">生长动画</option>
+        <option value="ROTATE">旋转动画</option>
+        <option value="SCALE">比例动画</option>
+        <option value="SHOW">显隐动画</option>
+        <option value="WAY">路径动画</option>
+    </select>
+    <input type="button" class="btn btn-default" value="播放" onclick="play()">&nbsp;&nbsp;
+    <input type="button" class="btn btn-default" value="暂停" onclick="pause()">&nbsp;&nbsp;
+    <input type="button" class="btn btn-default" value="停止" onclick="stop()">&nbsp;&nbsp;
+    <input type="button" class="btn btn-default" value="复位" onclick="reset()">&nbsp;&nbsp;
+    <input type="button" class="btn btn-default" value="删除动画" onclick="deleteSelectedFeaturesAnimation()">&nbsp;&nbsp;
+    <input type="button" class="btn btn-default" value="删除全部动画" onclick="deleteAllAnimation()">&nbsp;&nbsp;
+    <div id="pannel" style="padding: 10px;display: block;">
+        <div id="AttributePannel" style="display: none;">
+            <div class="param-item">
+                <label>线色动画：</label>
+                <select class='  ' id='lineColorAnimationFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始线色：</label>
+                <input type="text" id="a_startLineColor" value="" />
+                <span class=''><img src='./img/colorpicker.png' id="cp1"
+                                    style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>结束线色：</label>
+                <input type="text" id="a_endLineColor" value="" />
+                <span class=''><img src='./img/colorpicker.png' id="cp2"
+                                    style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>线宽动画：</label>
+                <select  id='lineWidthFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始线宽：</label>
+                <input type='text'  id='a_startLineWidth' value='2' />
+            </div>
+            <div class="param-item">
+                <label>结束线宽：</label>
+                <input type='text'  id='a_endLineWidth' value='3' />
+            </div>
+            <div class="param-item">
+                <label>衬线色动画：</label>
+                <select  id='surroundLineColorFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始衬线色：</label>
+                <input type="text" id="a_startSurroundLineColor" value="" />
+                <span ><img src='./img/colorpicker.png' id="cp3"
+                                       style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>结束衬线色：</label>
+                <input type="text" id="a_endSurroundLineColor" value="" />
+                <span ><img src='./img/colorpicker.png' id="cp4"
+                                       style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>衬线宽动画：</label>
+                <select  id='surroundLineWidthFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始衬线宽：</label>
+                <input type='text'  id='a_startSurroundLineWidth' value='2' />
+            </div>
+            <div class="param-item">
+                <label>结束衬线宽：</label>
+                <input type='text'  id='a_endSurroundLineWidth' value='3' />
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='a_startTime' value='0' />
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='a_duration' value='5' />
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='a_repeatFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createAttributeAnimation()"/>
+        </div>
+        <div id="BlinkPannel" style="display: none;">
+            <div class="param-item">
+                <label>闪烁风格：</label>
+                <select  id='blinkStyleFlag' >
+                    <option value='0'>频率闪烁</option>
+                    <option value='1'>次数闪烁</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>闪烁频率：</label>
+                <input type='text'  id='blinkFrequency' value='500' />
+            </div>
+            <div class="param-item">
+                <label>闪烁次数：</label>
+                <input type='text'  id='blinkNumber' value='5' />
+            </div>
+            <div class="param-item">
+                <label>颜色交替：</label>
+                <select  id='b_replaceColorFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始颜色：</label>
+                <input type="text" id="startLineColor" value="" />
+                <span ><img src='./img/colorpicker.png' id="cp5"
+                                       style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>结束颜色：</label>
+                <input type="text" id="endLineColor" value="" />
+                <span ><img src='./img/colorpicker.png' id="cp6"
+                                       style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='blinkStartTime' value='0' />
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='blinkDuration' value='5'/>
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='b_repeatFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createBlinkAnimation()"/>
+
+        </div>
+        <div id="GrowPannel" style="display: none;">
+            <div class="param-item">
+                <label>开始比例：</label>
+                <input type='text'  id='g_startScale' value='0' />
+            </div>
+            <div class="param-item">
+                <label>结束比例：</label>
+                <input type='text'  id='g_endScale' value='1'/>
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='g_startTime' value='0' />
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='g_duration' value='5' />
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='g_repeatFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createGrowAnimation()"/>
+        </div>
+        <div id="RotatePannel" style="display: none;">
+            <div class="param-item">
+                <label>旋转方向：</label>
+                <select  id='rotateDirectionFlag' >
+                    <option value='0'>顺时针</option>
+                    <option value='1'>逆时针</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始角度：</label>
+                <label>X</label>
+                <input type='text' class='' style="width: 30px" id='r_xStartAngle' value='0' />
+                <label>Y</label>
+                <input type='text' class='' style="width: 30px" id='r_yStartAngle' value='0'/>
+                <label>Z</label>
+                <input type='text' class='' style="width: 30px" id='r_zStartAngle' value='0'/>
+            </div>
+            <div class="param-item">
+                <label>结束角度：</label>
+                <label>X</label>
+                <input type='text'  style="width: 30px" id='r_xEndAngle' value='0'/>
+                <label>Y</label>
+                <input type='text'  style="width: 30px" id='r_yEndAngle' value='0' />
+                <label>Z</label>
+                <input type='text'  style="width: 30px" id='r_zEndAngle' value='0'/>
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='r_startTime' value='0' />
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='r_duration' value='5' />
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='r_repeatFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createRotateAnimation()"/>
+        </div>
+        <div id="ScalePannel" style="display: none;">
+            <div class="param-item">
+                <label>开始比例：</label>
+                <input type='text'  id='s_startScale' value='0' />
+            </div>
+            <div class="param-item">
+                <label>结束比例：</label>
+                <input type='text'  id='s_endScale' value='1' />
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='s_startTime' value='0' />
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='s_duration' value='5' />
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='s_repeatFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createScaleAnimation()"/>
+        </div>
+        <div id="ShowPannel" style="display: none;">
+            <div class="param-item">
+                <label>显示状态（finalDisplay）：</label>
+                <select  id='finalDisplayFlag'>
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>显示效果：</label>
+                <select  id='showEffectFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='show_startTime' value='0'/>
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='show_duration' value='5'/>
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='show_repeatFlag'>
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createShowAnimation()"/>
+        </div>
+        <div id="WayPannel" style="display: none;">
+            <div class="param-item">
+                <label>切线方向：</label>
+                <select  id='tangentDirectionFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>显示路径：</label>
+                <select  id='showPathFlag' >
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>路径类型：</label>
+                <select  id='pathTypeFlag' >
+                    <option value='0'>折线路径</option>
+                    <option value='1'>曲线路径</option>
+                </select>
+            </div>
+            <div class="param-item">
+                <label>路径线宽度：</label>
+                <input type='text'  id='pathWidth' value='2' />
+            </div>
+            <div class="param-item">
+                <label>路径线颜色：</label>
+                <input type="text" id="wayLineColor" value="" />
+                <span ><img src='./img/colorpicker.png' id="cp7"
+                                       style="cursor:pointer; z-index: 9999999;"/></span>
+            </div>
+            <div class="param-item">
+                <label>开始时间：</label>
+                <input type='text'  id='w_startTime' value='0'/>
+            </div>
+            <div class="param-item">
+                <label>播放时长：</label>
+                <input type='text'  id='w_duration' value='5'/>
+            </div>
+            <div class="param-item">
+                <label>重复：</label>
+                <select  id='w_repeatFlag'>
+                    <option value='0'>false</option>
+                    <option value='1'>true</option>
+                </select>
+            </div>
+            <input type="button" class="btn btn-default" id="drawWay" value="绘制路径线"/>
+            <input type="button" class="btn btn-default" value="创建动画" onclick="createWayAnimation()"/>
+        </div>
+    </div>
+</div>
+<div id="cesiumContainer" class="fullSize" style="position: relative;left: 0%;height: 100%;">
+    <script id="cesium_sandcastle_script">
+        var cesium, scene, viewer, serverUrl;
+
+        function onload(Cesium) {
+            'use strict';
+            cesium = Cesium;
+            var host = document.location.toString().match(/file:\/\//)?"http://localhost:8090":'http://' + document.location.host;
+            viewer = new Cesium.Viewer('cesiumContainer');
+            scene = viewer.scene;
+            scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+            serverUrl = host + '/iserver/services/plot-jingyong/rest/plot';
+            InitPlot(viewer, serverUrl);
+        }
+        $(document).ready(function () {
+            $("#cp1").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#a_startLineColor"),
+
+            });
+            $("#cp2").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#a_endLineColor"),
+
+            });
+            $("#cp3").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#a_startSurroundLineColor"),
+
+            });
+            $("#cp4").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#a_endSurroundLineColor"),
+
+            });
+            $("#cp5").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#startLineColor"),
+
+            });
+            $("#cp6").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#endLineColor"),
+
+            });
+            $("#cp7").colorpicker({
+                ishex: true,
+                fillcolor: true,
+                event: 'mouseover',
+                target: $("#wayLineColor"),
+
+            });
+            $("#_creset").css("font-size", "12px");
+            $("#_creset").css("padding-right", "20px");
+            $("#colorpanel").css({"z-index": "9999999"});
+        });
+
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            onload(Cesium);
+        }
+    </script>
+</div>
+</body>
+</html>

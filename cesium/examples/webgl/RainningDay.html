@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<title>雨天</title>
+		<link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/pretty.css" rel="stylesheet">
+		<link href="./css/style.css" rel="stylesheet">
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/config.js"></script>
+		<link href="./css/font-awesome.min.css" rel="stylesheet">
+		<link href="./css/liMarquee.css" rel="stylesheet">
+		<link href="./css/InfoGrid-skyline.css" rel="stylesheet">
+		<script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+		<script type="text/javascript" src="./js/fileSaver.js"></script>
+		<style>
+			input[type=checkbox] {
+				margin: -4px 4px 0 0px;
+			}
+			
+			label {
+				display: inline-block;
+			}
+			
+			.param-container {
+				border: none;
+			}
+			
+			.rainBox {
+				width: 100px;
+			}
+			
+			.rainLabel {
+				width: 28px;
+			}
+			
+			.titleBox {
+				margin-bottom: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="cesiumContainer"></div>
+		<div id='loadingbar' class="spinner">
+			<div class="spinner-container container1">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container2">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+			<div class="spinner-container container3">
+				<div class="circle1"></div>
+				<div class="circle2"></div>
+				<div class="circle3"></div>
+				<div class="circle4"></div>
+			</div>
+		</div>
+		<div id="toolbar" class="param-container tool-bar">
+			<div class="titleBox">
+				<div class="titl rainBox">雨天</div>
+				<span class="close2" aria-hidden="false">×</span>
+			</div>
+			<div class="param-item" style="margin-bottom: 0px;">
+				<label class="rainLabel" for="openRainMaterial">下雨</label>
+				<input type="checkbox" id="openRainMaterial">
+			</div>
+		</div>
+		<script type="text/javascript">
+			function onload(Cesium) {
+				var viewer = new Cesium.Viewer('cesiumContainer', {
+					selectionIndicator: false,
+					infoBox: false,
+					timeline: true,
+					skyAtmosphere: false
+				});
+				var scene = viewer.scene;
+				scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+				scene.debugShowFramesPerSecond = true;
+				//创建天空盒
+				var cloudSkyBox = new Cesium.SkyBox({
+					sources: {
+						positiveX: './images/SkyBox/cloudy/Right.jpg',
+						negativeX: './images/SkyBox/cloudy/Left.jpg',
+						positiveY: './images/SkyBox/cloudy/Front.jpg',
+						negativeY: './images/SkyBox/cloudy/Back.jpg',
+						positiveZ: './images/SkyBox/cloudy/Up.jpg',
+						negativeZ: './images/SkyBox/cloudy/Down.jpg'
+					}
+				});
+				scene.skyBox = cloudSkyBox;
+				var promise = scene.open(URL_CONFIG.SCENE_CBD_RIAN_SNOW);
+				promise.then(function(layers) {
+					//设置相机位置，定位至模型
+					scene.camera.setView({
+						destination: new Cesium.Cartesian3(-2141928.463803975, 4391705.204806254, 4099531.6497787824),
+						orientation: {
+							heading: 6.268809805519916,
+							pitch: 0.05347051142348236,
+							roll: 6.283185307179576
+						}
+					});
+					let groundLayer = layers[2];
+					let buildingLayer = layers[3];
+					groundLayer.style3D.bottomAltitude = 5;
+					Cesium.MemoryManager.setCacheSize(2024);
+					buildingLayer.clearMemoryImmediately = false;
+					//开启雨景
+					$("#openRainMaterial").on('input change', function() {
+						viewer.scene.postProcessStages.rain.enabled = this.checked;
+						viewer.scene.postProcessStages.rain.uniforms.density = 10;
+						viewer.scene.postProcessStages.rain.uniforms.angle = 6;
+						viewer.scene.postProcessStages.rain.uniforms.speed = 6;
+						if(this.checked) {
+							groundLayer.setPBRMaterialFromJSON("./SampleData/pbr/MaterialJson/rain_.json");
+							buildingLayer.setPBRMaterialFromJSON("./SampleData/pbr/MaterialJson/rain_.json");
+							let recordRain = 0;
+							let intervalValue = setInterval(() => {
+								if(groundLayer._PBRMaterialParams.pbrMetallicRoughness.rainEffect !== undefined && buildingLayer._PBRMaterialParams.pbrMetallicRoughness.rainEffect !== undefined) {
+									if(recordRain === 0) {
+										recordRain = 1;
+									}
+									groundLayer._PBRMaterialParams.pbrMetallicRoughness.rainEffect.wetnessFactor += 0.0005;
+									buildingLayer._PBRMaterialParams.pbrMetallicRoughness.rainEffect.wetnessFactor += 0.0005;
+								}
+								if(buildingLayer._PBRMaterialParams.pbrMetallicRoughness.rainEffect !== undefined && buildingLayer._PBRMaterialParams.pbrMetallicRoughness.rainEffect.wetnessFactor - 0.85 > 0)
+									clearInterval(intervalValue);
+							}, 40)
+
+						} else {
+							groundLayer.removePBRMaterial();
+							buildingLayer.removePBRMaterial();
+						}
+					});
+				});
+
+				$('#toolbar').show();
+				$('#loadingbar').remove();
+			}
+			if(typeof Cesium !== 'undefined') {
+				window.startupCalled = true;
+				onload(Cesium);
+			}
+		</script>
+	</body>
+
+</html>

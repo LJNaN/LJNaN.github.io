@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>动态单体化</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-select.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<div id="bubble" class="bubble" style="bottom:0;left:82%;display:none;" >
+    <div id="tools" style="text-align : right">
+        <span  style="color: rgb(95, 74, 121);padding: 5px;position: absolute;left: 10px;top: 4px;">对象属性</span>
+        <span class="fui-export" id="bubblePosition" style="color: darkgrey; padding:5px" title="停靠"></span>
+        <span  class="fui-cross" title="关闭" id="close" style="color: darkgrey;padding:5px"></span>
+    </div>
+    <div style="overflow-y:scroll;height:150px" id="tableContainer"><table id="tab"></table></div>
+</div>
+<div id='loadingbar' class="spinner">
+    <div class="spinner-container container1">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+    <div class="spinner-container container2">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+    <div class="spinner-container container3">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+</div>
+<div id='toolbar' class="param-container tool-bar">
+    <p>提示：</p>
+    <span>点击房屋面以查看动态单体化效果</span>
+</div>
+<script>
+    function onload(Cesium) {
+        var viewer = new Cesium.Viewer('cesiumContainer');
+        var scene = viewer.scene;
+        scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+        var camera = scene.camera;
+
+        var scenePosition = null; // 记录在场景中点击的笛卡尔坐标点
+        var table = null ; //气泡内的table
+
+        initPopup();
+
+        // 方法一，通过数据服务的形式添加单体化标识面
+        // (推荐使用)
+        var dataServiceUrl = 'http://www.supermapol.com/realspace/services/data-dynamicDTH/rest/data/featureResults.rjson?returnContent=true'; // 数据服务URL
+        var dataSourceName = '铁岭矢量面'; // 数据源名称
+        var dataSetName = 'New_Region3D_1'; // 数据集名称
+
+        // 加载倾斜摄影图层
+        var promise = scene.addS3MTilesLayerByScp('http://www.supermapol.com/realspace/services/3D-dynamicDTH/rest/realspace/datas/Config%20-%201/config',{
+            name: 'oblique photography'
+        });
+
+        promise.then(function (obliqueLayers) {
+            camera.setView({ // 先定位，开始渲染定位区域的倾斜
+                destination: new Cesium.Cartesian3(-2623004.4174251584, 3926981.958360567, 4287374.829655093),
+                orientation: {
+                    heading: 4.39611370540786,
+                    pitch: -0.43458664812464143,
+                    roll: 2.0174972803488345e-11
+                }
+            });
+        
+            var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            handler.setInputAction(function (e) {
+                // 首先移除之前添加标识实体
+                viewer.entities.removeById('identify-area');
+                // 获取点击位置笛卡尔坐标
+                var position = scene.pickPosition(e.position);
+                scenePosition = position;
+                // 从笛卡尔坐标获取经纬度
+                var cartographic = Cesium.Cartographic.fromCartesian(position);
+                var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+                var latitude = Cesium.Math.toDegrees(cartographic.latitude);
+             
+                var queryPoint = { // 查询点对象
+                    x: longitude,
+                    y: latitude
+                };
+
+                queryByPoint(queryPoint);
+
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+            // 去除加载动画
+            $('#toolbar').show();
+            $('#loadingbar').remove();
+        });
+
+        // 通过点击查询用于表示单体化的面要素，添加到场景中高亮显示。
+        function queryByPoint(queryPoint) {
+            var queryObj = {
+                "getFeatureMode": "SPATIAL",
+                "spatialQueryMode": "INTERSECT",
+                "datasetNames": [dataSourceName + ":" + dataSetName],
+                "geometry": {
+                    id: 0,
+                    parts: [1],
+                    points: [queryPoint],
+                    type: "POINT"
+                }
+            };
+
+            queryObjJSON = JSON.stringify(queryObj); // 转化为JSON字符串作为查询参数
+
+            $.ajax({
+                type: "post",
+                url: dataServiceUrl,
+                data: queryObjJSON,
+                success: function (result) {
+                    var resultObj = JSON.parse(result);
+                    if (resultObj.featureCount > 0) {
+                        addClapFeature(resultObj.features[0]);
+                    }
+                },
+                error: function (msg) {
+                    console.log(msg);
+                }
+            })
+        }
+
+        // 将数据服务查询到的要素添加到场景中高亮显示，表示选中效果。
+        function addClapFeature(feature) {
+            for (i = table.rows.length-1;i > -1;i--){
+                table.deleteRow(i);
+            } 
+            var length = Math.max(feature.fieldNames.length,feature.fieldValues.length)
+            for(var index = 0;index < length;index++){
+                var newRow = table.insertRow();
+                var cell1 = newRow.insertCell();
+                var cell2 = newRow.insertCell();    
+                cell1.innerHTML = feature.fieldNames[index];
+                cell2.innerHTML = feature.fieldValues[index];
+            }
+            $("#bubble").show();
+
+            var lonLatArr = getLonLatArray(feature.geometry.points);
+            viewer.entities.add({
+                id: 'identify-area',
+                name: '单体化标识面',
+                polygon: {
+                    hierarchy: Cesium.Cartesian3.fromDegreesArray(lonLatArr),
+                    material: new Cesium.Color(1.0, 0.0, 0.0, 0.3),
+                    classificationType: Cesium.ClassificationType.S3M_TILE // 贴在S3M模型表面
+                },
+            });
+        }
+
+        // 得到[经度,纬度,经度,纬度...]形式的数组，用于构造面。
+        function getLonLatArray(points) {
+            var point3D = [];
+            points.forEach(function (point) {
+                point3D.push(point.x);
+                point3D.push(point.y);
+            });
+            return point3D;
+        }
+
+        function initPopup(){
+            var dock = false; // 是否停靠
+            var infoboxContainer = document.getElementById("bubble");
+            table = document.getElementById("tab"); // 气泡内的表格
+            $("#bubblePosition").click(function(){ // 停靠状态切换
+            dock = !dock;
+            if($("#bubblePosition").hasClass("fui-export")){
+                $("#bubble").removeClass("bubble").addClass("float");
+                $("#bubblePosition").removeClass("fui-export").addClass("fui-bubble");
+                $("#bubblePosition")[0].title = "悬浮";
+                $("#bubble").css({'left' : '82%','bottom' : '45%'});
+                $("#tableContainer").css({'height':'350px'});
+            } else if($("#bubblePosition").hasClass("fui-bubble")){
+                $("#bubble").removeClass("float").addClass("bubble");
+                $("#bubblePosition").removeClass("fui-bubble").addClass("fui-export");
+                $("#bubblePosition")[0].title = "停靠";
+                $("#tableContainer").css({'height':'150px'});
+            }
+            });
+        
+            $("#close").click(function(){ // 关闭气泡
+                $("#bubble").hide();
+            });
+
+            scene.postRender.addEventListener(function(){ // 每一帧都去计算气泡的正确位置
+                if (scenePosition && !dock) {
+                    var canvasHeight = scene.canvas.height;
+                    var windowPosition = new Cesium.Cartesian2();
+                    Cesium.SceneTransforms.wgs84ToWindowCoordinates(scene, scenePosition, windowPosition);
+                    infoboxContainer.style.bottom = (canvasHeight - windowPosition.y + 45) + 'px';
+                    infoboxContainer.style.left = (windowPosition.x - 70) + 'px';
+                    infoboxContainer.style.visibility = "visible";
+                }
+            });
+            }
+    }
+    if (typeof Cesium !== 'undefined') {
+        window.startupCalled = true;
+        onload(Cesium);
+    }
+</script>
+</body>
+</html>

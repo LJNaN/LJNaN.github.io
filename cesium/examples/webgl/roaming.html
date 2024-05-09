@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>漫游</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-select.min.js"></script>
+    <script src="./js/slider.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/tooltip.js"></script>
+    <script src="./js/spectrum.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+    <script type="text/javascript" src="./js/roaming.js"></script>
+ 
+    <style>
+        .drawCur {
+            cursor: url(./images/cur/measure.cur), auto;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 73px;
+            height: 2px;
+            border-radius: 10px;
+            /*这个属性设置使填充进度条时的图形为圆角*/
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            margin-top: -3px;
+            height: 10px;
+            width: 10px;
+        }
+
+        .inputBox {
+            margin-bottom: 12px;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 2px;
+        }
+
+        input[type=text] {
+            width: 62px;
+            height: 28px;
+            background: rgba(51, 51, 51, 1);
+            border: 1px solid rgba(74, 74, 74, 1);
+            border-radius: 4px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div id="cesiumContainer"></div>
+    <div id='loadingbar' class="spinner">
+        <div class="spinner-container container1">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+        <div class="spinner-container container2">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+        <div class="spinner-container container3">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+        </div>
+    </div>
+    <button id="bn"
+        style="position : absolute; left : 1%; top : 2%; display : none;background-color: #00a1cb;color:#fff;border: 0">
+        展开
+    </button>
+    <div id="toolbar" style="position : absolute; left : 1%; top : 2%; display : none;">
+        <div class="titleBox">
+            <div class="titl">漫游路线</div>
+            <span class="close2" aria-hidden="false">×</span>
+        </div>
+        <div class="inputBox ">
+            <label class="lab " for="PerspectiveMode">视角模式</label>
+            <select id="PerspectiveMode" class="selectstyle">
+                <option value="NO">无</option>
+                <option value="TRACK">跟随视角</option>
+                <option value="FIRST">第一视角</option>
+                <option value="GOD">上帝视角</option>
+            </select>
+        </div>
+        <div class="inputBox">
+            <label class="lab">速度设置</label>
+            <div class="rangeBox">
+                <input type="range" id="speed" min="1" max="100" step="1.0" value="10" title="speed"
+                    data-bind="value: speed, valueUpdate: 'input'">
+            </div>
+            <input type="text" size="5" data-bind="value: speed" style="color: #ffffff">
+        </div>
+
+        <div style="margin-bottom: 6px;">
+            <input type="checkbox" id="isGround" style="margin: 3px;">
+            <label class="lab " for="isGround">绘制路线贴地</label>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <input type="checkbox" id="isPathShow" style="margin: 3px;" checked>
+            <label class="lab " for="isPathShow">显示路线</label>
+
+        </div>
+        <div class="inputBox foot">
+            <button type="button" id="drawLine" class=" btn2" style="right: 10px;position: static;">绘制路线</button>
+            <button type="button" id="stop" class=" btn2" style="right: 10px;position: static;">暂停</button>
+            <button type="button" id="clear" class=" btn2" style="right: 10px;position: static;">清除</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function onload(Cesium) {
+            var viewer = new Cesium.Viewer('cesiumContainer');
+            var scene = viewer.scene;
+            scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+            viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+                key: URL_CONFIG.BING_MAP_KEY,//当场景出现黑球时可至官网（https://www.bingmapsportal.com/）申请key
+                url: URL_CONFIG.BINGMAP
+            }));
+            viewer.terrainProvider = new Cesium.CesiumTerrainProvider({
+                url: 'https://www.supermapol.com/realspace/services/3D-stk_terrain/rest/realspace/datas/info/data/path',
+                isSct: false
+            });
+            scene.camera.setView({
+                destination: new Cesium.Cartesian3.fromDegrees(116.4566, 39.9149, 5323.445971240632),
+                orientation: {
+                    heading: 3.1612,
+                    pitch: -1.5188,
+                    roll: 6.283185307179563
+                }
+            });
+            // 初始化数据
+            var viewModel = {
+                speed: 10.0,
+            };
+            Cesium.knockout.track(viewModel);
+            var toolbar = document.getElementById('toolbar');
+            Cesium.knockout.applyBindings(viewModel, toolbar);
+            let options = {
+                model: { url: "./SampleData/models/Cesium_Ground.gltf" } // 和cesium中model的配置一致
+            };
+
+            let roam = new Roaming(viewer, options); // 创建漫游对象
+            var tooltip = createTooltip(viewer._element);
+            var widget = viewer.cesiumWidget;
+            var handler = new Cesium.DrawHandler(viewer, Cesium.DrawMode.Line, 0);
+            handler.activeEvt.addEventListener(function (isActive) {
+                if (isActive == true) {
+                    viewer.enableCursorStyle = false;
+                    viewer._element.style.cursor = '';
+                    $('body').removeClass('drawCur').addClass('drawCur');
+                } else {
+                    viewer.enableCursorStyle = true;
+                    $('body').removeClass('drawCur');
+                }
+            });
+            handler.movingEvt.addEventListener(function (windowPosition) {
+                tooltip.showAt(windowPosition, '<p>点击绘制路线，右击绘制结束</p>');
+            });
+            handler.drawEvt.addEventListener(function (result) {
+                tooltip.setVisible(false);
+                let lines = result.object._positions;
+                if ($('#isGround').prop("checked")) setGroundLine(lines);
+                else initRoam(lines);
+                handler.clear();
+            });
+
+            // 贴地路线生成及执行漫游
+            function setGroundLine(points) {
+                let points2 = [];
+                for (let i = 1, j = points.length; i < j; i++) {
+                    let startPoint = points[i - 1];
+                    let endPoint = points[i];
+                    let d = Cesium.Cartesian3.distance(startPoint, endPoint);
+                    let count = parseInt(d / 10) + 1;   //间隔10米取点
+                    for (let i = 1, j = count; i <= j; i++) {
+                        points2.push(
+                            Cesium.Cartesian3.lerp(
+                                startPoint,
+                                endPoint,
+                                i / count,
+                                new Cesium.Cartesian3()
+                            )
+                        );
+                    }
+                }
+                viewer.scene.clampToHeightMostDetailed(points2).then(clampedCartesians => {
+                   setTimeout(()=> initRoam(clampedCartesians),1000)
+                });
+            }
+
+            // 执行漫游
+            function initRoam(line) {
+                let option = {
+                    data: line
+                };
+                roam.updateOptionsParams(option);
+                roam.createRoaming()
+            }
+
+            $('#drawLine').click(function () {
+                handler.clear();
+                handler.activate();
+            });
+
+            $('#stop').click(function () {
+                if(this.innerHTML == '暂停'){
+                    roam.pauseOrContinue(false);
+                    this.innerHTML = '继续'
+                }else{
+                    roam.pauseOrContinue(true);
+                    this.innerHTML = '暂停'
+                }
+            });
+
+            $('#clear').click(function () {
+                handler.clear();
+                roam.removeRoaming();
+            });
+
+            //显示路线
+            $('#isPathShow').on("input propertychange", function (evt) {
+                roam.setRoamingPathVisibility($(this).prop("checked"))
+            });
+            //设置贴地
+            $('#isGround').on("input propertychange", function (evt) {
+                if ($(this).prop("checked")) handler.clampMode = Cesium.ClampMode.Ground
+                else handler.clampMode = Cesium.ClampMode.Space
+            });
+            //设置视角
+            $("#PerspectiveMode").on("input change", function (evt) {
+                roam.setPerspective(this.value);
+            });
+            //设置速度
+            Cesium.knockout.getObservable(viewModel, 'speed').subscribe(
+                function (newValue) {
+                    roam.changeRoamingSpeed(Number(newValue))
+                }
+            );
+
+
+            //关闭操作框
+            $(".close2").click(function () {
+                $("#toolbar").hide();
+                $("#bn").show()
+            });
+            $("#bn").click(function () {
+                $("#toolbar").show();
+                $("#bn").hide()
+            });
+            $('#loadingbar').remove();
+            $("#toolbar").show();
+        }
+
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            onload(Cesium);
+        }
+    </script>
+</body>
+
+</html>

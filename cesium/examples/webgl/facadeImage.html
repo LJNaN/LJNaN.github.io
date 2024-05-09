@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>立面出图</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="../../Build/Cesium/Cesium.js"></script>
+    <script src="./js/config.js"></script>
+    <style>
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .cesium-infoBox {
+            left: 10px;
+            transform: translate(0, 0);
+        }
+
+        #play {
+            content: url(images/play.png);
+            height: 30px;
+            padding: 5px;
+        }
+
+        #pause {
+            content: url(images/pause.png);
+            height: 30px;
+            padding: 5px;
+        }
+
+        #stop {
+            content: url(images/stop.png);
+            height: 30px;
+            padding: 5px;
+        }
+
+        .bootstrap-select {
+            width: 150px;
+        }
+
+        input[type=range] {
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cesiumContainer">
+    </div>
+    <div id='toolbar' class="param-container tool-bar">
+        <button id="set-region">指定范围</button>
+        <button id="execute">生成立面图</button>
+        <button id="clear">清除</button>
+        <div style="margin-top: 20px;">
+            <div>
+                <span>最大距离:</span>
+                <input type="range" value="500" min="1" max="1000" id="max-distance" />
+                <label for="max-distance" id="max-distance-label">500</label>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <div>
+                <span>最大高度:</span>
+                <input type="range" value="100" min="1" max="200" id="max-height" />
+                <label for="max-height" id="max-height-label">100</label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function onload(Cesium) {
+            var viewer = new Cesium.Viewer('cesiumContainer', {
+                timeline: true
+            });
+            var scene = viewer.scene;
+            scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+            var promise = scene.open(URL_CONFIG.SCENE_CBD);
+            promise.then(function (layers) {
+                for (var i = 0; i < layers.length; i++) {
+                    layers[i].selectEnabled = false;
+                    layers[i].setLodRangeScale(0.01);
+                }
+                scene.camera.setView({
+                    destination: new Cesium.Cartesian3(-2178415.305960234, 4380553.720690763, 4092818.1871923497),
+                    orientation: {
+                        heading: 0.8716718616451056,
+                        pitch: -0.5387968426122569,
+                        roll: 5.595524044110789e-14
+                    }
+                });
+
+                //初始化立面出图
+                var facade = new Cesium.Facade(scene);
+                facade.build();
+
+                var handlerLine = new Cesium.DrawHandler(viewer, Cesium.DrawMode.Line);
+                handlerLine.drawEvt.addEventListener(function (result) {
+                    result.object.show = false;
+                    var startPoint = result.object.positions[0];
+                    var endPoint = result.object.positions[1];
+                    facade.startPoint = startPoint;
+                    facade.endPoint = endPoint;
+                });
+
+                $('#set-region').click(function () {
+                    handlerLine.activate();
+                });
+
+                $("#execute").click(function () {
+                    facade.readyPromise.then(function (base64data) {
+                        download(base64data);
+                    });
+                });
+
+                $("#clear").click(function () {
+                    facade.clear();
+                    handlerLine.clear();
+                });
+
+                $("#max-distance").on("input", function () {
+                    $("#max-distance-label").text($(this).val());
+                    facade.farDistance = Number($(this).val());
+                });
+
+                $("#max-height").on("input", function () {
+                    $("#max-height-label").text($(this).val());
+                    $("#max-height-2").val($(this).val());
+                    facade.maxHeight = Number($(this).val());
+                });
+
+
+                function convertImageToCanvas(image) {
+                    var canvas = document.createElement("canvas");
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                    canvas.getContext("2d").drawImage(image, 0, 0);
+                    return canvas;
+                }
+
+                function download(base64data) {
+                    var image = new Image();
+                    image.src = base64data;
+                    image.onload = function () {
+                        var canvas = convertImageToCanvas(image);
+                        url = canvas.toDataURL("image/jpeg");
+                        var a = document.createElement('a');
+                        var event = new MouseEvent('click');
+                        a.download = (new Date()).getTime() + ".jpg"; // 指定下载图片的名称
+                        a.href = url;
+                        a.dispatchEvent(event); // 触发超链接的点击事件
+                    }
+                }
+            });
+        }
+
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            onload(Cesium);
+        }
+    </script>
+</body>
+
+</html>

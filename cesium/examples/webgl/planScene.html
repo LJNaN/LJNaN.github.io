@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>平面场景</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/tooltip.js"></script>
+    <script src="./js/config.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+
+    <style>
+        #label {
+            font-size: 16px;
+            position: fixed;
+            bottom: 0;
+            right: 40px;
+            width: auto;
+            height: 36px;
+            line-height: 36px;
+            z-index: 99;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<div id="label">
+</div>
+
+<div id='toolbar' class="param-container tool-bar">
+    <button type="button" id="pick" class="button black">拾取添加</button>
+    <button type="button" id="fly" class="button black">定位</button>
+    <button type="button" id="add" class="button black">定点添加</button>
+    <button type="button" id="viewshed" class="button black">可视域分析</button>
+    <button type="button" id="excavationTerrain" class="button black">地形开挖</button>
+    <button type="button" id="modifyTerrain" class="button black" style="display: none;">地形修改、压平</button>
+    <button type="button" id="clear" class="button black">清除</button>
+</div>
+<div id='loadingbar' class="spinner">
+    <div class="spinner-container container1">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+    <div class="spinner-container container2">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+    <div class="spinner-container container3">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+</div>
+<script>
+    function onload(Cesium) {
+        $('#loadingbar').remove();
+
+        var viewer = new Cesium.Viewer('cesiumContainer');
+        var scene = viewer.scene;
+        scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+
+        scene.skyAtmosphere.show = false;//大气
+        //创建天空盒
+        var sunSkyBox = new Cesium.SkyBox({
+            sources: {
+                positiveX: './images/SkyBox/sunsetglow/Right.jpg',
+                negativeX: './images/SkyBox/sunsetglow/Left.jpg',
+                positiveY: './images/SkyBox/sunsetglow/Front.jpg',
+                negativeY: './images/SkyBox/sunsetglow/Back.jpg',
+                positiveZ: './images/SkyBox/sunsetglow/Up.jpg',
+                negativeZ: './images/SkyBox/sunsetglow/Down.jpg'
+            }
+        });
+        scene.skyBox = sunSkyBox;
+
+
+        var tooltip = createTooltip(viewer._element);
+
+        //设置平面场景
+        viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW;
+
+        //移除底图图片
+        viewer.imageryLayers.remove(viewer.imageryLayers._layers[0])
+
+        var promise = scene.open(URL_CONFIG.OLYMPIC_PLAN);
+
+        Cesium.when(promise, function (layers) {
+
+                viewer.clock.currentTime = Cesium.JulianDate.fromDate(new Date(2022,10,18,18))
+
+                let layer0 = layers[0];
+
+                var remove_points = [];
+
+                var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+
+                $('#pick').click(function () {
+                    clear();
+                    //左键点击，添加点
+                    handler.setInputAction(function (e) {
+                        var position = scene.pickPosition(e.position);//平面拾取的点
+
+                        var point = viewer.entities.add({
+                            position: position,
+                            billboard: {
+                                image: './images/location4.png',
+                                show: true,
+                                // pixelOffset: new Cesium.Cartesian2(0, -50),
+                                eyeOffset: new Cesium.Cartesian3(0.0, 0.0, 0.0),
+                                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                                scale: 0.3,
+                                color: Cesium.Color.YELLOW,
+                                alignedAxis: Cesium.Cartesian3.ZERO,
+                            },
+                        })
+
+                        remove_points.push(point)
+
+                    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+                })
+
+                //实时拾取平面坐标值
+                var perPos;
+                handler.setInputAction(function (movement) {
+                    var pos = scene.pickPosition2D(movement.endPosition);
+
+                    if (pos) {
+                        document.getElementById("label").style.visibility = "visible";//显示
+                        perPos = 'x:' + pos.x.toFixed(4) + '，y:' + pos.y.toFixed(4) + '，z:' + pos.z.toFixed(4);
+                        document.getElementById('label').innerText = perPos;
+                    }
+
+                    // 若此标记为false，则激活对可视域分析对象的操作
+                    if (!scene.viewFlag) {
+                        //获取鼠标屏幕坐标,并将其转化成笛卡尔坐标
+                        var position = movement.endPosition;
+                        var last = scene.pickPosition(position);
+
+                        //计算该点与视口位置点坐标的距离
+                        var distance = Cesium.Cartesian3.distance(viewPosition, last);
+
+                        if (distance > 0) {
+                            // 将鼠标当前点坐标转化成经纬度
+                            var cartographic = Cesium.Cartographic.fromCartesian(last);
+                            var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+                            var latitude = Cesium.Math.toDegrees(cartographic.latitude);
+                            var height = cartographic.height;
+                            // 通过该点设置可视域分析对象的距离及方向
+                            viewshed3D.setDistDirByPoint([longitude, latitude, height]);
+                        }
+                    }
+
+                }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+                handler.setInputAction(function (e) {
+                    //鼠标右键事件回调，不再执行鼠标移动事件中对可视域的操作
+                    scene.viewFlag = true;
+                }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+
+                // 先将此标记置为true，不激活鼠标移动事件中对可视域分析对象的操作
+                scene.viewFlag = true;
+                var pointHandler = new Cesium.DrawHandler(viewer, Cesium.DrawMode.Point);
+                // 创建可视域分析对象
+                var viewshed3D = new Cesium.ViewShed3D(scene);
+                var viewPosition;//可视域分析观察点
+
+                $('#viewshed').click(function () {
+                    
+                    clear()
+
+                    if (pointHandler.active) {
+                        return;
+                    }
+                    //先清除之前的可视域分析
+                    viewshed3D.distance = 0.1;
+                    scene.viewFlag = true;
+
+                    // 关闭拾取添加
+                    handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK)  //移除鼠标单击事件监听
+                    // 关闭地形开挖
+                    if(handlerPolygon.polygon && handlerPolygon.polyline){
+                        handlerPolygon.polygon.show=false;
+                        handlerPolygon.polyline.show=false;
+                        handlerPolygon.deactivate();
+                    }
+                    // 关闭提示框
+                    tooltip.setVisible(false);
+
+
+                    //激活绘制点类
+                    pointHandler.activate();
+                });
+
+                pointHandler.drawEvt.addEventListener(function (result) {
+                    var point = result.object;
+                    var position = point.position;
+                    viewPosition = position;
+
+                    // 将获取的点的位置转化成经纬度
+                    var cartographic = Cesium.Cartographic.fromCartesian(position);
+                    var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+                    var latitude = Cesium.Math.toDegrees(cartographic.latitude);
+                    var height = cartographic.height + 1.8;
+                    point.position = Cesium.Cartesian3.fromDegrees(longitude, latitude, height);
+
+                    if (scene.viewFlag) {
+                        // 设置视口位置
+                        viewshed3D.viewPosition = [longitude, latitude, height];
+                        viewshed3D.build();
+                        // 将标记置为false以激活鼠标移动回调里面的设置可视域操作
+                        scene.viewFlag = false;
+                    }
+                });
+
+
+                //根据桌面获取的坐标值，添加到指定位置
+                var url = "./SampleData/gltf/地标动画.gltf";
+                var gltf;
+                $('#add').click(function () {
+                    var pos = new Cesium.Cartesian3(447742.322, 4428382.465, 56);//x、y坐标通过桌面拾取的 投影坐标
+                    var convertPos = Cesium.SceneTransforms.convert2DToCartesian(scene, pos);//转换为笛卡尔坐标
+
+                    if (!gltf) {
+                        gltf = viewer.entities.add({
+                            position: convertPos,
+                            billboard: {
+                                image: './images/station.png',
+                                show: true,
+                                // pixelOffset: new Cesium.Cartesian2(0, -50),
+                                eyeOffset: new Cesium.Cartesian3(0.0, 0.0, 0.0),
+                                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                                scale: 0.3,
+                                color: Cesium.Color.YELLOW,
+                                alignedAxis: Cesium.Cartesian3.ZERO,
+                            },
+                        })
+
+                        remove_points.push(gltf)
+                    }
+
+                    viewer.zoomTo(gltf);
+                })
+
+                //根据桌面坐标，进行飞行定位
+                $('#fly').click(function () {
+                    var pos = new Cesium.Cartesian3(445044.376, 4429689.452, 5000);//x、y坐标通过桌面拾取的 投影坐标
+                    scene.camera.setView({
+                        destination: pos,
+                        convert: false  //平面需要设置该参数
+                    })
+                })
+
+                var tooltip = createTooltip(viewer._element);
+                //绘制多边形
+                var handlerPolygon = new Cesium.DrawHandler(viewer, Cesium.DrawMode.Polygon, 0);
+                handlerPolygon.activeEvt.addEventListener(function (isActive) {
+                    if (isActive == true) {
+                        viewer.enableCursorStyle = false;
+                        viewer._element.style.cursor = '';
+                        $('body').removeClass('drawCur').addClass('drawCur');
+                    } else {
+                        viewer.enableCursorStyle = true;
+                        $('body').removeClass('drawCur');
+                    }
+                });
+                handlerPolygon.movingEvt.addEventListener(function (windowPosition) {
+                    if (windowPosition.x < 200 && windowPosition.y < 150) {
+                        tooltip.setVisible(false);
+                        return;
+                    }
+                    if (handlerPolygon.isDrawing) {
+                        tooltip.showAt(windowPosition, '<p>点击确定开挖区域中间点</p><p>右键单击结束绘制,进行开挖</p>');
+                    } else {
+                        tooltip.showAt(windowPosition, '<p>点击绘制开挖区域第一个点</p>');
+                    }
+                    
+                });
+                handlerPolygon.drawEvt.addEventListener(function (result) {
+                    if (!result.object.positions) {
+                        tooltip.showAt(result, '<p>请绘制正确的多边形</p>');
+                        handlerPolygon.polygon.show = false;
+                        handlerPolygon.polyline.show = false;
+                        handlerPolygon.deactivate();
+                        handlerPolygon.activate();
+                        return;
+                    }
+                    var array = [].concat(result.object.positions);
+                    tooltip.setVisible(false);
+                    var positions = [];
+                    for (var i = 0, len = array.length; i < len; i++) {
+                        var cartographic = Cesium.Cartographic.fromCartesian(array[i]);
+                        var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+                        var latitude = Cesium.Math.toDegrees(cartographic.latitude);
+                        var h = cartographic.height;
+                        if (positions.indexOf(longitude) == -1 && positions.indexOf(latitude) == -1) {
+                            positions.push(longitude);
+                            positions.push(latitude);
+                            // positions.push(h);
+
+                            positions.push(0);
+                        }
+                    }
+                    // var dep = $('#depth').val();
+                    var dep = 500;
+                    
+
+                    if (excavationFlag) {
+                        //地形开挖
+                        viewer.scene.globe.removeAllExcavationRegion();
+                        viewer.scene.globe.addExcavationRegion({
+                            name: 'kaiwa' + Cesium.createGuid(),
+                            position: positions,
+                            height: dep,
+                            transparent: false
+                        });
+                    } else {
+                        //此处用的地形修改
+                        viewer.scene.globe.removeAllModifyRegion();
+                        viewer.scene.globe.addModifyRegion({
+                            name: 'flatten' + Cesium.createGuid(),
+                            position: positions
+                        });
+                    }
+
+                    // // 倾斜图层的开挖和压平
+                    // layer.addExcavationRegion({
+                    //     // name: 'kaiwa' + Math.random(),
+                    //     name: 'kaiwa' + Cesium.createGuid(),
+                    //     position: positions,
+                    // })
+                    //
+                    // layer.addFlattenRegion({
+                    //     // name: 'flatten' + Math.random(),
+                    //     name: 'flatten' + Cesium.createGuid(),
+                    //     position: positions,
+                    // });
+
+
+                    handlerPolygon.polygon.show = false;
+                    handlerPolygon.polyline.show = false;
+                    handlerPolygon.deactivate();
+                    handlerPolygon.activate();
+                });
+
+                var excavationFlag = false;
+                //地形开挖
+                $('#excavationTerrain').click(function () {
+
+                    clear()
+            
+                    excavationFlag = true;
+                    handlerPolygon.activate();
+                })
+
+                //地形压平
+                $('#modifyTerrain').click(function () {
+                    excavationFlag = false;
+                    handlerPolygon.activate();
+                })
+
+
+                function clear(){
+                    tooltip.setVisible(false);
+                    viewer.scene.globe.removeAllExcavationRegion();
+                    viewer.scene.globe.removeAllModifyRegion();
+                    scene.viewFlag = true;
+                    pointHandler.clear();
+                    viewshed3D.distance = 0.1;
+              
+                    handlerPolygon.clear();
+                    remove_points.forEach((entity)=>{
+                        viewer.entities.remove(entity)
+                    })
+                    remove_points.length = 0;
+                    gltf = undefined;
+                    handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK)  //移除鼠标单击事件监听
+                }
+
+                //清除
+                $('#clear').click(function () {
+                    clear()
+                })
+
+            }
+        )
+    }
+
+    if (typeof Cesium !== 'undefined') {
+        window.startupCalled = true;
+        onload(Cesium);
+    }
+</script>
+</body>
+</html>

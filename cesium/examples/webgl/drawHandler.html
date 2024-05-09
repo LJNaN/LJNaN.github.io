@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>绘制</title>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-select.min.js"></script>
+    <script src="./js/tooltip.js"></script>
+    <script src="./js/config.js"></script>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<div id='loadingbar' class="spinner">
+    <div class="spinner-container container1">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+    <div class="spinner-container container2">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+    <div class="spinner-container container3">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+    </div>
+</div>
+<div style="position:absolute;left:5px;top:5px;">
+    <select id="entityOptions" class="selectpicker show-tick form-control">
+        <option selected value="1" >绘制点</option>
+        <option value="2">绘制线</option>
+        <option value="3">绘制面</option>
+        <option value="4">绘制栅格线</option>
+        <option value="5">绘制栅格面</option>
+        <option value="6">添加地标</option>
+    </select>
+</div>
+<script type="text/javascript">
+    function onload(Cesium) {
+        // 初始化viewer部件
+        var viewer = new Cesium.Viewer('cesiumContainer',{
+            infoBox : false,
+            selectionIndicator : false
+        });
+        viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+            url : 'https://dev.virtualearth.net',
+            mapStyle : Cesium.BingMapsStyle.AERIAL,
+            key : URL_CONFIG.BING_MAP_KEY//当场景出现黑球时可至官网（https://www.bingmapsportal.com/）申请key
+        }));
+        var scene = viewer.scene;
+        scene.shadowMap.darkness = 1.275; //设置第二重烘焙纹理的效果（明暗程度）
+        scene.skyAtmosphere.brightnessShift=0.4;  //修改大气的亮度
+        scene.debugShowFramesPerSecond = true;
+        scene.hdrEnabled = false;
+        scene.sun.show = true;
+        // 01设置环境光的强度-新处理CBD场景
+        scene.lightSource.ambientLightColor = new Cesium.Color(0.65, 0.65, 0.65, 1);
+        // 添加光源
+        var position1 = new Cesium.Cartesian3.fromDegrees(116.261209157595,  39.3042238956531, 480);
+        //光源方向点
+
+        var targetPosition1 = new Cesium.Cartesian3.fromDegrees(116.261209157595, 39.3042238956531,430);
+        var dirLightOptions = {
+            targetPosition: targetPosition1,
+            color: new Cesium.Color(1.0, 1.0, 1.0, 1),
+            intensity: 0.55
+        };
+        directionalLight_1 = new Cesium.DirectionalLight(position1, dirLightOptions);
+        scene.addLightSource(directionalLight_1);
+
+        try {
+            // 打开所发布三维服务下的所有图层
+            var promise = scene.open(URL_CONFIG.SCENE_CBD);
+            Cesium.when(promise,function(layers){
+                // 设置相机位置、视角，便于观察场景
+                scene.camera.setView({
+                    destination : new Cesium.Cartesian3.fromDegrees(116.4563,39.8969,553),
+                    orientation : {
+                        heading : 5.901089214916513,
+                        pitch : -0.40668579780875524,
+                        roll : 6.281842456812987
+                    }
+                });
+                for(var i = 0; i<layers.length;i++){
+                    layers[i].selectEnabled = false;
+                }
+            
+                if(!scene.pickPositionSupported){
+                    alert('不支持深度纹理,无法拾取位置！');
+                }
+            },function(e){
+                if (widget._showRenderLoopErrors) {
+                    var title = '加载SCP失败，请检查网络连接状态或者url地址是否正确？';
+                    widget.showErrorPanel(title, undefined, e);
+                }
+            });
+        }
+        catch(e){
+            if (widget._showRenderLoopErrors) {
+                var title = '渲染时发生错误，已停止渲染。';
+                widget.showErrorPanel(title, undefined, e);
+            }
+        }
+
+        var handler;
+		var tooltip = createTooltip(document.body);
+        var handlerPoint = new Cesium.DrawHandler(viewer,Cesium.DrawMode.Point);
+        handlerPoint.activeEvt.addEventListener(function(isActive){
+            if(isActive == true){
+                viewer.enableCursorStyle = false;
+                viewer._element.style.cursor = '';
+                $('body').removeClass('drawCur').addClass('drawCur');
+            }
+            else{
+                viewer.enableCursorStyle = true;
+                $('body').removeClass('drawCur');
+            }
+        });
+        handlerPoint.movingEvt.addEventListener(function(windowPosition){
+            tooltip.showAt(windowPosition,'<p>点击绘制点</p>');
+        });
+        handlerPoint.drawEvt.addEventListener(function(result){
+            tooltip.setVisible(false);
+        });
+        handlerPoint.activate();
+        var chooseMode = {
+            "1": Cesium.DrawMode.Point,
+            "2": Cesium.DrawMode.Line,
+            "3": Cesium.DrawMode.Polygon,
+            "4": "Cesium.RasterGeometryType.POLYLINE",
+            "5": "Cesium.RasterGeometryType.POLYGON",
+            "6": Cesium.DrawMode.Marker
+        };
+        var DrawMode= ["点","线","面","地标"];
+        $("#entityOptions").change(function(){
+            handlerPoint.deactivate();
+            handlerPoint.clear();
+            if(handler !== undefined){
+                handler.deactivate();
+                handler.clear();
+            }
+            viewer.scene.rasterVectorCollection.removeAll();
+            var value = $(this).val();
+            var chooseDrawMode = chooseMode[value];
+            if(value !== "5" && value !== "4"){
+                entityHandler(chooseDrawMode,viewer);
+            }else{
+                rasterVectorEntityHandler(chooseDrawMode);
+            }
+        });
+
+        function entityHandler(chooseDrawMode,viewer){
+            var clampMode = 0;
+            if(chooseDrawMode ===  1){
+                handler = new Cesium.DrawHandler(viewer,chooseDrawMode,clampMode);
+            }else{
+                handler = new Cesium.DrawHandler(viewer,chooseDrawMode);
+            }
+            handler.activeEvt.addEventListener(function(isActive){
+                if(isActive == true){
+                    viewer.enableCursorStyle = false;
+                    viewer._element.style.cursor = '';
+                    $('body').removeClass('drawCur').addClass('drawCur');
+                }else{
+                    viewer.enableCursorStyle = true;
+                    $('body').removeClass('drawCur');
+                }
+            });
+            handler.movingEvt.addEventListener(function(windowPosition){
+                tooltip.showAt(windowPosition,'<p>点击绘制'+DrawMode[chooseDrawMode]+',右击绘制结束</p>');
+            });
+            handler.drawEvt.addEventListener(function(result){
+                tooltip.setVisible(false);
+            });
+            handler.activate();
+        };
+        var ps = [];
+        function rasterVectorEntityHandler(chooseDrawMode){
+            viewer.enableCursorStyle = false;
+            viewer._element.style.cursor = '';
+            $('body').removeClass('drawCur').addClass('drawCur');
+            var rasterVectorMode ={
+                "Cesium.RasterGeometryType.POLYLINE" : Cesium.RasterGeometryType.POLYLINE,
+                "Cesium.RasterGeometryType.POLYGON" : Cesium.RasterGeometryType.POLYGON
+            }
+            viewer.scene.rasterVectorCollection.removeAll();
+            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            handler.setInputAction(function (e) {
+                //获取鼠标屏幕坐标,并将其转化成笛卡尔坐标
+                var position = e.position;
+                var last = viewer.scene.pickPosition(position);
+                // 将鼠标当前点坐标转化成经纬度
+                var cartographic = Cesium.Cartographic.fromCartesian(last);
+                var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+                var latitude = Cesium.Math.toDegrees(cartographic.latitude);
+                var height = cartographic.height;
+                ps.push(Cesium.Cartographic.fromDegrees(longitude,latitude,height));
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+            handler.setInputAction(function(e){
+                tooltip.showAt(e.endPosition, '<p>单击选择下一处,右击结束绘制</p>');
+            },Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+            handler.setInputAction(function (e) {
+                scene.rasterVectorCollection.add({
+                    name:"myname",
+                    positions:ps,
+                    lineColor:new Cesium.Color(1.0,0,1,1),
+                    lineWidth:40,
+                    geometryType:rasterVectorMode[chooseDrawMode]
+                });
+                //鼠标右键结束事件
+                handler.destroy();
+                handler = null;
+                ps=[];
+                viewer.enableCursorStyle = true;
+                tooltip.setVisible(false);
+                $('body').removeClass('drawCur');
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        };
+
+        $("#toolbar").show();
+        $("#loadingbar").remove();
+    }
+    if (typeof Cesium !== 'undefined') {
+        window.startupCalled = true;
+        onload(Cesium);
+    }
+</script>
+</body>
+</html>

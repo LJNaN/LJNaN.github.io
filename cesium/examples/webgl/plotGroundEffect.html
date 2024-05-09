@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description" content="Test">
+    <meta name="cesium-sandcastle-labels" content="Geometries">
+    <title>关灯特效</title>
+    <script type="text/javascript" src="../../Build/Cesium/Cesium.js"></script>
+    <link href="../../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+</head>
+
+<body style=" margin: 0;background: #fff;width: 100%;height:100%;position: absolute;top: 0;">
+    <div id="cesiumContainer" class="fullSize" style="position: absolute;width: 100%;height: 100%;">
+
+        <script id="cesium_sandcastle_script">
+            var plotting, plottingLayer, plotEditControl;
+            var cesium;
+            var scene, viewer;
+            var symbolLibManager;
+            var groundEfficiency
+
+            function onload(Cesium) {
+                'use strict';
+                var host = document.location.toString().match(/file:\/\//) ? "http://localhost:8090" :  'http://' + document.location.hostname + ":8090";
+                viewer = new Cesium.Viewer('cesiumContainer');
+                scene = viewer.scene;
+
+                let CBD = host + "/iserver/services/3D-CBD/rest/realspace";
+                var promise = scene.open(CBD);
+
+                groundEfficiency = new Cesium.GroundEffect({
+                    scene: scene,
+                    id: "GroundEffect",
+                    color: Cesium.Color.BLACK.withAlpha(0.7),
+                    positions: [
+                        116.4560006060437, 39.914940223670925,
+                        116.45911535703866, 39.914946081485304,
+                        116.45943901754349, 39.91235473089909,
+                        116.45624166330651, 39.91242400259561,
+                    ],
+                    maxTerrainHeight: 100,
+                    minTerrainHeight: 80
+                })
+            }
+
+            if (typeof Cesium !== 'undefined') {
+                window.startupCalled = true;
+                onload(Cesium);
+            }
+        </script>
+    </div>
+</body>
+
+</html>
